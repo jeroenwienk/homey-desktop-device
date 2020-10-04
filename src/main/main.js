@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Tray, Menu } = require('electron');
+const { app, globalShortcut, BrowserWindow, Tray, Menu } = require('electron');
 const Socket = require('./services/socket');
 const mdns = require('./services/mdns');
 const iconUrl = require('../images/iconUrl');
@@ -13,6 +13,7 @@ function makeSingleInstance() {
   app.requestSingleInstanceLock();
 
   app.on('second-instance', () => {
+    console.log('app:second-instance');
     if (mainWindow) {
       if (mainWindow.isMinimized()) mainWindow.restore();
       mainWindow.focus();
@@ -40,18 +41,29 @@ function createMainWindow() {
 
   socket.setMainWindow(mainWindow);
 
-  mainWindow.on('minimize', function (event) {
+  mainWindow.on('minimize', (event) => {
+    console.log('mainWindow:minimize');
     // event.preventDefault();
     // mainWindow.minimize();
   });
 
-  mainWindow.on('restore', function (event) {
+  mainWindow.on('restore', (event) => {
+    console.log('mainWindow:restore');
     mainWindow.show();
   });
 
   mainWindow.on('close', (event) => {
+    console.log('mainWindow:close');
     event.preventDefault();
     mainWindow.hide();
+  });
+
+  mainWindow.on('show', (event) => {
+    console.log('mainWindow:show');
+  });
+
+  mainWindow.on('hide', (event) => {
+    console.log('mainWindow:hide');
   });
 
   return mainWindow;
@@ -70,6 +82,7 @@ function createTray() {
     {
       label: 'Quit',
       click() {
+        mainWindow.destroy();
         app.quit();
       },
     },
@@ -86,6 +99,7 @@ function createTray() {
 }
 
 app.on('ready', () => {
+  console.log('app:ready');
   mainWindow = createMainWindow();
   tray = createTray();
 });
@@ -94,14 +108,16 @@ app.on('ready', () => {
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
 app.on('window-all-closed', (event) => {
-  event.preventDefault();
-  mainWindow.hide();
-  // if (process.platform !== 'darwin') {
-  //   app.quit();
-  // }
+  console.log('app:window-all-closed');
+  // event.preventDefault();
+  // mainWindow.hide();
+  if (process.platform !== 'darwin') {
+    app.quit();
+  }
 });
 
 app.on('activate', () => {
+  console.log('app:activate');
   // On OS X it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   if (BrowserWindow.getAllWindows().length === 0) {
