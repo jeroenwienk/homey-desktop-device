@@ -1,10 +1,15 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
+import { ipcRenderer } from 'electron';
 
 import { historyStore } from './historyStore';
 
 export function App() {
   const commands = historyStore((state) => state.commands);
+
+  useEffect(() => {
+    ipcRenderer.send('init', {});
+  }, []);
 
   return (
     <Container>

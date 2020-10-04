@@ -3,6 +3,8 @@ const Server = require('socket.io');
 const open = require('open');
 const { shell } = require('electron');
 
+const { commandCollection } = require('./db');
+
 class Socket {
   constructor() {
     this.httpServer = http.createServer();
@@ -19,7 +21,7 @@ class Socket {
 
     io.use((socket, next) => {
       let handshake = socket.handshake;
-      console.log(handshake);
+      console.log('handshake:', handshake);
       next();
     });
 
@@ -66,10 +68,17 @@ class Socket {
     callback('run:browser:open');
 
     if (this.mainWindow != null) {
-      this.mainWindow.webContents.send('pushCommand', {
+      const entry = {
         name: 'browser:open',
         argument: data.url,
+        date: new Date(),
+      };
+
+      commandCollection.insert(entry, (error) => {
+        console.error(error);
       });
+
+      this.mainWindow.webContents.send('push:command', entry);
     }
 
     (async () => {
@@ -81,10 +90,17 @@ class Socket {
     callback('run:path:open');
 
     if (this.mainWindow != null) {
-      this.mainWindow.webContents.send('pushCommand', {
+      const entry = {
         name: 'path:open',
         argument: data.path,
+        date: new Date(),
+      };
+
+      commandCollection.insert(entry, (error) => {
+        console.error(error);
       });
+
+      this.mainWindow.webContents.send('push:command', entry);
     }
 
     (async () => {

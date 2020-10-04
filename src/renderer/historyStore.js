@@ -3,18 +3,26 @@ import create from 'zustand';
 
 export const historyStore = create((set) => ({
   commands: [],
-  pushCommand: (nextCommand) =>
-    set((state) => ({ commands: [...state.commands, nextCommand] })),
 }));
 
 export function pushCommand(command) {
-  const state = historyStore.getState();
-
-  historyStore.setState({
-    commands: [...state.commands, command],
+  historyStore.setState((prevState) => {
+    return {
+      commands: [...prevState.commands, command],
+    };
   });
 }
 
-ipcRenderer.on('pushCommand', (event, data) => {
+export function initCommands(commands) {
+  historyStore.setState({
+    commands: commands,
+  });
+}
+
+ipcRenderer.on('push:command', (event, data) => {
   pushCommand(data);
+});
+
+ipcRenderer.on('init:commands', (event, data) => {
+  initCommands(data);
 });

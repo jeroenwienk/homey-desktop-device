@@ -1,4 +1,11 @@
-const { app, globalShortcut, BrowserWindow, Tray, Menu } = require('electron');
+const {
+  app,
+  globalShortcut,
+  BrowserWindow,
+  Tray,
+  Menu,
+  ipcMain,
+} = require('electron');
 const Socket = require('./services/socket');
 const mdns = require('./services/mdns');
 const iconUrl = require('../images/iconUrl');
@@ -33,6 +40,7 @@ function createMainWindow() {
       nodeIntegration: true,
     },
   });
+
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
   if (process.env.NODE_ENV !== 'production') {
@@ -43,8 +51,6 @@ function createMainWindow() {
 
   mainWindow.on('minimize', (event) => {
     console.log('mainWindow:minimize');
-    // event.preventDefault();
-    // mainWindow.minimize();
   });
 
   mainWindow.on('restore', (event) => {
@@ -109,8 +115,6 @@ app.on('ready', () => {
 // explicitly with Cmd + Q.
 app.on('window-all-closed', (event) => {
   console.log('app:window-all-closed');
-  // event.preventDefault();
-  // mainWindow.hide();
   if (process.platform !== 'darwin') {
     app.quit();
   }
@@ -130,3 +134,25 @@ if (require('electron-squirrel-startup')) {
   // eslint-disable-line global-require
   app.quit();
 }
+
+app.whenReady().then(() => {
+  // Register a 'CommandOrControl+X' shortcut listener.
+  const ret = globalShortcut.register('CommandOrControl+M', () => {
+    console.log('CommandOrControl+M is pressed');
+  });
+
+  if (!ret) {
+    console.log('registration failed');
+  }
+
+  // Check whether a shortcut is registered.
+  // console.log(globalShortcut.isRegistered('CommandOrControl+M'));
+});
+
+app.on('will-quit', () => {
+  // Unregister a shortcut.
+  globalShortcut.unregister('CommandOrControl+M');
+
+  // Unregister all shortcuts.
+  globalShortcut.unregisterAll();
+});

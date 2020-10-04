@@ -87,6 +87,7 @@
   "dependencies": {
     "@homebridge/ciao": "^1.0.12",
     "electron-squirrel-startup": "^1.0.0",
+    "nedb": "^1.8.0",
     "node-fetch": "^2.6.1",
     "open": "^7.3.0",
     "react": "^16.13.1",
