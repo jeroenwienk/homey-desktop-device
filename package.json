@@ -1,6 +1,6 @@
 {
   "name": "homey-desktop",
-  "productName": "homey-desktop",
+  "productName": "Homey Desktop",
   "version": "1.0.0",
   "description": "Homey Desktop",
   "main": ".webpack/main",
@@ -26,7 +26,8 @@
         {
           "name": "@electron-forge/maker-squirrel",
           "config": {
-            "name": "homey_desktop"
+            "name": "homey-desktop",
+            "setupIcon": "./src/images/home.ico"
           }
         },
         {

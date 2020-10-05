@@ -1,14 +1,28 @@
-const {
-  app,
-  globalShortcut,
-  BrowserWindow,
-  Tray,
-  Menu,
-  ipcMain,
-} = require('electron');
+const { app, globalShortcut, BrowserWindow, Tray, Menu } = require('electron');
+
+// Handle creating/removing shortcuts on Windows when installing/uninstalling.
+// DO NOT MOVE
+if (require('electron-squirrel-startup')) return;
+
+const path = require('path');
 const Socket = require('./services/socket');
 const mdns = require('./services/mdns');
-const iconUrl = require('../images/iconUrl');
+
+const appFolder = path.dirname(process.execPath);
+const updateExe = path.resolve(appFolder, '..', 'Update.exe');
+const exeName = path.basename(process.execPath);
+
+app.setLoginItemSettings({
+  openAtLogin: true,
+  openAsHidden: true,
+  path: updateExe,
+  args: [
+    '--processStart',
+    `"${exeName}"`,
+    '--process-start-args',
+    `"--hidden"`,
+  ],
+});
 
 let socket = new Socket();
 let mainWindow = null;
@@ -31,10 +45,11 @@ function makeSingleInstance() {
 makeSingleInstance();
 
 function createMainWindow() {
+  const imagepath = path.resolve(__dirname, '../images/home.png');
   const mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
-    icon: iconUrl,
+    icon: imagepath,
     backgroundColor: '#292929',
     webPreferences: {
       nodeIntegration: true,
@@ -76,7 +91,9 @@ function createMainWindow() {
 }
 
 function createTray() {
-  const tray = new Tray(iconUrl);
+  // TODO: seperate os dependant cases
+  const imagepath = path.resolve(__dirname, '../images/home.ico');
+  const tray = new Tray(imagepath);
 
   const contextMenu = Menu.buildFromTemplate([
     {
@@ -128,12 +145,6 @@ app.on('activate', () => {
     mainWindow = createMainWindow();
   }
 });
-
-// Handle creating/removing shortcuts on Windows when installing/uninstalling.
-if (require('electron-squirrel-startup')) {
-  // eslint-disable-line global-require
-  app.quit();
-}
 
 app.whenReady().then(() => {
   // Register a 'CommandOrControl+X' shortcut listener.

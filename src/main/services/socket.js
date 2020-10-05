@@ -75,7 +75,7 @@ class Socket {
       };
 
       commandCollection.insert(entry, (error) => {
-        console.error(error);
+        if (error) console.error(error);
       });
 
       this.mainWindow.webContents.send('push:command', entry);
@@ -97,7 +97,7 @@ class Socket {
       };
 
       commandCollection.insert(entry, (error) => {
-        console.error(error);
+        if (error) console.error(error);
       });
 
       this.mainWindow.webContents.send('push:command', entry);
