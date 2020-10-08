@@ -5,8 +5,10 @@ const { app, globalShortcut, BrowserWindow, Tray, Menu } = require('electron');
 if (require('electron-squirrel-startup')) return;
 
 const path = require('path');
-const Socket = require('./services/socket');
-const mdns = require('./services/mdns');
+const db = require('./services/db');
+const socket = require('./services/socket');
+const MDNS = require('./services/mdns');
+const ipcMainHandlers = require('./ipcMainHandlers');
 
 const appFolder = path.dirname(process.execPath);
 const updateExe = path.resolve(appFolder, '..', 'Update.exe');
@@ -24,7 +26,11 @@ app.setLoginItemSettings({
   ],
 });
 
-let socket = new Socket();
+socket.setDataBase(db);
+ipcMainHandlers.init();
+
+const mdns = new MDNS();
+
 let mainWindow = null;
 let tray = null;
 
@@ -147,6 +153,8 @@ app.on('activate', () => {
 });
 
 app.whenReady().then(() => {
+  mdns.advertise();
+
   // Register a 'CommandOrControl+X' shortcut listener.
   const ret = globalShortcut.register('CommandOrControl+M', () => {
     console.log('CommandOrControl+M is pressed');
@@ -160,10 +168,16 @@ app.whenReady().then(() => {
   // console.log(globalShortcut.isRegistered('CommandOrControl+M'));
 });
 
-app.on('will-quit', () => {
+app.on('will-quit', async (event) => {
+  console.log('will:quit');
+  event.preventDefault();
+  await socket.close();
+  await mdns.close();
+
   // Unregister a shortcut.
   globalShortcut.unregister('CommandOrControl+M');
 
   // Unregister all shortcuts.
   globalShortcut.unregisterAll();
+  app.exit(0);
 });

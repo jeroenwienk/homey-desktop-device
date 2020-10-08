@@ -2,47 +2,50 @@ import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { ipcRenderer } from 'electron';
 
-import { historyStore } from './historyStore';
+import { History } from './containers/History';
+import { Buttons } from './containers/Buttons';
+
+import { REND } from '../shared/events';
 
 export function App() {
-  const commands = historyStore((state) => state.commands);
-
   useEffect(() => {
-    ipcRenderer.send('init', {});
+    ipcRenderer.send(REND.INIT, {});
   }, []);
 
   return (
-    <Container>
-      <Heading>Recent Commands</Heading>
-      {commands.map((command, index) => {
-        return (
-          <Command key={index}>
-            {command.name} : {command.argument}
-          </Command>
-        );
-      })}
-    </Container>
+    <Grid>
+      <Main>
+        <Buttons />
+      </Main>
+      <Sidebar>
+        <History />
+      </Sidebar>
+    </Grid>
   );
 }
 
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  color: rgba(41, 41, 41, 1);
+const Grid = styled.div`
+  display: grid;
+  grid-template-columns: auto auto auto 400px;
+  grid-template-rows: repeat(3, 1fr);
+  grid-template-areas:
+    'main main main sidebar'
+    'main main main sidebar'
+    'main main main sidebar';
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
 `;
 
-const Heading = styled.h3`
-  font-weight: 700;
-  font-size: 22px;
-  line-height: 22px;
-  margin: 0;
-  padding: 0;
-  color: rgba(255, 255, 255, 1);
+const Sidebar = styled.aside`
+  grid-area: sidebar;
+  min-height: 0;
+  padding: 16px;
+  overflow-y: auto;
 `;
 
-const Command = styled.div`
-  padding: 8px;
-  background-color: rgba(255, 255, 255, 1);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+const Main = styled.main`
+  grid-area: main;
+  padding: 16px;
+  overflow-y: auto;
 `;

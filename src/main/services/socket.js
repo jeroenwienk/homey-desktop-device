@@ -1,12 +1,13 @@
+const { shell, ipcMain } = require('electron');
 const http = require('http');
 const Server = require('socket.io');
 const open = require('open');
-const { shell } = require('electron');
 
-const { commandCollection } = require('./db');
+const { MAIN, REND, IO_EMIT, IO_ON } = require('../../shared/events');
 
 class Socket {
   constructor() {
+    console.log('Socket:constructor');
     this.httpServer = http.createServer();
     this.options = {
       path: '/desktop',
@@ -16,18 +17,17 @@ class Socket {
       upgradeTimeout: 10000,
       maxHttpBufferSize: 10e7,
     };
+    this.db = null;
 
-    const io = new Server(this.httpServer, this.options);
+    this.io = new Server(this.httpServer, this.options);
 
-    io.use((socket, next) => {
+    this.io.use((socket, next) => {
       let handshake = socket.handshake;
       console.log('handshake:', handshake);
       next();
     });
 
-    const commands = [{ id: 1, name: 'Test' }];
-
-    io.on('connect', (socket) => {
+    this.io.on('connect', (socket) => {
       console.log('connect:', socket.id);
 
       socket.on('disconnect', (reason) => {
@@ -42,21 +42,22 @@ class Socket {
         console.error(error);
       });
 
-      socket.on('run:commands', (data, callback) => {
-        callback('running:commands');
-        (async () => {
-          await open('https://github.com/');
-        })();
-      });
-
-      socket.on('run:browser:open', (...args) => {
+      socket.on(IO_ON.BROWSER_OPEN_RUN, (...args) => {
         this.handleBrowserOpen(...args);
       });
-      socket.on('run:path:open', (...args) => {
+      socket.on(IO_ON.PATH_OPEN_RUN, (...args) => {
         this.handlePathOpen(...args);
       });
 
-      socket.emit('init:commands', { commands });
+      socket.on(IO_ON.BUTTON_RUN_SUCCESS, (args) => {
+        console.log(IO_ON.BUTTON_RUN_SUCCESS, args);
+      });
+
+      socket.on(IO_ON.BUTTON_RUN_ERROR, (args) => {
+        console.log(IO_ON.BUTTON_RUN_ERROR, args);
+      });
+
+      this.sync(socket);
     });
 
     this.httpServer.listen(3106, () => {
@@ -65,7 +66,7 @@ class Socket {
   }
 
   handleBrowserOpen(data, callback) {
-    callback('run:browser:open');
+    callback(IO_ON.BROWSER_OPEN_RUN);
 
     if (this.mainWindow != null) {
       const entry = {
@@ -74,11 +75,11 @@ class Socket {
         date: new Date(),
       };
 
-      commandCollection.insert(entry, (error) => {
+      this.db.historyCollection.insert(entry, (error) => {
         if (error) console.error(error);
       });
 
-      this.mainWindow.webContents.send('push:command', entry);
+      this.mainWindow.webContents.send(MAIN.HISTORY_PUSH, entry);
     }
 
     (async () => {
@@ -87,7 +88,7 @@ class Socket {
   }
 
   handlePathOpen(data, callback) {
-    callback('run:path:open');
+    callback(IO_ON.PATH_OPEN_RUN);
 
     if (this.mainWindow != null) {
       const entry = {
@@ -96,11 +97,11 @@ class Socket {
         date: new Date(),
       };
 
-      commandCollection.insert(entry, (error) => {
+      this.db.historyCollection.insert(entry, (error) => {
         if (error) console.error(error);
       });
 
-      this.mainWindow.webContents.send('push:command', entry);
+      this.mainWindow.webContents.send(MAIN.HISTORY_PUSH, entry);
     }
 
     (async () => {
@@ -108,9 +109,35 @@ class Socket {
     })();
   }
 
+  async sync(socket) {
+    try {
+      const buttons = await this.db.getButtons();
+
+      const commands = [{ id: 1, name: 'Test' }];
+
+      socket.emit(IO_EMIT.COMMANDS_SYNC, { commands });
+      socket.emit(IO_EMIT.BUTTONS_SYNC, { buttons });
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async close() {
+    return new Promise((resolve) => {
+      this.io.close(() => {
+        console.log('io:closed');
+        resolve();
+      });
+    });
+  }
+
   setMainWindow(mainWindow) {
     this.mainWindow = mainWindow;
   }
+
+  setDataBase(db) {
+    this.db = db;
+  }
 }
 
-module.exports = Socket;
+module.exports = new Socket();
