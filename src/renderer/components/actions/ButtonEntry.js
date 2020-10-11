@@ -8,7 +8,7 @@ import { useFocusRing } from '@react-aria/focus';
 import { VARIABLES, VAR } from '../../theme/GlobalStyles';
 import { mergeRefs } from '../../lib/mergeRefs';
 
-export const Button = forwardRef(function (props, forwardedRef) {
+export const ButtonEntry = forwardRef(function (props, forwardedRef) {
   const buttonRef = useRef();
   const button = useButton({ ...props, id: props.button.id }, buttonRef);
   const focusRing = useFocusRing();
@@ -18,6 +18,7 @@ export const Button = forwardRef(function (props, forwardedRef) {
       {...mergeProps(focusRing.focusProps, button.buttonProps)}
       ref={mergeRefs([buttonRef, forwardedRef])}
       isFocusVisible={focusRing.isFocusVisible}
+      onContextMenu={props.onContextMenu}
     >
       <div className="top" />
       <div className="name" title={props.button.name}>

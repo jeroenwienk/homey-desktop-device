@@ -4,6 +4,7 @@ export const VARIABLES = {
   COLOR_BACKGROUND_LIGHT: '--color-background-white',
   COLOR_PRIMARY_TEXT: '--color-primary-text',
   COLOR_PRIMARY_TEXT_DARK: '--color-primary-text-dark',
+  COLOR_PRIMARY_TEXT_DARK_ACCENT: '--color-primary-text-dark-accent',
 
   COLOR_ICON_DARK: '--color-icon-dark',
   COLOR_ICON_LIGHT: '--color-icon-light',
@@ -29,6 +30,7 @@ export const GlobalStyles = createGlobalStyle`
   :root {
     ${VARIABLES.COLOR_PRIMARY_TEXT}: rgba(255, 255, 255, 1);
     ${VARIABLES.COLOR_PRIMARY_TEXT_DARK}: rgba(41, 41, 41, 1);
+    ${VARIABLES.COLOR_PRIMARY_TEXT_DARK_ACCENT}: rgba(41, 41, 41, 0.5);
     ${VARIABLES.COLOR_BACKGROUND_LIGHT}: rgba(255, 255, 255, 1);
     
     ${VARIABLES.COLOR_ICON_DARK}: rgba(41, 41, 41, 1);

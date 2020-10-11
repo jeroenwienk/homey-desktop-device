@@ -2,10 +2,11 @@ import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { ipcRenderer } from 'electron';
 
+import { REND } from '../shared/events';
+
+import { Connections } from './containers/Connections';
 import { History } from './containers/History';
 import { Buttons } from './containers/Buttons';
-
-import { REND } from '../shared/events';
 
 export function App() {
   useEffect(() => {
@@ -14,6 +15,9 @@ export function App() {
 
   return (
     <Grid>
+      <Header>
+        <Connections />
+      </Header>
       <Main>
         <Buttons />
       </Main>
@@ -27,8 +31,9 @@ export function App() {
 const Grid = styled.div`
   display: grid;
   grid-template-columns: auto auto auto 400px;
-  grid-template-rows: repeat(3, 1fr);
+  grid-template-rows: 64px repeat(3, 1fr);
   grid-template-areas:
+    'header header header header'
     'main main main sidebar'
     'main main main sidebar'
     'main main main sidebar';
@@ -37,15 +42,22 @@ const Grid = styled.div`
   overflow: hidden;
 `;
 
-const Sidebar = styled.aside`
-  grid-area: sidebar;
+const Header = styled.header`
+  grid-area: header;
+  min-height: 0;
+  padding: 16px;
+`;
+
+const Main = styled.main`
+  grid-area: main;
   min-height: 0;
   padding: 16px;
   overflow-y: auto;
 `;
 
-const Main = styled.main`
-  grid-area: main;
+const Sidebar = styled.aside`
+  grid-area: sidebar;
+  min-height: 0;
   padding: 16px;
   overflow-y: auto;
 `;

@@ -5,6 +5,7 @@ import { REND, MAIN } from '../../shared/events';
 
 export const buttonStore = create((set) => ({
   buttons: [],
+  broken: [],
 }));
 
 export function pushButton(button) {
@@ -16,12 +17,35 @@ export function pushButton(button) {
   });
 }
 
+export function editButton(button) {
+  ipcRenderer.send(REND.BUTTON_UPDATE, button);
+  buttonStore.setState((prevState) => {
+    const nextButtons = prevState.buttons.filter(
+      (prevButton) => prevButton.id !== button.id
+    );
+
+    return {
+      buttons: [...nextButtons, button],
+    };
+  });
+}
+
 export function initButtons(buttons) {
   buttonStore.setState({
     buttons: buttons,
   });
 }
 
+export function initBroken(broken) {
+  buttonStore.setState({
+    broken: broken,
+  });
+}
+
 ipcRenderer.on(MAIN.BUTTONS_INIT, (event, data) => {
   initButtons(data);
+});
+
+ipcRenderer.on(MAIN.BUTTONS_BROKEN, (event, data) => {
+  initBroken(data);
 });

@@ -44,6 +44,15 @@ class DataBase {
       });
     });
   }
+
+  async updateButton(id, args) {
+    return new Promise((resolve, reject) => {
+      this.buttonCollection.update({ id }, { $set: args }, (error) => {
+        if (error) return reject(error);
+        resolve();
+      });
+    });
+  }
 }
 
 // commandCollection.remove({}, { multi: true }, function (err, numRemoved) {

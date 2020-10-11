@@ -21,6 +21,7 @@ export function TextField(props) {
       autoFocus: props.autoFocus,
       type: 'text',
       placeholder: props.label,
+      defaultValue: props.defaultValue,
       'aria-label': props.label,
     },
     textFieldRef

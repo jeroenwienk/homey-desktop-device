@@ -9,6 +9,8 @@ const db = require('./services/db');
 const socket = require('./services/socket');
 const MDNS = require('./services/mdns');
 const ipcMainHandlers = require('./ipcMainHandlers');
+const createMainWindow = require('./createMainWindow');
+const createTray = require('./createTray');
 
 const appFolder = path.dirname(process.execPath);
 const updateExe = path.resolve(appFolder, '..', 'Update.exe');
@@ -50,87 +52,28 @@ function makeSingleInstance() {
 
 makeSingleInstance();
 
-function createMainWindow() {
-  const imagepath = path.resolve(__dirname, '../images/home.png');
-  const mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
-    icon: imagepath,
-    backgroundColor: '#292929',
-    webPreferences: {
-      nodeIntegration: true,
-    },
-  });
-
-  mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
-
-  if (process.env.NODE_ENV !== 'production') {
-    mainWindow.webContents.openDevTools();
-  }
-
-  socket.setMainWindow(mainWindow);
-
-  mainWindow.on('minimize', (event) => {
-    console.log('mainWindow:minimize');
-  });
-
-  mainWindow.on('restore', (event) => {
-    console.log('mainWindow:restore');
-    mainWindow.show();
-  });
-
-  mainWindow.on('close', (event) => {
-    console.log('mainWindow:close');
-    event.preventDefault();
-    mainWindow.hide();
-  });
-
-  mainWindow.on('show', (event) => {
-    console.log('mainWindow:show');
-  });
-
-  mainWindow.on('hide', (event) => {
-    console.log('mainWindow:hide');
-  });
-
-  return mainWindow;
-}
-
-function createTray() {
-  // TODO: seperate os dependant cases
-  const imagepath = path.resolve(__dirname, '../images/home.ico');
-  const tray = new Tray(imagepath);
-
-  const contextMenu = Menu.buildFromTemplate([
-    {
-      label: 'Show',
-      click() {
-        mainWindow.show();
-      },
-    },
-    {
-      label: 'Quit',
-      click() {
-        mainWindow.destroy();
-        app.quit();
-      },
-    },
-  ]);
-
-  tray.on('click', (event) => {
-    mainWindow.show();
-  });
-
-  tray.setToolTip('Homey Desktop');
-  tray.setContextMenu(contextMenu);
-
-  return tray;
-}
-
-app.on('ready', () => {
+app.on('ready', async () => {
   console.log('app:ready');
   mainWindow = createMainWindow();
-  tray = createTray();
+
+  mainWindow.webContents.on('dom-ready', (event) => {
+    socket.setMainWindow(mainWindow);
+    socket.listen();
+  })
+
+  tray = createTray(mainWindow);
+
+  await mdns.init();
+  await mdns.advertise();
+
+  // Register a 'CommandOrControl+X' shortcut listener.
+  const ret = globalShortcut.register('CommandOrControl+M', () => {
+    console.log('CommandOrControl+M is pressed');
+  });
+
+  if (!ret) {
+    console.log('registration failed');
+  }
 });
 
 // Quit when all windows are closed, except on macOS. There, it's common
@@ -141,31 +84,6 @@ app.on('window-all-closed', (event) => {
   if (process.platform !== 'darwin') {
     app.quit();
   }
-});
-
-app.on('activate', () => {
-  console.log('app:activate');
-  // On OS X it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
-  if (BrowserWindow.getAllWindows().length === 0) {
-    mainWindow = createMainWindow();
-  }
-});
-
-app.whenReady().then(() => {
-  mdns.advertise();
-
-  // Register a 'CommandOrControl+X' shortcut listener.
-  const ret = globalShortcut.register('CommandOrControl+M', () => {
-    console.log('CommandOrControl+M is pressed');
-  });
-
-  if (!ret) {
-    console.log('registration failed');
-  }
-
-  // Check whether a shortcut is registered.
-  // console.log(globalShortcut.isRegistered('CommandOrControl+M'));
 });
 
 app.on('will-quit', async (event) => {
@@ -181,3 +99,18 @@ app.on('will-quit', async (event) => {
   globalShortcut.unregisterAll();
   app.exit(0);
 });
+
+// // macOS only
+// app.on('activate', () => {
+//   console.log('app:activate');
+//   // On OS X it's common to re-create a window in the app when the
+//   // dock icon is clicked and there are no other windows open.
+//   if (BrowserWindow.getAllWindows().length === 0) {
+//     mainWindow = createMainWindow();
+//     tray = tray.destroy();
+//     tray = createTray(mainWindow);
+//
+//     socket.setMainWindow(mainWindow);
+//
+//   }
+// });

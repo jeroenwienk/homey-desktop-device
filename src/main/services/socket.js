@@ -1,4 +1,4 @@
-const { shell, ipcMain } = require('electron');
+const { shell, Notification } = require('electron');
 const http = require('http');
 const Server = require('socket.io');
 const open = require('open');
@@ -27,58 +27,82 @@ class Socket {
       next();
     });
 
-    this.io.on('connect', (socket) => {
-      console.log('connect:', socket.id);
+    this.io.on('connect', this.handleConnect.bind(this));
+  }
 
-      socket.on('disconnect', (reason) => {
-        console.log('disconnect:', reason);
+  listen() {
+    if (this.httpServer.listening === false) {
+      this.httpServer.listen(3106, () => {
+        console.log('listening on *:3106');
       });
+    }
+  }
 
-      socket.on('disconnecting', (reason) => {
-        console.log('disconnecting:', reason);
-      });
-
-      socket.on('error', (error) => {
-        console.error(error);
-      });
-
-      socket.on(IO_ON.BROWSER_OPEN_RUN, (...args) => {
-        this.handleBrowserOpen(...args);
-      });
-      socket.on(IO_ON.PATH_OPEN_RUN, (...args) => {
-        this.handlePathOpen(...args);
-      });
-
-      socket.on(IO_ON.BUTTON_RUN_SUCCESS, (args) => {
-        console.log(IO_ON.BUTTON_RUN_SUCCESS, args);
-      });
-
-      socket.on(IO_ON.BUTTON_RUN_ERROR, (args) => {
-        console.log(IO_ON.BUTTON_RUN_ERROR, args);
-      });
-
-      this.sync(socket);
+  handleConnect(socket) {
+    console.log('connect:', socket.id);
+    this.mainWindow.webContents.send(MAIN.SOCKET_CONNECT, {
+      socketId: socket.id,
+      cloudId: socket.handshake.query.cloudId,
+      name: socket.handshake.query.name,
+      connected: true,
+      reason: null,
     });
 
-    this.httpServer.listen(3106, () => {
-      console.log('listening on *:3106');
+    socket.on('disconnect', (reason) => {
+      console.log('disconnect:', reason);
+      this.mainWindow.webContents.send(MAIN.SOCKET_DISCONNECT, {
+        socketId: socket.id,
+        cloudId: socket.handshake.query.cloudId,
+        name: socket.handshake.query.name,
+        connected: false,
+        reason: reason,
+      });
     });
+
+    socket.on('disconnecting', (reason) => {
+      console.log('disconnecting:', reason);
+    });
+
+    socket.on('error', (error) => {
+      console.error(error);
+    });
+
+    socket.on(IO_ON.BROWSER_OPEN_RUN, (...args) => {
+      this.handleBrowserOpen(...args);
+    });
+    socket.on(IO_ON.PATH_OPEN_RUN, (...args) => {
+      this.handlePathOpen(...args);
+    });
+
+    socket.on(IO_ON.BUTTON_RUN_SUCCESS, (args) => {
+      console.log(IO_ON.BUTTON_RUN_SUCCESS, args);
+    });
+
+    socket.on(IO_ON.BUTTON_RUN_ERROR, (args) => {
+      console.log(IO_ON.BUTTON_RUN_ERROR, args);
+    });
+
+    socket.on(IO_ON.NOTIFICATION_SHOW_RUN, (...args) => {
+      this.handleNotificationShow(...args);
+    });
+
+    this.sync(socket);
   }
 
   handleBrowserOpen(data, callback) {
     callback(IO_ON.BROWSER_OPEN_RUN);
 
+    const entry = {
+      name: 'browser:open',
+      argument: data.url,
+      date: new Date(),
+    };
+
+    this.db.historyCollection.insert(entry, (error) => {
+      if (error) console.error(error);
+    });
+
     if (this.mainWindow != null) {
-      const entry = {
-        name: 'browser:open',
-        argument: data.url,
-        date: new Date(),
-      };
-
-      this.db.historyCollection.insert(entry, (error) => {
-        if (error) console.error(error);
-      });
-
       this.mainWindow.webContents.send(MAIN.HISTORY_PUSH, entry);
     }
 
@@ -90,23 +114,32 @@ class Socket {
   handlePathOpen(data, callback) {
     callback(IO_ON.PATH_OPEN_RUN);
 
+    const entry = {
+      name: 'path:open',
+      argument: data.path,
+      date: new Date(),
+    };
+
+    this.db.historyCollection.insert(entry, (error) => {
+      if (error) console.error(error);
+    });
+
     if (this.mainWindow != null) {
-      const entry = {
-        name: 'path:open',
-        argument: data.path,
-        date: new Date(),
-      };
-
-      this.db.historyCollection.insert(entry, (error) => {
-        if (error) console.error(error);
-      });
-
       this.mainWindow.webContents.send(MAIN.HISTORY_PUSH, entry);
     }
 
     (async () => {
       await shell.openPath(data.path);
     })();
+  }
+
+  handleNotificationShow(args) {
+    const notification = new Notification({
+      title: args.title != null ? args.title : 'Homey Desktop',
+      body: args.body,
+      silent: args.silent === 'true',
+    });
+    notification.show();
   }
 
   async sync(socket) {
@@ -116,7 +149,11 @@ class Socket {
       const commands = [{ id: 1, name: 'Test' }];
 
       socket.emit(IO_EMIT.COMMANDS_SYNC, { commands });
-      socket.emit(IO_EMIT.BUTTONS_SYNC, { buttons });
+      socket.emit(IO_EMIT.BUTTONS_SYNC, { buttons }, ({ broken }) => {
+        if (this.mainWindow != null) {
+          this.mainWindow.webContents.send(MAIN.BUTTONS_BROKEN, broken);
+        }
+      });
     } catch (error) {
       console.error(error);
     }
