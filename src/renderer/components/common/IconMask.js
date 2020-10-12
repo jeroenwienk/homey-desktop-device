@@ -6,6 +6,7 @@ import { VAR, VARIABLES } from '../../theme/GlobalStyles';
 import add from '../../../images/actions/add.svg';
 import save from '../../../images/actions/save.svg';
 import cancel from '../../../images/actions/cancel.svg';
+import remove from '../../../images/actions/remove.svg';
 
 export const IconMask = styled.div`
   display: inline-block;
@@ -16,17 +17,21 @@ export const IconMask = styled.div`
   width: 48px;
   height: 48px;
   background-color: ${(props) =>
-    props.color ?? VAR(VARIABLES.COLOR_ICON_LIGHT)};
+  props.color ?? VAR(VARIABLES.COLOR_ICON_LIGHT)};
 `;
 
 export const AddIcon = forwardRef((props, forwardedRef) => (
-  <IconMask {...props} ref={forwardedRef} mask={add} />
+  <IconMask {...props} ref={forwardedRef} mask={add}/>
 ));
 
 export const SaveIcon = forwardRef((props, forwardedRef) => (
-  <IconMask {...props} ref={forwardedRef} mask={save} />
+  <IconMask {...props} ref={forwardedRef} mask={save}/>
 ));
 
 export const CancelIcon = forwardRef((props, forwardedRef) => (
-  <IconMask {...props} ref={forwardedRef} mask={cancel} />
+  <IconMask {...props} ref={forwardedRef} mask={cancel}/>
+));
+
+export const RemoveIcon = forwardRef((props, forwardedRef) => (
+  <IconMask {...props} ref={forwardedRef} mask={remove}/>
 ));

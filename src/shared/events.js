@@ -2,7 +2,8 @@ const REND = {
   INIT: 'init',
   BUTTON_CREATE: 'button:create',
   BUTTON_UPDATE: 'button:update',
-  BUTTON_RUN: 'button:run',
+  BUTTON_REMOVE: 'button:remove',
+  BUTTON_RUN: 'button:run'
 };
 
 const MAIN = {
@@ -13,13 +14,13 @@ const MAIN = {
 
   SOCKETS_INIT: 'sockets:init',
   SOCKET_CONNECT: 'socket:connect',
-  SOCKET_DISCONNECT: 'socket:disconnect',
+  SOCKET_DISCONNECT: 'socket:disconnect'
 };
 
 const IO_EMIT = {
   BUTTONS_SYNC: 'buttons:sync',
   BUTTON_RUN: 'button:run',
-  COMMANDS_SYNC: 'commands:sync',
+  COMMANDS_SYNC: 'commands:sync'
 };
 
 const IO_ON = {
@@ -28,11 +29,12 @@ const IO_ON = {
   BUTTON_RUN_SUCCESS: 'button:run:success',
   BUTTON_RUN_ERROR: 'button:run:error',
   NOTIFICATION_SHOW_RUN: 'notification:show:run',
+  FLOW_BUTTON_SAVED: 'flow:button:saved'
 };
 
 module.exports = {
   REND,
   MAIN,
   IO_EMIT,
-  IO_ON,
+  IO_ON
 };

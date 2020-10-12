@@ -30,6 +30,19 @@ export function editButton(button) {
   });
 }
 
+export function removeButton(button) {
+  ipcRenderer.send(REND.BUTTON_REMOVE, button);
+  buttonStore.setState((prevState) => {
+    const nextButtons = prevState.buttons.filter(
+      (prevButton) => prevButton.id !== button.id
+    );
+
+    return {
+      buttons: [...nextButtons],
+    };
+  });
+}
+
 export function initButtons(buttons) {
   buttonStore.setState({
     buttons: buttons,
@@ -37,6 +50,8 @@ export function initButtons(buttons) {
 }
 
 export function initBroken(broken) {
+  console.log(broken);
+
   buttonStore.setState({
     broken: broken,
   });

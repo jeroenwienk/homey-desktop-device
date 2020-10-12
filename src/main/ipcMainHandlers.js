@@ -8,6 +8,7 @@ function init() {
   ipcMain.on(REND.INIT, handleInit);
   ipcMain.on(REND.BUTTON_CREATE, handleButtonCreate);
   ipcMain.on(REND.BUTTON_UPDATE, handleButtonUpdate);
+  ipcMain.on(REND.BUTTON_REMOVE, handleButtonRemove);
   ipcMain.on(REND.BUTTON_RUN, handleButtonRun);
 }
 
@@ -28,19 +29,7 @@ async function handleInit(event, args) {
 async function handleButtonCreate(event, args) {
   try {
     await db.insertButton(args);
-    const buttons = await db.getButtons();
-
-    Object.values(socket.io.sockets.connected).forEach((socket) => {
-      socket.emit(
-        IO_EMIT.BUTTONS_SYNC,
-        {
-          buttons,
-        },
-        ({ broken }) => {
-          event.reply(MAIN.BUTTONS_BROKEN, broken);
-        }
-      );
-    });
+    await emitButtonsSync(event);
   } catch (error) {
     console.error(error);
   }
@@ -49,19 +38,16 @@ async function handleButtonCreate(event, args) {
 async function handleButtonUpdate(event, args) {
   try {
     await db.updateButton(args.id, args);
-    const buttons = await db.getButtons();
+    await emitButtonsSync(event);
+  } catch (error) {
+    console.error(error);
+  }
+}
 
-    Object.values(socket.io.sockets.connected).forEach((socket) => {
-      socket.emit(
-        IO_EMIT.BUTTONS_SYNC,
-        {
-          buttons,
-        },
-        ({ broken }) => {
-          event.reply(MAIN.BUTTONS_BROKEN, broken);
-        }
-      );
-    });
+async function handleButtonRemove(event, args) {
+  try {
+    await db.removeButton(args.id);
+    await emitButtonsSync(event);
   } catch (error) {
     console.error(error);
   }
@@ -69,6 +55,21 @@ async function handleButtonUpdate(event, args) {
 
 function handleButtonRun(event, args) {
   socket.io.emit(IO_EMIT.BUTTON_RUN, args);
+}
+
+async function emitButtonsSync(event) {
+  const buttons = await db.getButtons();
+  Object.values(socket.io.sockets.connected).forEach((socket) => {
+    socket.emit(
+      IO_EMIT.BUTTONS_SYNC,
+      {
+        buttons,
+      },
+      ({ broken }) => {
+        event.reply(MAIN.BUTTONS_BROKEN, broken);
+      }
+    );
+  });
 }
 
 function getConnections() {

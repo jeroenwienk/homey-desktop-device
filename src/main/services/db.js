@@ -53,6 +53,15 @@ class DataBase {
       });
     });
   }
+
+  async removeButton(id) {
+    return new Promise((resolve, reject) => {
+      this.buttonCollection.remove({ id }, {}, (error) => {
+        if (error) return reject(error);
+        resolve();
+      });
+    });
+  }
 }
 
 // commandCollection.remove({}, { multi: true }, function (err, numRemoved) {

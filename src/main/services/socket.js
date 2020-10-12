@@ -86,6 +86,10 @@ class Socket {
       this.handleNotificationShow(...args);
     });
 
+    socket.on(IO_ON.FLOW_BUTTON_SAVED, (...args) => {
+      this.sync(socket);
+    })
+
     this.sync(socket);
   }
 

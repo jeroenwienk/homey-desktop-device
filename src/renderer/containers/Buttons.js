@@ -6,18 +6,25 @@ import { ipcRenderer } from 'electron';
 import { useForm } from 'react-hook-form';
 import { useId } from '@react-aria/utils';
 
-import { buttonStore, pushButton, editButton } from '../store/buttonStore';
+import {
+  buttonStore,
+  pushButton,
+  editButton,
+  removeButton,
+} from '../store/buttonStore';
 
 import {
   AddIconButton,
   SaveIconButton,
   CancelIconButton,
+  RemoveIconButton,
 } from '../components/common/IconButton';
 import { ButtonEntry } from '../components/actions/ButtonEntry';
 import { Heading } from '../components/Heading';
 import { TextField } from '../components/TextField';
 
 import { REND } from '../../shared/events';
+import { VARIABLES, VAR } from '../theme/GlobalStyles';
 
 export function Buttons() {
   const buttons = buttonStore((state) => state.buttons);
@@ -42,93 +49,125 @@ export function Buttons() {
   const formId = useId();
 
   return (
-    <>
-      <Container>
-        <EditSection>
-          <ActionsContainer>
-            {editId == null && (
-              <AddIconButton onClick={() => setEditId(uuid())} />
-            )}
-            {editId != null && (
-              <>
-                <SaveIconButton type="submit" form={formId} />
-                <CancelIconButton
+    <Container>
+      <EditSection>
+        <ActionsContainer>
+          {editId == null && (
+            <AddIconButton onClick={() => setEditId(uuid())} />
+          )}
+          {editId != null && (
+            <>
+              <SaveIconButton type="submit" form={formId} />
+
+              {editButtonEntry && (
+                <RemoveIconButton
                   onClick={() => {
+                    removeButton(editButtonEntry);
                     setEditId(null);
                     setEditButtonEntry(null);
                   }}
                 />
-              </>
-            )}
-          </ActionsContainer>
+              )}
 
-          {editId != null && (
-            <EditForm
-              id={formId}
-              key={editId}
-              onSubmit={handleSubmit(onSubmit)}
-            >
-              <TextField
-                label="Name"
-                name="name"
-                defaultValue={editButtonEntry?.name ?? ''}
-                required
-                minLength={1}
-                register={register}
-                error={errors.name}
+              <CancelIconButton
+                onClick={() => {
+                  setEditId(null);
+                  setEditButtonEntry(null);
+                }}
               />
-              <TextField
-                label="Description"
-                name="description"
-                required
-                defaultValue={editButtonEntry?.description ?? ''}
-                minLength={1}
-                register={register}
-                autoFocus
-                error={errors.description}
-              />
-            </EditForm>
+            </>
           )}
-        </EditSection>
+        </ActionsContainer>
 
-        <ButtonSection>
-          <Heading>Buttons</Heading>
-          <ButtonList>
-            {buttons.map((button) => {
-              return (
-                <ButtonEntry
-                  key={button.id}
-                  id={button.id}
-                  button={button}
-                  onPress={(event) => {
-                    ipcRenderer.send(REND.BUTTON_RUN, { id: event.target.id });
-                  }}
-                  onContextMenu={(event) => {
-                    const id = event.currentTarget.id;
-                    setEditId(id);
-                    setEditButtonEntry(
-                      buttons.find((button) => button.id === id)
-                    );
-                  }}
-                />
-              );
+        {editId != null && (
+          <EditForm id={formId} key={editId} onSubmit={handleSubmit(onSubmit)}>
+            <TextField
+              label="Name"
+              name="name"
+              defaultValue={editButtonEntry?.name ?? ''}
+              required
+              minLength={1}
+              register={register}
+              error={errors.name}
+            />
+            <TextField
+              label="Description"
+              name="description"
+              required
+              defaultValue={editButtonEntry?.description ?? ''}
+              minLength={1}
+              register={register}
+              autoFocus
+              error={errors.description}
+            />
+          </EditForm>
+        )}
+      </EditSection>
+
+      <ButtonSection>
+        <Heading>Buttons</Heading>
+        <ButtonList>
+          {buttons.map((button) => {
+            return (
+              <ButtonEntry
+                key={button.id}
+                id={button.id}
+                button={button}
+                onPress={(event) => {
+                  ipcRenderer.send(REND.BUTTON_RUN, { id: event.target.id });
+                }}
+                onContextMenu={(event) => {
+                  const id = event.currentTarget.id;
+                  setEditId(id);
+                  setEditButtonEntry(
+                    buttons.find((button) => button.id === id)
+                  );
+                }}
+              />
+            );
+          })}
+        </ButtonList>
+      </ButtonSection>
+      {broken.length > 0 && (
+        <BrokenSection>
+          <Heading>Broken</Heading>
+          <BrokenList>
+            {broken.map((brokenEntry) => {
+              if (brokenEntry.flow && brokenEntry.button) {
+                return (
+                  <BrokenEntry key={brokenEntry.flow.id}>
+                    <BrokenEntryTitle>{`Flow: ${brokenEntry.flow.name} `}</BrokenEntryTitle>
+                    <div>
+                      <strong>Expected:</strong> {brokenEntry.button.name}{' '}
+                      <strong>Got:</strong>{' '}
+                      {brokenEntry.flow.trigger.args.button.name}
+                    </div>
+                    <div>
+                      <strong>Expected:</strong>{' '}
+                      {brokenEntry.button.description} <strong>Got:</strong>:{' '}
+                      {brokenEntry.flow.trigger.args.button.description}
+                    </div>
+                  </BrokenEntry>
+                );
+              }
+
+              if (brokenEntry.flow) {
+                return (
+                  <BrokenEntry key={brokenEntry.flow.id}>
+                    <BrokenEntryTitle>{`Flow: ${brokenEntry.flow.name} `}</BrokenEntryTitle>
+                    <div>
+                      {`${brokenEntry.flow.trigger.args.button.name} no longer exists.`}
+                    </div>
+                  </BrokenEntry>
+                );
+              }
+
+              return null;
             })}
-          </ButtonList>
-        </ButtonSection>
-      </Container>
-      {broken.map((brokenEntry) => {
-        if (brokenEntry.flow && brokenEntry.button) {
-          return (
-            <div key={brokenEntry.flow.id}>
-              <div>{brokenEntry.flow.name}</div>
-              <div>{brokenEntry.button.name}</div>
-            </div>
-          );
-        }
-
-        return null;
-      })}
-    </>
+          </BrokenList>
+        </BrokenSection>
+      )}
+    </Container>
   );
 }
 
@@ -163,4 +202,33 @@ const ButtonList = styled.div`
   align-items: center;
   gap: 16px;
   margin: 16px 0 0;
+`;
+
+const BrokenSection = styled.div`
+  flex: 0 1 500px;
+  padding: 0 16px;
+`;
+
+const BrokenList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 16px 0 0;
+`;
+
+const BrokenEntryTitle = styled.h3`
+  margin: 0;
+  padding: 0;
+  font-weight: 700;
+  font-size: 22px;
+  line-height: 32px;
+  color: ${VAR(VARIABLES.COLOR_PRIMARY_TEXT_DARK)};
+`;
+
+const BrokenEntry = styled.div`
+  padding: 16px 32px;
+  background-color: ${VAR(VARIABLES.COLOR_BACKGROUND_LIGHT)};
+  box-shadow: ${VAR(VARIABLES.BOX_SHADOW_DEFAULT)};
+  word-break: break-all;
+  overflow: hidden;
 `;
