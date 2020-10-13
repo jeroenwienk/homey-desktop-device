@@ -34,7 +34,7 @@ export function Buttons() {
 
   const { register, handleSubmit, errors } = useForm();
   const onSubmit = (data) => {
-    if (editButton != null) {
+    if (editButtonEntry != null) {
       editButton({ id: editId, ...data });
       setEditId(null);
       setEditButtonEntry(null);

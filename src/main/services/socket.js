@@ -1,13 +1,14 @@
 const { shell, Notification } = require('electron');
 const http = require('http');
 const Server = require('socket.io');
-const open = require('open');
+const db = require('./db');
+const windowManager = require('../managers/windowManager');
 
 const { MAIN, REND, IO_EMIT, IO_ON } = require('../../shared/events');
 
-class Socket {
+class ServerSocket {
   constructor() {
-    console.log('Socket:constructor');
+    console.log('socket:constructor');
     this.httpServer = http.createServer();
     this.options = {
       path: '/desktop',
@@ -17,7 +18,6 @@ class Socket {
       upgradeTimeout: 10000,
       maxHttpBufferSize: 10e7,
     };
-    this.db = null;
 
     this.io = new Server(this.httpServer, this.options);
 
@@ -28,6 +28,10 @@ class Socket {
     });
 
     this.io.on('connect', this.handleConnect.bind(this));
+
+    windowManager.once('main-window-dom-ready', (event) => {
+      this.listen();
+    });
   }
 
   listen() {
@@ -40,23 +44,11 @@ class Socket {
 
   handleConnect(socket) {
     console.log('connect:', socket.id);
-    this.mainWindow.webContents.send(MAIN.SOCKET_CONNECT, {
-      socketId: socket.id,
-      cloudId: socket.handshake.query.cloudId,
-      name: socket.handshake.query.name,
-      connected: true,
-      reason: null,
-    });
+    windowManager.send(MAIN.SOCKETS_INIT, this.getConnections());
 
     socket.on('disconnect', (reason) => {
       console.log('disconnect:', reason);
-      this.mainWindow.webContents.send(MAIN.SOCKET_DISCONNECT, {
-        socketId: socket.id,
-        cloudId: socket.handshake.query.cloudId,
-        name: socket.handshake.query.name,
-        connected: false,
-        reason: reason,
-      });
+      windowManager.send(MAIN.SOCKETS_INIT, this.getConnections());
     });
 
     socket.on('disconnecting', (reason) => {
@@ -74,6 +66,10 @@ class Socket {
       this.handlePathOpen(...args);
     });
 
+    socket.on(IO_ON.NOTIFICATION_SHOW_RUN, (...args) => {
+      this.handleNotificationShow(...args);
+    });
+
     socket.on(IO_ON.BUTTON_RUN_SUCCESS, (args) => {
       console.log(IO_ON.BUTTON_RUN_SUCCESS, args);
     });
@@ -82,59 +78,45 @@ class Socket {
       console.log(IO_ON.BUTTON_RUN_ERROR, args);
     });
 
-    socket.on(IO_ON.NOTIFICATION_SHOW_RUN, (...args) => {
-      this.handleNotificationShow(...args);
-    });
-
     socket.on(IO_ON.FLOW_BUTTON_SAVED, (...args) => {
       this.sync(socket);
-    })
+    });
 
     this.sync(socket);
   }
 
-  handleBrowserOpen(data, callback) {
-    callback(IO_ON.BROWSER_OPEN_RUN);
+  async handleBrowserOpen(data, callback) {
+    try {
+      const historyEntry = await db.insertHistoryEntry({
+        name: 'browser:open',
+        argument: data.url,
+        date: new Date(),
+      });
 
-    const entry = {
-      name: 'browser:open',
-      argument: data.url,
-      date: new Date(),
-    };
-
-    this.db.historyCollection.insert(entry, (error) => {
-      if (error) console.error(error);
-    });
-
-    if (this.mainWindow != null) {
-      this.mainWindow.webContents.send(MAIN.HISTORY_PUSH, entry);
-    }
-
-    (async () => {
+      windowManager.send(MAIN.HISTORY_PUSH, historyEntry);
       await shell.openExternal(data.url);
-    })();
+      callback();
+    } catch (error) {
+      console.error(error);
+      callback(error);
+    }
   }
 
-  handlePathOpen(data, callback) {
-    callback(IO_ON.PATH_OPEN_RUN);
+  async handlePathOpen(data, callback) {
+    try {
+      const historyEntry = await db.insertHistoryEntry({
+        name: 'path:open',
+        argument: data.path,
+        date: new Date(),
+      });
 
-    const entry = {
-      name: 'path:open',
-      argument: data.path,
-      date: new Date(),
-    };
-
-    this.db.historyCollection.insert(entry, (error) => {
-      if (error) console.error(error);
-    });
-
-    if (this.mainWindow != null) {
-      this.mainWindow.webContents.send(MAIN.HISTORY_PUSH, entry);
-    }
-
-    (async () => {
+      windowManager.send(MAIN.HISTORY_PUSH, historyEntry);
       await shell.openPath(data.path);
-    })();
+      callback();
+    } catch (error) {
+      console.error(error);
+      callback(error);
+    }
   }
 
   handleNotificationShow(args) {
@@ -148,15 +130,13 @@ class Socket {
 
   async sync(socket) {
     try {
-      const buttons = await this.db.getButtons();
+      const buttons = await db.getButtons();
 
       const commands = [{ id: 1, name: 'Test' }];
 
       socket.emit(IO_EMIT.COMMANDS_SYNC, { commands });
       socket.emit(IO_EMIT.BUTTONS_SYNC, { buttons }, ({ broken }) => {
-        if (this.mainWindow != null) {
-          this.mainWindow.webContents.send(MAIN.BUTTONS_BROKEN, broken);
-        }
+        windowManager.send(MAIN.BUTTONS_BROKEN, broken);
       });
     } catch (error) {
       console.error(error);
@@ -172,13 +152,21 @@ class Socket {
     });
   }
 
-  setMainWindow(mainWindow) {
-    this.mainWindow = mainWindow;
+  getConnected() {
+    return Object.values(this.io.sockets.connected);
   }
 
-  setDataBase(db) {
-    this.db = db;
+  getConnections() {
+    return this.getConnected().map((socket) => {
+      return {
+        id: socket.id,
+        socketId: socket.id,
+        cloudId: socket.handshake.query.cloudId,
+        name: socket.handshake.query.name,
+        connected: socket.connected,
+      };
+    });
   }
 }
 
-module.exports = new Socket();
+module.exports = new ServerSocket();

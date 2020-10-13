@@ -13,8 +13,6 @@ const MAIN = {
   HISTORY_PUSH: 'history:push',
 
   SOCKETS_INIT: 'sockets:init',
-  SOCKET_CONNECT: 'socket:connect',
-  SOCKET_DISCONNECT: 'socket:disconnect'
 };
 
 const IO_EMIT = {

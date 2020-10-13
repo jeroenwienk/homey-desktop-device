@@ -8,15 +8,13 @@ import { socketStore } from '../store/socketStore';
 export function Connections() {
   const connections = socketStore((state) => state.connections);
 
-  console.log(connections);
-
   return (
     <ConnectionsList>
-      {Object.entries(connections).map(([cloudId, connection]) => {
+      {connections.map((connection) => {
         return (
           <ConnectionEntry
-            key={cloudId}
-            title={cloudId}
+            key={connection.cloudId}
+            title={connection.cloudId}
             connected={connection.connected}
           >
             {connection.name}

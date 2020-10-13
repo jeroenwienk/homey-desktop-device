@@ -27,6 +27,15 @@ class DataBase {
     });
   }
 
+  async insertHistoryEntry(args) {
+    return new Promise((resolve, reject) => {
+      this.historyCollection.insert(args, (error, entry) => {
+        if (error) return reject(error);
+        resolve(entry);
+      });
+    });
+  }
+
   async getButtons() {
     return new Promise((resolve, reject) => {
       this.buttonCollection.find({}).exec((error, docs) => {
@@ -38,9 +47,9 @@ class DataBase {
 
   async insertButton(args) {
     return new Promise((resolve, reject) => {
-      this.buttonCollection.insert(args, (error) => {
+      this.buttonCollection.insert(args, (error, entry) => {
         if (error) return reject(error);
-        resolve();
+        resolve(entry);
       });
     });
   }
@@ -63,9 +72,5 @@ class DataBase {
     });
   }
 }
-
-// commandCollection.remove({}, { multi: true }, function (err, numRemoved) {
-//   console.log(numRemoved);
-// });
 
 module.exports = new DataBase();
