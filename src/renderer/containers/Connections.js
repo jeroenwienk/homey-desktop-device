@@ -13,7 +13,7 @@ export function Connections() {
       {connections.map((connection) => {
         return (
           <ConnectionEntry
-            key={connection.cloudId}
+            key={connection.id}
             title={connection.cloudId}
             connected={connection.connected}
           >

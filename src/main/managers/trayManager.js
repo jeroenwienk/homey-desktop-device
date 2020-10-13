@@ -1,6 +1,6 @@
 const path = require('path');
 const EventEmitter = require('events');
-const { Tray, Menu } = require('electron');
+const { Tray, Menu, app } = require('electron');
 
 const windowManager = require('./windowManager');
 
