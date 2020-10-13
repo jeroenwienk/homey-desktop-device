@@ -137,9 +137,6 @@ class ServerSocket {
     try {
       const buttons = await db.getButtons();
 
-      const commands = [{ id: 1, name: 'Test' }];
-
-      socket.emit(IO_EMIT.COMMANDS_SYNC, { commands });
       socket.emit(IO_EMIT.BUTTONS_SYNC, { buttons }, ({ broken }) => {
         windowManager.send(MAIN.BUTTONS_BROKEN, broken);
       });
