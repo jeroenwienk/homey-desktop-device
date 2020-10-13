@@ -119,13 +119,18 @@ class ServerSocket {
     }
   }
 
-  handleNotificationShow(args) {
-    const notification = new Notification({
-      title: args.title != null ? args.title : 'Homey Desktop',
-      body: args.body,
-      silent: args.silent === 'true',
-    });
-    notification.show();
+  handleNotificationShow(args, callback) {
+    try {
+      const notification = new Notification({
+        title: args.title != null ? args.title : 'Homey Desktop',
+        body: args.body,
+        silent: args.silent === 'true',
+      });
+      notification.show();
+      callback();
+    } catch (error) {
+      callback(error);
+    }
   }
 
   async sync(socket) {
