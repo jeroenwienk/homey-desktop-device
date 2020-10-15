@@ -131,17 +131,25 @@ async function emitAcceleratorsSync(event) {
 function registerAccelerators(accelerators) {
   globalShortcut.unregisterAll();
 
+  // TODO: fails on arrows
   accelerators.forEach((accelerator) => {
-    const ret = globalShortcut.register(
-      accelerator.keys.replaceAll(' ', '+'),
-      () => {
-        serverSocket.io.emit(IO_EMIT.ACCELERATOR_RUN, { id: accelerator.id });
-      }
-    );
+    try  {
+      const ret = globalShortcut.register(
+        accelerator.keys.replaceAll(' ', '+'),
+        () => {
+          serverSocket.io.emit(IO_EMIT.ACCELERATOR_RUN, { id: accelerator.id });
+        }
+      );
 
-    if (!ret) {
-      console.log('registration failed');
+      if (!ret) {
+        console.log('registration failed');
+      }
+    } catch (error) {
+      console.log(error);
     }
+
+
+
   });
 }
 
