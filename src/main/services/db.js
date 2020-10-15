@@ -12,6 +12,11 @@ class DataBase {
       filename: `${app.getPath('userData')}/buttons`,
       autoload: true,
     });
+
+    this.acceleratorCollection = new DataStore({
+      filename: `${app.getPath('userData')}/accelerators`,
+      autoload: true,
+    });
   }
 
   async getHistory({ limit = Infinity } = {}) {
@@ -66,6 +71,42 @@ class DataBase {
   async removeButton(id) {
     return new Promise((resolve, reject) => {
       this.buttonCollection.remove({ id }, {}, (error) => {
+        if (error) return reject(error);
+        resolve();
+      });
+    });
+  }
+
+  async getAccelerators() {
+    return new Promise((resolve, reject) => {
+      this.acceleratorCollection.find({}).exec((error, docs) => {
+        if (error) return reject(error);
+        resolve(docs);
+      });
+    });
+  }
+
+  async insertAccelerator(args) {
+    return new Promise((resolve, reject) => {
+      this.acceleratorCollection.insert(args, (error, entry) => {
+        if (error) return reject(error);
+        resolve(entry);
+      });
+    });
+  }
+
+  async updateAccelerator(id, args) {
+    return new Promise((resolve, reject) => {
+      this.acceleratorCollection.update({ id }, { $set: args }, (error) => {
+        if (error) return reject(error);
+        resolve();
+      });
+    });
+  }
+
+  async removeAccelerator(id) {
+    return new Promise((resolve, reject) => {
+      this.acceleratorCollection.remove({ id }, {}, (error) => {
         if (error) return reject(error);
         resolve();
       });

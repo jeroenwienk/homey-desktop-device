@@ -17,6 +17,7 @@ export const VARIABLES = {
   COLOR_SELECTED_ACCENT: '--color-selected-accent',
 
   BORDER_ERROR: '--border-error',
+  BORDER_FOCUS: '--border-focus',
 
   BOX_SHADOW_DEFAULT: '--box-shadow-default',
   BOX_SHADOW_DEFAULT_LIGHT: '--box-shadow-default-light',
@@ -44,7 +45,7 @@ export const GlobalStyles = createGlobalStyle`
     ${VARIABLES.COLOR_SELECTED_ACCENT}: rgba(0, 128, 255, 0.05);
     
     ${VARIABLES.BORDER_ERROR}: 2px solid rgba(198, 40, 40, 1);
-    
+    ${VARIABLES.BORDER_FOCUS}: 2px solid rgba(255, 151, 19, 1);
     
     ${VARIABLES.BOX_SHADOW_DEFAULT}: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.1);
     ${VARIABLES.BOX_SHADOW_DEFAULT_LIGHT}: 0 1px 3px 0 rgba(255, 255, 255, 0.12), 0 1px 2px 0 rgba(255, 255, 255, 0.24);

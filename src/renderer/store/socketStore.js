@@ -14,8 +14,5 @@ export function initConnections(connections) {
 }
 
 ipcRenderer.on(MAIN.SOCKETS_INIT, (event, data) => {
-
-  console.log(data);
-
   initConnections(data);
 });

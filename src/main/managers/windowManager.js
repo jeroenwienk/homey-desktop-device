@@ -9,7 +9,7 @@ class WindowManager extends EventEmitter {
   }
 
   createMainWindow() {
-    const imagepath = path.resolve(__dirname, '../../images/home.png');
+    const imagepath = path.resolve(__dirname, '../../assets/home.png');
     const mainWindow = new BrowserWindow({
       width: 800,
       height: 600,

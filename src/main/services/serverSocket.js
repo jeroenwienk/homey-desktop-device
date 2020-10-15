@@ -74,11 +74,25 @@ class ServerSocket {
       console.log(IO_ON.BUTTON_RUN_SUCCESS, args);
     });
 
+    // TODO: implement in app
     socket.on(IO_ON.BUTTON_RUN_ERROR, (args) => {
       console.log(IO_ON.BUTTON_RUN_ERROR, args);
     });
 
+    socket.on(IO_ON.ACCELERATOR_RUN_SUCCESS, (args) => {
+      console.log(IO_ON.ACCELERATOR_RUN_SUCCESS, args);
+    });
+
+    // TODO: implement in app
+    socket.on(IO_ON.ACCELERATOR_RUN_ERROR, (args) => {
+      console.log(IO_ON.ACCELERATOR_RUN_ERROR, args);
+    });
+
     socket.on(IO_ON.FLOW_BUTTON_SAVED, (...args) => {
+      this.sync(socket);
+    });
+
+    socket.on(IO_ON.FLOW_ACCELERATOR_SAVED, (...args) => {
       this.sync(socket);
     });
 
@@ -119,12 +133,12 @@ class ServerSocket {
     }
   }
 
-  handleNotificationShow(args, callback) {
+  handleNotificationShow(data, callback) {
     try {
       const notification = new Notification({
-        title: args.title != null ? args.title : 'Homey Desktop',
-        body: args.body,
-        silent: args.silent === 'true',
+        title: data.title != null ? data.title : 'Homey Desktop',
+        body: data.body,
+        silent: data.silent === 'true',
       });
       notification.show();
       callback();
@@ -136,9 +150,14 @@ class ServerSocket {
   async sync(socket) {
     try {
       const buttons = await db.getButtons();
+      const accelerators = await db.getAccelerators();
 
       socket.emit(IO_EMIT.BUTTONS_SYNC, { buttons }, ({ broken }) => {
         windowManager.send(MAIN.BUTTONS_BROKEN, broken);
+      });
+
+      socket.emit(IO_EMIT.ACCELERATORS_SYNC, { accelerators }, ({ broken }) => {
+        windowManager.send(MAIN.ACCELERATORS_BROKEN, broken);
       });
     } catch (error) {
       console.error(error);

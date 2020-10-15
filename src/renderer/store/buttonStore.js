@@ -50,8 +50,6 @@ export function initButtons(buttons) {
 }
 
 export function initBroken(broken) {
-  console.log(broken);
-
   buttonStore.setState({
     broken: broken,
   });

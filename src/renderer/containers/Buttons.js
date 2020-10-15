@@ -6,6 +6,9 @@ import { ipcRenderer } from 'electron';
 import { useForm } from 'react-hook-form';
 import { useId } from '@react-aria/utils';
 
+import { REND } from '../../shared/events';
+import { VARIABLES, VAR } from '../theme/GlobalStyles';
+
 import {
   buttonStore,
   pushButton,
@@ -22,9 +25,6 @@ import {
 import { ButtonEntry } from '../components/actions/ButtonEntry';
 import { Heading } from '../components/Heading';
 import { TextField } from '../components/TextField';
-
-import { REND } from '../../shared/events';
-import { VARIABLES, VAR } from '../theme/GlobalStyles';
 
 export function Buttons() {
   const buttons = buttonStore((state) => state.buttons);

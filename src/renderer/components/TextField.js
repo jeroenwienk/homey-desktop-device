@@ -55,7 +55,6 @@ const Input = styled.input`
   display: block;
   min-width: 256px;
   height: 48px;
-  margin-bottom: 8px;
   padding: 8px;
   color: ${VAR(VARIABLES.COLOR_PRIMARY_TEXT_DARK)};
   background-color: ${VAR(VARIABLES.COLOR_BACKGROUND_LIGHT)};

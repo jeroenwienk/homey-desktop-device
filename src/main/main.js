@@ -1,11 +1,20 @@
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 // DO NOT MOVE
-if (require('electron-squirrel-startup')) return;
-
+const squirrelStartup = require('electron-squirrel-startup');
 const { app, globalShortcut } = require('electron');
+const shell = require('shelljs');
+shell.config.execPath = shell.which('node').toString();
 
-const MDNS = require('./services/mdns');
-const serverSocket = require('./services/socket');
+if (squirrelStartup) {
+  app.quit();
+}
+
+// if (true) {
+//   require('inspector').open(9229, '0.0.0.0', true);
+// }
+
+const mdns = require('./services/mdns');
+const serverSocket = require('./services/serverSocket');
 const ipcMainHandlers = require('./ipcMainHandlers');
 const windowManager = require('./managers/windowManager');
 const trayManager = require('./managers/trayManager');
@@ -17,8 +26,6 @@ makeSingleInstance();
 
 ipcMainHandlers.init();
 
-const mdns = new MDNS();
-
 app.on('ready', async () => {
   console.log('app:ready');
 
@@ -27,6 +34,7 @@ app.on('ready', async () => {
 
   await mdns.init();
   await mdns.advertise();
+
 });
 
 // Quit when all windows are closed, except on macOS. There, it's common
@@ -34,24 +42,17 @@ app.on('ready', async () => {
 // explicitly with Cmd + Q.
 app.on('window-all-closed', (event) => {
   console.log('app:window-all-closed');
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
+  app.quit();
 });
 
 app.on('will-quit', async (event) => {
   console.log('will:quit');
   event.preventDefault();
+  globalShortcut.unregisterAll();
 
   try {
     await serverSocket.close();
     await mdns.close();
-
-    // Unregister a shortcut.
-    globalShortcut.unregister('CommandOrControl+M');
-
-    // Unregister all shortcuts.
-    globalShortcut.unregisterAll();
   } catch (error) {
     console.error(error);
   }

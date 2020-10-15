@@ -1,7 +1,7 @@
 import React, { forwardRef } from 'react';
 
 import { ButtonBase } from './ButtonBase';
-import { IconMask, AddIcon, SaveIcon, CancelIcon, RemoveIcon } from './IconMask';
+import { IconMask, AddIcon, SaveIcon, CancelIcon, RemoveIcon, ClearIcon } from './IconMask';
 
 export const IconButton = forwardRef((props, forwardedRef) => (
   <ButtonBase
@@ -32,5 +32,9 @@ export const CancelIconButton = forwardRef((props, forwardedRef) => (
 
 export const RemoveIconButton = forwardRef((props, forwardedRef) => (
   <IconButton {...props} ref={forwardedRef} iconComponent={RemoveIcon}/>
+));
+
+export const ClearIconButton = forwardRef((props, forwardedRef) => (
+  <IconButton {...props} ref={forwardedRef} iconComponent={ClearIcon}/>
 ));
 

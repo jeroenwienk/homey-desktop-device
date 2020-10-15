@@ -43,4 +43,4 @@ class MDNS {
   }
 }
 
-module.exports = MDNS;
+module.exports = new MDNS();

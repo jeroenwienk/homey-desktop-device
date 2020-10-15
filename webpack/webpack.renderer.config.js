@@ -1,11 +1,7 @@
-const rules = require('./webpack.rules');
-const CopyPlugin = require('copy-webpack-plugin');
 const path = require('path');
+const CopyPlugin = require('copy-webpack-plugin');
 
-rules.push({
-  test: /\.css$/,
-  use: [{ loader: 'style-loader' }, { loader: 'css-loader' }],
-});
+const rules = require('./webpack.rules');
 
 module.exports = {
   target: 'electron-renderer',
@@ -36,7 +32,7 @@ module.exports = {
   },
   plugins: [
     new CopyPlugin({
-      patterns: [{ from: path.join('src', 'images'), to: 'images' }],
+      patterns: [{ from: path.resolve('src/assets'), to: './assets' }],
     }),
   ],
 };

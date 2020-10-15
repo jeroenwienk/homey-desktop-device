@@ -7,6 +7,7 @@ import { REND } from '../shared/events';
 import { Connections } from './containers/Connections';
 import { History } from './containers/History';
 import { Buttons } from './containers/Buttons';
+import { Accelerators } from './containers/Accelerators';
 
 export function App() {
   useEffect(() => {
@@ -20,6 +21,7 @@ export function App() {
       </Header>
       <Main>
         <Buttons />
+        <Accelerators />
       </Main>
       <Sidebar>
         <History />
@@ -50,7 +52,10 @@ const Header = styled.header`
 
 const Main = styled.main`
   grid-area: main;
+  display: flex;
+  flex-direction: column;
   min-height: 0;
+  gap: 16px;
   padding: 16px;
   overflow-y: auto;
 `;
