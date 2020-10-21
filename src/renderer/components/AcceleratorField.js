@@ -7,7 +7,7 @@ import { useKeyboard } from '@react-aria/interactions';
 import { mergeRefs } from '../lib/mergeRefs';
 import { VAR, VARIABLES } from '../theme/GlobalStyles';
 
-import { ClearIconButton } from './common/IconButton';
+import { Clear } from './common/IconButton';
 
 const order = ['Control', 'Command', 'Super', 'Alt', 'Shift'];
 
@@ -23,7 +23,7 @@ export function AcceleratorField(props) {
     required: true,
   });
 
-  let label = useLabel({
+  const label = useLabel({
     label: props.label,
     'aria-label': props.label,
   });
@@ -41,8 +41,17 @@ export function AcceleratorField(props) {
     onKeyDown: (event) => {
       let key = event.key.length === 1 ? event.key.toUpperCase() : event.key;
 
+      if (key === 'Tab' || key === 'Escape') {
+        event.continuePropagation();
+        return;
+      }
+
       if (key === 'Meta') {
         key = 'Super';
+      }
+
+      if (key === 'AltGraph') {
+        key = 'AltGr';
       }
 
       setState((prevState) => {
@@ -75,23 +84,25 @@ export function AcceleratorField(props) {
 
   return (
     <Container>
-      <Label {...label.labelProps}>{props.label}</Label>
-      <InputContainer>
-        <Input
-          {...label.fieldProps}
-          {...keyboard.keyboardProps}
-          readOnly
-          name={props.name}
-          defaultValue={props.defaultValue}
-          hasError={props.error != null}
-          ref={mergeRefs([acceleratorFieldRef, register])}
-        />
-        <ClearIconButton
-          onClick={() => {
+      <LabelContainer>
+        <Label {...label.labelProps}>{props.label}</Label>
+        <Clear
+          size={24}
+          onPress={() => {
             setState({});
           }}
         />
-      </InputContainer>
+      </LabelContainer>
+      <Input
+        {...label.fieldProps}
+        {...keyboard.keyboardProps}
+        readOnly
+        autoFocus
+        name={props.name}
+        defaultValue={props.defaultValue}
+        hasError={props.error != null}
+        ref={mergeRefs([acceleratorFieldRef, register])}
+      />
     </Container>
   );
 }
@@ -101,14 +112,14 @@ const Container = styled.div`
   flex-direction: column;
 `;
 
-const InputContainer = styled.div`
+const LabelContainer = styled.div`
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: space-between;
+  margin-bottom: 8px;
 `;
 
 const Label = styled.label`
-  margin-bottom: 8px;
   color: ${VAR(VARIABLES.COLOR_PRIMARY_TEXT)};
   font-weight: 500;
 `;
@@ -119,8 +130,10 @@ const Input = styled.input`
   min-width: 256px;
   height: 48px;
   padding: 8px;
-  color: ${VAR(VARIABLES.COLOR_PRIMARY_TEXT_DARK)};
-  background-color: ${VAR(VARIABLES.COLOR_BACKGROUND_LIGHT)};
+  color: ${VAR(VARIABLES.COLOR_PRIMARY_TEXT)};
+  background-color: ${VAR(VARIABLES.COLOR_BACKGROUND_INPUT)};
+  border: 1px solid ${VAR(VARIABLES.COLOR_BACKGROUND_INPUT)};
+  border-radius: 3px;
   outline: ${(props) => props.hasError && VAR(VARIABLES.BORDER_ERROR)};
 
   &:focus {

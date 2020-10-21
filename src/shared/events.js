@@ -8,6 +8,7 @@ const REND = {
   ACCELERATOR_UPDATE: 'accelerator:update',
   ACCELERATOR_REMOVE: 'accelerator:remove',
   ACCELERATOR_RUN: 'accelerator:run',
+  TEST: 'test',
 };
 
 const MAIN = {
@@ -19,6 +20,7 @@ const MAIN = {
   HISTORY_PUSH: 'history:push',
 
   SOCKETS_INIT: 'sockets:init',
+  TEST: 'test',
 };
 
 const IO_EMIT = {
@@ -31,6 +33,7 @@ const IO_EMIT = {
 const IO_ON = {
   BROWSER_OPEN_RUN: 'browser:open:run',
   PATH_OPEN_RUN: 'path:open:run',
+  COMMAND_RUN: 'command:run',
   BUTTON_RUN_SUCCESS: 'button:run:success',
   BUTTON_RUN_ERROR: 'button:run:error',
   ACCELERATOR_RUN_SUCCESS: 'accelerator:run:success',

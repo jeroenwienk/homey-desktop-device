@@ -8,7 +8,7 @@ export const buttonStore = create((set) => ({
   broken: [],
 }));
 
-export function pushButton(button) {
+export function createButton(button) {
   ipcRenderer.send(REND.BUTTON_CREATE, button);
   buttonStore.setState((prevState) => {
     return {

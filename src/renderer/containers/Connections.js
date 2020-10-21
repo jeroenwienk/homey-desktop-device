@@ -29,13 +29,14 @@ const ConnectionsList = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  gap: 8px;
 `;
 
 const ConnectionEntry = styled.div`
   position: relative;
   font-weight: 700;
   font-size: 22px;
-  line-height: 22px;
+  line-height: 26px;
   margin-left: 24px;
   color: ${VAR(VARIABLES.COLOR_PRIMARY_TEXT)};
 
@@ -47,7 +48,8 @@ const ConnectionEntry = styled.div`
     transform: translateY(-50%);
     width: 16px;
     height: 16px;
-    background-color: ${(props) => (props.connected ? 'green' : 'red')};
+    background-color: ${(props) =>
+      props.connected ? VAR(VARIABLES.COLOR_GREEN) : VAR(VARIABLES.COLOR_RED)};
     border-radius: 50%;
   }
 `;

@@ -8,9 +8,9 @@ import { useFocusRing } from '@react-aria/focus';
 import { VARIABLES, VAR } from '../../theme/GlobalStyles';
 import { mergeRefs } from '../../lib/mergeRefs';
 
-export const AcceleratorEntry = forwardRef(function (props, forwardedRef) {
+export const ButtonEntry = forwardRef(function (props, forwardedRef) {
   const buttonRef = useRef();
-  const button = useButton({ ...props, id: props.accelerator.id }, buttonRef);
+  const button = useButton({ ...props, id: props.button.id }, buttonRef);
   const focusRing = useFocusRing();
 
   return (
@@ -21,8 +21,8 @@ export const AcceleratorEntry = forwardRef(function (props, forwardedRef) {
       onContextMenu={props.onContextMenu}
     >
       <div className="top" />
-      <div className="name" title={props.accelerator.keys}>
-        {props.accelerator.keys}
+      <div className="name" title={props.button.name}>
+        {props.button.name}
       </div>
     </ButtonBase>
   );
@@ -38,8 +38,8 @@ const ButtonBase = styled.button`
   padding: 8px;
   cursor: pointer;
   border-radius: 10px;
-  background-color: ${VAR(VARIABLES.COLOR_BACKGROUND_LIGHT)};
-  color: ${VAR(VARIABLES.COLOR_PRIMARY_TEXT_DARK)};
+  background-color: ${VAR(VARIABLES.COLOR_BACKGROUND_BUTTON)};
+  color: ${VAR(VARIABLES.COLOR_PRIMARY_TEXT_ACCENT)};
   box-shadow: ${VAR(VARIABLES.BOX_SHADOW_DEFAULT)};
 
   &:active {
@@ -64,7 +64,7 @@ const ButtonBase = styled.button`
     text-align: left;
     font-size: 14px;
     font-weight: 500;
-    line-height: 14px;
+    line-height: 18px;
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;

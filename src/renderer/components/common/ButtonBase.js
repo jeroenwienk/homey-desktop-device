@@ -4,11 +4,17 @@ import { VARIABLES, VAR } from '../../theme/GlobalStyles';
 
 export const ButtonBase = styled.button`
   display: inline-flex;
+  align-items: center;
+  justify-content: center;
   position: relative;
   cursor: pointer;
   background-color: transparent;
-  color: ${VAR(VARIABLES.COLOR_PRIMARY_TEXT)};
-  line-height: 12px;
+  color: ${(props) =>
+    props.isFocusVisible
+      ? VAR(VARIABLES.COLOR_PRIMARY_TEXT)
+      : VAR(VARIABLES.COLOR_PRIMARY_TEXT_ACCENT)};
+  font-weight: 700;
+  line-height: 22px;
 
   &:hover:after {
     content: '';
@@ -17,7 +23,7 @@ export const ButtonBase = styled.button`
     right: 0;
     bottom: 0;
     left: 0;
-    border-radius: 10px;
+    border-radius: 3px;
     background-color: ${VAR(VARIABLES.COLOR_HOVER)};
   }
 
@@ -28,7 +34,7 @@ export const ButtonBase = styled.button`
     right: 0;
     bottom: 0;
     left: 0;
-    border-radius: 10px;
+    border-radius: 3px;
     background-color: ${VAR(VARIABLES.COLOR_ACTIVE)};
   }
 `;

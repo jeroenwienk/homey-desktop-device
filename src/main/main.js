@@ -2,8 +2,6 @@
 // DO NOT MOVE
 const squirrelStartup = require('electron-squirrel-startup');
 const { app, globalShortcut } = require('electron');
-const shell = require('shelljs');
-shell.config.execPath = shell.which('node').toString();
 
 if (squirrelStartup) {
   app.quit();
@@ -20,9 +18,11 @@ const windowManager = require('./managers/windowManager');
 const trayManager = require('./managers/trayManager');
 const makeSingleInstance = require('./makeSingleInstance');
 const setLoginItemSettings = require('./setLoginItemSettings');
+const { setApplicationMenu } = require('./setApplicationMenu');
 
 setLoginItemSettings();
 makeSingleInstance();
+setApplicationMenu();
 
 ipcMainHandlers.init();
 
@@ -34,7 +34,6 @@ app.on('ready', async () => {
 
   await mdns.init();
   await mdns.advertise();
-
 });
 
 // Quit when all windows are closed, except on macOS. There, it's common

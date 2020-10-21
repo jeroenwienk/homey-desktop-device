@@ -9,19 +9,19 @@ module.exports = {
   entry: path.resolve('src/main/main.js'),
   target: 'electron-main',
   devtool: 'source-map',
-  externals: [nodeExternals()],
+  //externals: [nodeExternals()],
   module: {
     rules: [...rules],
   },
   plugins: [
-    new Plugin(),
-    new CopyPlugin({
-      patterns: [
-        {
-          from: path.resolve('node_modules'),
-          to: '../node_modules',
-        },
-      ],
-    }),
+    // new Plugin(),
+    // new CopyPlugin({
+    //   patterns: [
+    //     {
+    //       from: path.resolve('node_modules'),
+    //       to: '../node_modules',
+    //     },
+    //   ],
+    // }),
   ],
 };

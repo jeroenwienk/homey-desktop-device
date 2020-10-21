@@ -9,14 +9,21 @@ import cancel from '../../../assets/actions/cancel.svg';
 import remove from '../../../assets/actions/remove.svg';
 import clear from '../../../assets/actions/clear.svg';
 
+import nolink from '../../../assets/status/nolink.svg';
+import warning from '../../../assets/status/warning.svg';
+import error from '../../../assets/status/error.svg';
+
+import browser from '../../../assets/history/browser.svg';
+import path from '../../../assets/history/path.svg';
+
 export const IconMask = styled.div`
   display: inline-block;
   mask-image: url(${(props) => props.mask});
   mask-size: contain;
   mask-position: center;
   mask-repeat: no-repeat;
-  width: 48px;
-  height: 48px;
+  width: ${(props) => props.size ?? 48}px;
+  height: ${(props) => props.size ?? 48}px;
   background-color: ${(props) =>
     props.color ?? VAR(VARIABLES.COLOR_ICON_LIGHT)};
 `;
@@ -39,4 +46,24 @@ export const RemoveIcon = forwardRef((props, forwardedRef) => (
 
 export const ClearIcon = forwardRef((props, forwardedRef) => (
   <IconMask {...props} ref={forwardedRef} mask={clear} />
+));
+
+export const BrowserIcon = forwardRef((props, forwardedRef) => (
+  <IconMask {...props} ref={forwardedRef} mask={browser} />
+));
+
+export const PathIcon = forwardRef((props, forwardedRef) => (
+  <IconMask {...props} ref={forwardedRef} mask={path} />
+));
+
+export const NoLinkIcon = forwardRef((props, forwardedRef) => (
+  <IconMask {...props} ref={forwardedRef} mask={nolink} />
+));
+
+export const ErrorIcon = forwardRef((props, forwardedRef) => (
+  <IconMask {...props} ref={forwardedRef} mask={error} />
+));
+
+export const WarningIcon = forwardRef((props, forwardedRef) => (
+  <IconMask {...props} ref={forwardedRef} mask={warning} />
 ));

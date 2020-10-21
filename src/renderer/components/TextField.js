@@ -56,7 +56,9 @@ const Input = styled.input`
   min-width: 256px;
   height: 48px;
   padding: 8px;
-  color: ${VAR(VARIABLES.COLOR_PRIMARY_TEXT_DARK)};
-  background-color: ${VAR(VARIABLES.COLOR_BACKGROUND_LIGHT)};
+  color: ${VAR(VARIABLES.COLOR_PRIMARY_TEXT)};
+  background-color: ${VAR(VARIABLES.COLOR_BACKGROUND_INPUT)};
+  border: 1px solid ${VAR(VARIABLES.COLOR_BACKGROUND_INPUT)};
+  border-radius: 3px;
   outline: ${(props) => props.hasError && VAR(VARIABLES.BORDER_ERROR)};
 `;

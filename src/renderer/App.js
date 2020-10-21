@@ -2,12 +2,16 @@ import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { ipcRenderer } from 'electron';
 
+import { history } from './memoryHistory';
 import { REND } from '../shared/events';
+import { VAR, VARIABLES } from './theme/GlobalStyles';
 
 import { Connections } from './containers/Connections';
 import { History } from './containers/History';
-import { Buttons } from './containers/Buttons';
-import { Accelerators } from './containers/Accelerators';
+import { Buttons } from './containers/buttons/Buttons';
+import { Accelerators } from './containers/accelerators/Accelerators';
+import { Broken } from './containers/Broken';
+import { MenuButton, MenuButtonItem } from './components/common/Menu';
 
 export function App() {
   useEffect(() => {
@@ -17,11 +21,22 @@ export function App() {
   return (
     <Grid>
       <Header>
+        <MenuButton
+          key={1}
+          label="Create"
+          onAction={(key) => {
+            history.push(`/${key}?id=create`);
+          }}
+        >
+          <MenuButtonItem key="button">Button</MenuButtonItem>
+          <MenuButtonItem key="accelerator">Shortcut</MenuButtonItem>
+        </MenuButton>
         <Connections />
       </Header>
       <Main>
         <Buttons />
         <Accelerators />
+        <Broken />
       </Main>
       <Sidebar>
         <History />
@@ -45,9 +60,15 @@ const Grid = styled.div`
 `;
 
 const Header = styled.header`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   grid-area: header;
   min-height: 0;
-  padding: 16px;
+  padding: 0 8px;
+  z-index: ${VAR(VARIABLES.Z_INDEX_HEADER)};
+  background-color: ${VAR(VARIABLES.COLOR_BACKGROUND_PANEL)};
+  box-shadow: ${VAR(VARIABLES.BOX_SHADOW_HEADER)};
 `;
 
 const Main = styled.main`

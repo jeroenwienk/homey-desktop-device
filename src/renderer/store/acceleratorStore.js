@@ -8,7 +8,7 @@ export const acceleratorStore = create((set) => ({
   broken: [],
 }));
 
-export function pushAccelerator(accelerator) {
+export function createAccelerator(accelerator) {
   ipcRenderer.send(REND.ACCELERATOR_CREATE, accelerator);
   acceleratorStore.setState((prevState) => {
     return {

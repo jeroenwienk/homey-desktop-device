@@ -1,5 +1,6 @@
 const { shell, Notification } = require('electron');
 const http = require('http');
+const { exec } = require('child_process');
 const Server = require('socket.io');
 const db = require('./db');
 const windowManager = require('../managers/windowManager');
@@ -68,6 +69,10 @@ class ServerSocket {
 
     socket.on(IO_ON.NOTIFICATION_SHOW_RUN, (...args) => {
       this.handleNotificationShow(...args);
+    });
+
+    socket.on(IO_ON.COMMAND_RUN, (...args) => {
+      this.handleCommand(...args);
     });
 
     socket.on(IO_ON.BUTTON_RUN_SUCCESS, (args) => {
@@ -142,6 +147,40 @@ class ServerSocket {
       });
       notification.show();
       callback();
+    } catch (error) {
+      callback(error);
+    }
+  }
+
+  async handleCommand(data, callback) {
+    const execCommand = () =>
+      new Promise((resolve, reject) => {
+        exec(
+          data.command,
+          {
+            timeout: data.timeout == null ? 0 : data.timeout,
+            cwd: data.cwd == null ? '/' : data.cwd,
+          },
+          (error, stdout, stderr) => {
+            if (error) {
+              if (stderr.length > 0) {
+                reject({ stderr });
+                return;
+              }
+
+              reject(error);
+              return;
+            }
+            // console.log('stdout', stdout);
+            // console.log('stderr', stderr);
+            resolve({ stdout, stderr });
+          }
+        );
+      });
+
+    try {
+      const result = await execCommand();
+      callback(null, result);
     } catch (error) {
       callback(error);
     }

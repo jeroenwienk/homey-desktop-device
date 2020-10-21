@@ -14,7 +14,7 @@ class WindowManager extends EventEmitter {
       width: 800,
       height: 600,
       icon: imagepath,
-      backgroundColor: '#292929',
+      backgroundColor: '#181818',
       webPreferences: {
         nodeIntegration: true,
       },

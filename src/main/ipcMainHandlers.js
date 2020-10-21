@@ -1,6 +1,7 @@
 const { ipcMain, globalShortcut } = require('electron');
 const db = require('./services/db');
 const serverSocket = require('./services/serverSocket');
+const { exec } = require('child_process');
 
 const { REND, MAIN, IO_EMIT, IO_ON } = require('../shared/events');
 
@@ -14,6 +15,22 @@ function init() {
   ipcMain.on(REND.ACCELERATOR_UPDATE, handleAcceleratorUpdate);
   ipcMain.on(REND.ACCELERATOR_REMOVE, handleAcceleratorRemove);
   ipcMain.on(REND.ACCELERATOR_RUN, handleAcceleratorRun);
+  ipcMain.handle(REND.TEST, handleExecRunTest);
+}
+
+async function handleExecRunTest(event, args) {
+  return new Promise((resolve, reject) => {
+    exec(args.command, { timeout: 0, cwd: '/' }, (error, stdout, stderr) => {
+      if (error) {
+        console.error(`exec error: ${error}`);
+        reject(error);
+        return;
+      }
+      console.log(`stdout: ${stdout}`);
+      console.error(`stderr: ${stderr}`);
+      resolve({ stdout, stderr });
+    });
+  });
 }
 
 async function handleInit(event, args) {
@@ -133,7 +150,7 @@ function registerAccelerators(accelerators) {
 
   // TODO: fails on arrows
   accelerators.forEach((accelerator) => {
-    try  {
+    try {
       const ret = globalShortcut.register(
         accelerator.keys.replaceAll(' ', '+'),
         () => {
@@ -147,9 +164,6 @@ function registerAccelerators(accelerators) {
     } catch (error) {
       console.log(error);
     }
-
-
-
   });
 }
 
