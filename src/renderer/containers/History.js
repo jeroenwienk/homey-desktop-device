@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 import { VARIABLES, VAR } from '../theme/GlobalStyles';
-import { historyStore } from '../store/historyStore';
+import { useHistoryList } from '../store/historyStore';
 
 import { BrowserIcon, PathIcon } from '../components/common/IconMask';
 
@@ -20,15 +20,15 @@ const dateOptions = {
 const dateFormatter = new Intl.DateTimeFormat('default', dateOptions);
 
 export function History() {
-  const history = historyStore((state) => state.history);
+  const historyList = useHistoryList();
 
   return (
-    <HistoryList>
-      {history.map((entry, index) => {
-        const IconComponent = getIconComponent(entry.name);
+    <history.list>
+      {historyList.map((historyEntry, index) => {
+        const IconComponent = getIconComponent(historyEntry.name);
 
         return (
-          <HistoryEntry key={index}>
+          <history.entry key={index}>
             <div>
               <IconComponent
                 size={24}
@@ -36,13 +36,15 @@ export function History() {
               />
             </div>
             <div>
-              <div className="argument">{entry.argument}</div>
-              <div className="time">{dateFormatter.format(entry.date)}</div>
+              <history.argument>{historyEntry.argument}</history.argument>
+              <history.time>
+                {dateFormatter.format(historyEntry.date)}
+              </history.time>
             </div>
-          </HistoryEntry>
+          </history.entry>
         );
       })}
-    </HistoryList>
+    </history.list>
   );
 }
 
@@ -57,34 +59,30 @@ function getIconComponent(name) {
   }
 }
 
-const HistoryList = styled.ul`
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-`;
-
-const HistoryEntry = styled.li`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 16px;
-  padding: 16px 32px;
-  background-color: ${VAR(VARIABLES.COLOR_BACKGROUND_PANEL)};
-  box-shadow: ${VAR(VARIABLES.BOX_SHADOW_DEFAULT)};
-  word-break: break-all;
-  overflow: hidden;
-  border-radius: 3px;
-
-  .argument {
+const history = {
+  list: styled.ul`
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  `,
+  entry: styled.li`
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 32px;
+    background-color: ${VAR(VARIABLES.COLOR_BACKGROUND_PANEL)};
+    box-shadow: ${VAR(VARIABLES.BOX_SHADOW_DEFAULT)};
+    word-break: break-all;
+    overflow: hidden;
+    border-radius: 3px;
+  `,
+  argument: styled.div`
     color: ${VAR(VARIABLES.COLOR_PRIMARY_TEXT)};
-  }
-
-  .time {
+  `,
+  time: styled.div`
     color: ${VAR(VARIABLES.COLOR_PRIMARY_TEXT_ACCENT)};
     font-weight: 500;
     margin-top: 8px;
-  }
-`;
+  `,
+};

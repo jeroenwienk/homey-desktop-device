@@ -17,7 +17,7 @@ class MDNS {
 
     this.responder = ciao.getResponder();
     this.service = this.responder.createService({
-      name: 'homey-desktop',
+      name: `homey-desktop-${this.mac}`,
       type: 'homeydesktop',
       port: this.port,
       txt: {

@@ -32,7 +32,7 @@ export function AcceleratorDialog(props) {
     <DialogBase onClose={handleClose} isOpen>
       <DialogContent>
         <Actions>
-          {props.editId !== 'create' && (
+          {editId !== 'create' && (
             <Remove
               onPress={() => {
                 removeAccelerator({ id: editId });

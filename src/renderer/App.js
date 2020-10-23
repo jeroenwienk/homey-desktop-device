@@ -11,7 +11,7 @@ import { History } from './containers/History';
 import { Buttons } from './containers/buttons/Buttons';
 import { Accelerators } from './containers/accelerators/Accelerators';
 import { Broken } from './containers/Broken';
-import { MenuButton, MenuButtonItem } from './components/common/Menu';
+import { MenuButton } from './components/common/Menu';
 
 export function App() {
   useEffect(() => {
@@ -19,8 +19,8 @@ export function App() {
   }, []);
 
   return (
-    <Grid>
-      <Header>
+    <sc.grid>
+      <sc.header>
         <MenuButton
           key={1}
           label="Create"
@@ -28,62 +28,61 @@ export function App() {
             history.push(`/${key}?id=create`);
           }}
         >
-          <MenuButtonItem key="button">Button</MenuButtonItem>
-          <MenuButtonItem key="accelerator">Shortcut</MenuButtonItem>
+          <MenuButton.Item key="button">Button</MenuButton.Item>
+          <MenuButton.Item key="accelerator">Shortcut</MenuButton.Item>
         </MenuButton>
         <Connections />
-      </Header>
-      <Main>
+      </sc.header>
+      <sc.main>
         <Buttons />
         <Accelerators />
         <Broken />
-      </Main>
-      <Sidebar>
+      </sc.main>
+      <sc.sidebar>
         <History />
-      </Sidebar>
-    </Grid>
+      </sc.sidebar>
+    </sc.grid>
   );
 }
 
-const Grid = styled.div`
-  display: grid;
-  grid-template-columns: auto auto auto 400px;
-  grid-template-rows: 64px repeat(3, 1fr);
-  grid-template-areas:
-    'header header header header'
-    'main main main sidebar'
-    'main main main sidebar'
-    'main main main sidebar';
-  height: 100vh;
-  width: 100vw;
-  overflow: hidden;
-`;
-
-const Header = styled.header`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  grid-area: header;
-  min-height: 0;
-  padding: 0 8px;
-  z-index: ${VAR(VARIABLES.Z_INDEX_HEADER)};
-  background-color: ${VAR(VARIABLES.COLOR_BACKGROUND_PANEL)};
-  box-shadow: ${VAR(VARIABLES.BOX_SHADOW_HEADER)};
-`;
-
-const Main = styled.main`
-  grid-area: main;
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  gap: 16px;
-  padding: 16px;
-  overflow-y: auto;
-`;
-
-const Sidebar = styled.aside`
-  grid-area: sidebar;
-  min-height: 0;
-  padding: 16px;
-  overflow-y: auto;
-`;
+const sc = {
+  grid: styled.div`
+    display: grid;
+    grid-template-columns: auto auto auto 400px;
+    grid-template-rows: 64px repeat(3, 1fr);
+    grid-template-areas:
+      'header header header header'
+      'main main main sidebar'
+      'main main main sidebar'
+      'main main main sidebar';
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+  `,
+  header: styled.header`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    grid-area: header;
+    min-height: 0;
+    padding: 0 8px;
+    z-index: ${VAR(VARIABLES.Z_INDEX_HEADER)};
+    background-color: ${VAR(VARIABLES.COLOR_BACKGROUND_PANEL)};
+    box-shadow: ${VAR(VARIABLES.BOX_SHADOW_HEADER)};
+  `,
+  main: styled.main`
+    grid-area: main;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    gap: 16px;
+    padding: 16px;
+    overflow-y: auto;
+  `,
+  sidebar: styled.aside`
+    grid-area: sidebar;
+    min-height: 0;
+    padding: 16px;
+    overflow-y: auto;
+  `,
+};

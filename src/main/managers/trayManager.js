@@ -12,7 +12,7 @@ class TrayManager extends EventEmitter {
 
   createTray() {
     // TODO: seperate os dependant cases
-    const imagepath = path.resolve(__dirname, '../../assets/home.ico');
+    const imagepath = path.resolve(__dirname, '../../assets/home.png');
     const tray = new Tray(imagepath);
 
     const contextMenu = Menu.buildFromTemplate([

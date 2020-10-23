@@ -4,7 +4,8 @@ const squirrelStartup = require('electron-squirrel-startup');
 const { app, globalShortcut } = require('electron');
 
 if (squirrelStartup) {
-  app.quit();
+  //app.quit();
+  app.exit(0)
 }
 
 // if (true) {

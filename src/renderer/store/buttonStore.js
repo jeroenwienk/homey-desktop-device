@@ -4,7 +4,7 @@ import create from 'zustand';
 import { REND, MAIN } from '../../shared/events';
 
 export const buttonStore = create((set) => ({
-  buttons: [],
+  list: [],
   broken: [],
 }));
 
@@ -12,7 +12,7 @@ export function createButton(button) {
   ipcRenderer.send(REND.BUTTON_CREATE, button);
   buttonStore.setState((prevState) => {
     return {
-      buttons: [...prevState.buttons, button],
+      list: [...prevState.list, button],
     };
   });
 }
@@ -20,12 +20,12 @@ export function createButton(button) {
 export function editButton(button) {
   ipcRenderer.send(REND.BUTTON_UPDATE, button);
   buttonStore.setState((prevState) => {
-    const nextButtons = prevState.buttons.filter(
+    const nextButtons = prevState.list.filter(
       (prevButton) => prevButton.id !== button.id
     );
 
     return {
-      buttons: [...nextButtons, button],
+      list: [...nextButtons, button],
     };
   });
 }
@@ -33,19 +33,19 @@ export function editButton(button) {
 export function removeButton(button) {
   ipcRenderer.send(REND.BUTTON_REMOVE, button);
   buttonStore.setState((prevState) => {
-    const nextButtons = prevState.buttons.filter(
+    const nextButtons = prevState.list.filter(
       (prevButton) => prevButton.id !== button.id
     );
 
     return {
-      buttons: [...nextButtons],
+      list: [...nextButtons],
     };
   });
 }
 
 export function initButtons(buttons) {
   buttonStore.setState({
-    buttons: buttons,
+    list: buttons,
   });
 }
 
@@ -62,3 +62,9 @@ ipcRenderer.on(MAIN.BUTTONS_INIT, (event, data) => {
 ipcRenderer.on(MAIN.BUTTONS_BROKEN, (event, data) => {
   initBroken(data);
 });
+
+const selectList = (state) => state.list;
+
+export function useButtonList() {
+  return buttonStore(selectList);
+}

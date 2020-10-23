@@ -14,7 +14,7 @@ import { VAR, VARIABLES } from '../../theme/GlobalStyles';
 
 import { Add } from './IconButton';
 
-export const MenuButtonItem = Item;
+MenuButton.Item = Item;
 
 export function MenuButton(props) {
   const menuTriggerRef = React.useRef();

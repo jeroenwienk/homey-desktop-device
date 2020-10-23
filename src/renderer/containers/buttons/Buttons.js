@@ -6,63 +6,63 @@ import { Route } from 'react-router';
 import { history } from '../../memoryHistory';
 import { REND } from '../../../shared/events';
 
-import { buttonStore } from '../../store/buttonStore';
+import { useButtonList } from '../../store/buttonStore';
 
 import { ButtonDialog } from './ButtonDialog';
 import { ButtonEntry } from './ButtonEntry';
 import { Heading } from '../../components/common/Heading';
 
 export function Buttons() {
-  const buttons = buttonStore((state) => state.buttons);
+  const buttonList = useButtonList();
 
   return (
-    <Container>
+    <buttons.root>
       <Route
         exact
         path="/button"
         render={(routeProps) => {
-          return <ButtonDialog {...routeProps} buttons={buttons} />;
+          return <ButtonDialog {...routeProps} buttonList={buttonList} />;
         }}
       />
 
-      <ButtonSection>
+      <buttons.section>
         <Heading>Buttons</Heading>
-        <ButtonList>
-          {buttons.map((button) => {
+        <buttons.list>
+          {buttonList.map((buttonEntry) => {
             return (
               <ButtonEntry
-                key={button.id}
-                id={button.id}
-                button={button}
-                onPress={(event) => {
-                  ipcRenderer.send(REND.BUTTON_RUN, { id: event.target.id });
+                key={buttonEntry.id}
+                id={buttonEntry.id}
+                button={buttonEntry}
+                onPress={() => {
+                  ipcRenderer.send(REND.BUTTON_RUN, { id: buttonEntry.id });
                 }}
-                onContextMenu={(event) => {
-                  history.push(`/button?id=${event.currentTarget.id}`);
+                onContextMenu={() => {
+                  history.push(`/button?id=${buttonEntry.id}`);
                 }}
               />
             );
           })}
-        </ButtonList>
-      </ButtonSection>
-    </Container>
+        </buttons.list>
+      </buttons.section>
+    </buttons.root>
   );
 }
 
-const Container = styled.div`
-  display: flex;
-  align-items: flex-start;
-  gap: 32px;
-`;
-
-const ButtonSection = styled.div`
-  flex: 1 1 auto;
-`;
-
-const ButtonList = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 16px;
-  margin: 16px 0 0;
-`;
+const buttons = {
+  root: styled.div`
+    display: flex;
+    align-items: flex-start;
+    gap: 32px;
+  `,
+  section: styled.div`
+    flex: 1 1 auto;
+  `,
+  list: styled.div`
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px;
+    margin: 16px 0 0;
+  `,
+};

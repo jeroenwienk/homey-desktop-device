@@ -4,20 +4,20 @@ import create from 'zustand';
 import { MAIN } from '../../shared/events';
 
 export const historyStore = create((set) => ({
-  history: [],
+  list: [],
 }));
 
 export function pushHistory(entry) {
   historyStore.setState((prevState) => {
     return {
-      history: [entry, ...prevState.history],
+      list: [entry, ...prevState.list],
     };
   });
 }
 
 export function initHistory(history) {
   historyStore.setState({
-    history: history,
+    list: history,
   });
 }
 
@@ -28,3 +28,9 @@ ipcRenderer.on(MAIN.HISTORY_PUSH, (event, data) => {
 ipcRenderer.on(MAIN.HISTORY_INIT, (event, data) => {
   initHistory(data);
 });
+
+const selectList = (state) => state.list;
+
+export function useHistoryList() {
+  return historyStore(selectList);
+}

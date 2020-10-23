@@ -47,7 +47,7 @@ export function ButtonDialog(props) {
         <ButtonForm
           formId={formId}
           editId={editId}
-          buttons={props.buttons}
+          buttonList={props.buttonList}
           onSubmit={handleClose}
         />
       </DialogContent>
@@ -71,12 +71,12 @@ function ButtonForm(props) {
 
   useEffect(() => {
     if (props.editId !== 'create') {
-      const button = props.buttons.find((button) => {
+      const button = props.buttonList.find((button) => {
         return button.id === props.editId;
       });
       reset(button);
     }
-  }, [props.editId, props.buttons]);
+  }, [props.editId, props.buttonList]);
 
   return (
     <EditForm id={props.formId} key={props.editId}>
