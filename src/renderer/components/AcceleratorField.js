@@ -9,7 +9,7 @@ import { VAR, VARIABLES } from '../theme/GlobalStyles';
 
 import { Clear } from './common/IconButton';
 
-const order = ['Control', 'Command', 'Super', 'Alt', 'Shift'];
+const order = ['Control', 'Command', 'Super', 'Alt', 'AltGr', 'Shift'];
 
 function keyCompare(a, b) {
   if (order.indexOf(a) === -1) return 1;
@@ -40,6 +40,7 @@ export function AcceleratorField(props) {
   const keyboard = useKeyboard({
     onKeyDown: (event) => {
       let key = event.key.length === 1 ? event.key.toUpperCase() : event.key;
+      const code = event.code;
 
       if (key === 'Tab' || key === 'Escape') {
         event.continuePropagation();
@@ -52,6 +53,14 @@ export function AcceleratorField(props) {
 
       if (key === 'AltGraph') {
         key = 'AltGr';
+      }
+
+      if (key.startsWith('Arrow')) {
+        key = key.substring(5);
+      }
+
+      if (code.startsWith('Numpad')) {
+        key = `num${code.substring(6, 9).toLowerCase()}`;
       }
 
       setState((prevState) => {
