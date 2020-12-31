@@ -5,7 +5,7 @@ import { mergeProps } from '@react-aria/utils';
 import { useButton } from '@react-aria/button';
 import { useFocusRing } from '@react-aria/focus';
 
-import { VAR, VARIABLES } from '../../theme/GlobalStyles';
+import { vars } from '../../theme/GlobalStyles';
 
 import { ButtonBase } from './ButtonBase';
 
@@ -15,8 +15,8 @@ export function Button(props) {
   const focusRing = useFocusRing();
 
   const backgroundColor = focusRing.isFocusVisible
-    ? VAR(VARIABLES.COLOR_FOCUS)
-    : VAR(VARIABLES.COLOR_BACKGROUND_BUTTON);
+    ? vars.color_focus
+    : vars.color_background_button;
 
   return (
     <Base

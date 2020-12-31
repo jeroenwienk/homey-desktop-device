@@ -5,7 +5,7 @@ import { mergeProps } from '@react-aria/utils';
 import { useButton } from '@react-aria/button';
 import { useFocusRing } from '@react-aria/focus';
 
-import { VARIABLES, VAR } from '../../theme/GlobalStyles';
+import { vars } from '../../theme/GlobalStyles';
 import { mergeRefs } from '../../lib/mergeRefs';
 
 export const AcceleratorEntry = forwardRef(function (props, forwardedRef) {
@@ -38,9 +38,9 @@ const ButtonBase = styled.button`
   padding: 8px;
   cursor: pointer;
   border-radius: 10px;
-  background-color: ${VAR(VARIABLES.COLOR_BACKGROUND_BUTTON)};
-  color: ${VAR(VARIABLES.COLOR_PRIMARY_TEXT_ACCENT)};
-  box-shadow: ${VAR(VARIABLES.BOX_SHADOW_DEFAULT)};
+  background-color: ${vars.color_background_button};
+  color: ${vars.color_primary_text_accent};
+  box-shadow: ${vars.box_shadow_default};
 
   &:active {
     transform: scale(0.95);
@@ -54,8 +54,8 @@ const ButtonBase = styled.button`
     right: 0;
     left: 0;
     bottom: 0;
-    border: 2px solid ${VAR(VARIABLES.COLOR_FOCUS)};
-    background-color: ${VAR(VARIABLES.COLOR_FOCUS_ACCENT)};
+    border: 2px solid ${vars.color_focus};
+    background-color: ${vars.color_focus_accent};
     border-radius: 10px;
   }
 

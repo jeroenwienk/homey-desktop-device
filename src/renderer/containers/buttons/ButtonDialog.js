@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { v4 as uuid } from 'uuid';
 
@@ -12,7 +12,7 @@ import {
   removeButton,
 } from '../../store/buttonStore';
 
-import { VAR, VARIABLES } from '../../theme/GlobalStyles';
+import { vars } from '../../theme/GlobalStyles';
 
 import { DialogBase } from '../../components/common/DialogBase';
 import { Cancel, Remove } from '../../components/common/IconButton';
@@ -108,9 +108,9 @@ const DialogContent = styled.div`
   flex-direction: column;
   padding: 16px;
   gap: 16px;
-  background-color: ${VAR(VARIABLES.COLOR_BACKGROUND_DIALOG)};
+  background-color: ${vars.color_background_dialog};
   border-radius: 3px;
-  box-shadow: ${VAR(VARIABLES.BOX_SHADOW_DIALOG)};
+  box-shadow: ${vars.box_shadow_dialog};
 `;
 
 const Actions = styled.div`

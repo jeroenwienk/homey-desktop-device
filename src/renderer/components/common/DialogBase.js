@@ -11,7 +11,7 @@ import {
 import { FocusScope } from '@react-aria/focus';
 import { useDialog } from '@react-aria/dialog';
 
-import { VAR, VARIABLES } from '../../theme/GlobalStyles';
+import { vars } from '../../theme/GlobalStyles';
 
 export function DialogBase(props) {
   const overlayRef = useRef();
@@ -56,14 +56,14 @@ export function DialogBase(props) {
 const Overlay = styled.div`
   display: flex;
   position: fixed;
-  z-index: ${VAR(VARIABLES.Z_INDEX_OVERLAY)};
+  z-index: ${vars.z_index_overlay};
   top: 0;
   right: 0;
   bottom: 0;
   left: 0;
   align-items: center;
   justify-content: center;
-  background: ${VAR(VARIABLES.COLOR_BACKGROUND_OVERLAY)};
+  background: ${vars.color_background_overlay};
 `;
 
 const ContentContainer = styled.div`

@@ -21,7 +21,8 @@
     "forge": {
       "packagerConfig": {
         "asar": true,
-        "icon": "./src/assets/home.png"
+        "icon": "./src/assets/home.png",
+        "executeableName": "homey-desktop"
       },
       "makers": [
         {

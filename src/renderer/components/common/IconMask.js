@@ -1,7 +1,7 @@
 import React, { forwardRef } from 'react';
 import styled from 'styled-components';
 
-import { VAR, VARIABLES } from '../../theme/GlobalStyles';
+import { vars } from '../../theme/GlobalStyles';
 
 import add from '../../../assets/actions/add.svg';
 import save from '../../../assets/actions/save.svg';
@@ -24,8 +24,7 @@ export const IconMask = styled.div`
   mask-repeat: no-repeat;
   width: ${(props) => props.size ?? 48}px;
   height: ${(props) => props.size ?? 48}px;
-  background-color: ${(props) =>
-    props.color ?? VAR(VARIABLES.COLOR_ICON_LIGHT)};
+  background-color: ${(props) => props.color ?? vars.color_icon_light};
 `;
 
 export const AddIcon = forwardRef((props, forwardedRef) => (

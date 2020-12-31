@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import { VAR, VARIABLES } from '../theme/GlobalStyles';
+import { vars } from '../theme/GlobalStyles';
 
 import { useConnectionList } from '../store/connectionStore';
 
@@ -38,7 +38,7 @@ const connections = {
     font-size: 22px;
     line-height: 22px;
     margin-left: 24px;
-    color: ${VAR(VARIABLES.COLOR_PRIMARY_TEXT)};
+    color: ${vars.color_primary_text};
 
     &:before {
       content: '';
@@ -49,9 +49,7 @@ const connections = {
       width: 16px;
       height: 16px;
       background-color: ${(props) =>
-        props.connected
-          ? VAR(VARIABLES.COLOR_GREEN)
-          : VAR(VARIABLES.COLOR_RED)};
+        props.connected ? vars.color_green : vars.color_red};
       border-radius: 50%;
     }
   `,

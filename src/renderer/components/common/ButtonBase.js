@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-import { VARIABLES, VAR } from '../../theme/GlobalStyles';
+import { vars } from '../../theme/GlobalStyles';
 
 export const ButtonBase = styled.button`
   display: inline-flex;
@@ -11,8 +11,8 @@ export const ButtonBase = styled.button`
   background-color: transparent;
   color: ${(props) =>
     props.isFocusVisible
-      ? VAR(VARIABLES.COLOR_PRIMARY_TEXT)
-      : VAR(VARIABLES.COLOR_PRIMARY_TEXT_ACCENT)};
+      ? vars.color_primary_text
+      : vars.color_primary_text_accent};
   font-weight: 700;
   line-height: 22px;
 
@@ -24,7 +24,7 @@ export const ButtonBase = styled.button`
     bottom: 0;
     left: 0;
     border-radius: 3px;
-    background-color: ${VAR(VARIABLES.COLOR_HOVER)};
+    background-color: ${vars.color_hover};
   }
 
   &:active:after {
@@ -35,6 +35,6 @@ export const ButtonBase = styled.button`
     bottom: 0;
     left: 0;
     border-radius: 3px;
-    background-color: ${VAR(VARIABLES.COLOR_ACTIVE)};
+    background-color: ${vars.color_active};
   }
 `;

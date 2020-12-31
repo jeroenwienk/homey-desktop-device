@@ -5,7 +5,7 @@ import { useLabel } from '@react-aria/label';
 import { useKeyboard } from '@react-aria/interactions';
 
 import { mergeRefs } from '../lib/mergeRefs';
-import { VAR, VARIABLES } from '../theme/GlobalStyles';
+import { vars } from '../theme/GlobalStyles';
 
 import { Clear } from './common/IconButton';
 
@@ -129,7 +129,7 @@ const LabelContainer = styled.div`
 `;
 
 const Label = styled.label`
-  color: ${VAR(VARIABLES.COLOR_PRIMARY_TEXT)};
+  color: ${vars.color_primary_text};
   font-weight: 500;
 `;
 
@@ -139,13 +139,13 @@ const Input = styled.input`
   min-width: 256px;
   height: 48px;
   padding: 8px;
-  color: ${VAR(VARIABLES.COLOR_PRIMARY_TEXT)};
-  background-color: ${VAR(VARIABLES.COLOR_BACKGROUND_INPUT)};
-  border: 1px solid ${VAR(VARIABLES.COLOR_BACKGROUND_INPUT)};
+  color: ${vars.color_primary_text};
+  background-color: ${vars.color_background_input};
+  border: 1px solid ${vars.color_background_input};
   border-radius: 3px;
-  outline: ${(props) => props.hasError && VAR(VARIABLES.BORDER_ERROR)};
+  outline: ${(props) => props.hasError && vars.border_error};
 
   &:focus {
-    outline: ${VAR(VARIABLES.BORDER_FOCUS)};
+    outline: ${vars.border_focus};
   }
 `;

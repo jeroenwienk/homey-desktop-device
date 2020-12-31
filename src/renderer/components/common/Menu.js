@@ -10,7 +10,7 @@ import { FocusScope } from '@react-aria/focus';
 import { useFocus } from '@react-aria/interactions';
 import { useOverlay, DismissButton } from '@react-aria/overlays';
 
-import { VAR, VARIABLES } from '../../theme/GlobalStyles';
+import { vars } from '../../theme/GlobalStyles';
 
 import { Add } from './IconButton';
 
@@ -141,9 +141,9 @@ const MenuPopupOverlay = styled.div`
   position: absolute;
   left: 24px;
   top: 48px;
-  background-color: ${VAR(VARIABLES.COLOR_BACKGROUND_PANEL)};
+  background-color: ${vars.color_background_panel};
   border-radius: 3px;
-  box-shadow: ${VAR(VARIABLES.BOX_SHADOW_DEFAULT)};
+  box-shadow: ${vars.box_shadow_default};
 `;
 
 const MenuList = styled.ul`
@@ -159,11 +159,9 @@ const MenuItemListItem = styled.li`
   font-weight: 500;
   cursor: pointer;
   color: ${(props) =>
-    props.isFocused
-      ? VAR(VARIABLES.COLOR_FOCUS)
-      : VAR(VARIABLES.COLOR_PRIMARY_TEXT)};
+    props.isFocused ? vars.color_focus : vars.color_primary_text};
 
   &:hover {
-    background-color: ${VAR(VARIABLES.COLOR_HOVER)};
+    background-color: ${vars.color_hover};
   }
 `;

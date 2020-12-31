@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 import { buttonStore } from '../store/buttonStore';
 import { acceleratorStore } from '../store/acceleratorStore';
-import { VARIABLES, VAR } from '../theme/GlobalStyles';
+import { vars } from '../theme/GlobalStyles';
 
 import { WarningIcon, ErrorIcon } from '../components/common/IconMask';
 
@@ -17,7 +17,7 @@ export function Broken() {
         if (!brokenButton.button) {
           return (
             <BrokenEntry key={brokenButton.flow.id}>
-              <ErrorIcon color={VAR(VARIABLES.COLOR_RED)}/>
+              <ErrorIcon color={vars.color_red} />
               <div>
                 <div>
                   <strong>Flow: </strong>
@@ -33,7 +33,7 @@ export function Broken() {
 
         return (
           <BrokenEntry key={brokenButton.flow.id}>
-            <WarningIcon color={VAR(VARIABLES.COLOR_YELLOW)} />
+            <WarningIcon color={vars.color_yellow} />
             <div>
               <div>
                 <strong>Flow: </strong>
@@ -52,7 +52,7 @@ export function Broken() {
         if (!brokenAccelerator.accelerator) {
           return (
             <BrokenEntry key={brokenAccelerator.flow.id}>
-              <ErrorIcon color={VAR(VARIABLES.COLOR_RED)} />
+              <ErrorIcon color={vars.color_red} />
               <div>
                 <div>
                   <strong>Flow: </strong>
@@ -68,7 +68,7 @@ export function Broken() {
 
         return (
           <BrokenEntry key={brokenAccelerator.flow.id}>
-            <WarningIcon color={VAR(VARIABLES.COLOR_YELLOW)} />
+            <WarningIcon color={vars.color_yellow} />
             <div>
               <div>
                 <strong>Flow: </strong>
@@ -157,18 +157,18 @@ const BrokenEntry = styled.div`
   align-items: center;
   padding: 16px;
   gap: 16px;
-  background-color: ${VAR(VARIABLES.COLOR_BACKGROUND_PANEL)};
-  color: ${VAR(VARIABLES.COLOR_PRIMARY_TEXT)};
-  box-shadow: ${VAR(VARIABLES.BOX_SHADOW_DEFAULT)};
+  background-color: ${vars.color_background_panel};
+  color: ${vars.color_primary_text};
+  box-shadow: ${vars.box_shadow_default};
   border-radius: 3px;
   line-height: 22px;
 `;
 
 const Message = styled.div`
-  color: ${VAR(VARIABLES.COLOR_PRIMARY_TEXT_ACCENT)};
+  color: ${vars.color_primary_text_accent};
 `;
 
 const Argument = styled.div`
   display: inline-block;
-  color: ${VAR(VARIABLES.COLOR_PRIMARY_TEXT_ACCENT)};
+  color: ${vars.color_primary_text_accent};
 `;

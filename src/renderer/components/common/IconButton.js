@@ -5,7 +5,7 @@ import { useFocusRing } from '@react-aria/focus';
 import { mergeProps } from '@react-aria/utils';
 
 import { mergeRefs } from '../../lib/mergeRefs';
-import { VAR, VARIABLES } from '../../theme/GlobalStyles';
+import { vars } from '../../theme/GlobalStyles';
 
 import { ButtonBase } from './ButtonBase';
 import {
@@ -22,9 +22,7 @@ export const IconButton = forwardRef((props, forwardedRef) => {
   const button = useButton(props);
   const focusRing = useFocusRing();
 
-  const color = focusRing.isFocusVisible
-    ? VAR(VARIABLES.COLOR_FOCUS)
-    : props.color;
+  const color = focusRing.isFocusVisible ? vars.color_focus : props.color;
 
   return (
     <ButtonBase

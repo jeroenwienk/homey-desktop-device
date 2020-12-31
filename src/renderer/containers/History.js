@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import { VARIABLES, VAR } from '../theme/GlobalStyles';
+import { vars } from '../theme/GlobalStyles';
 import { useHistoryList } from '../store/historyStore';
 
 import { BrowserIcon, PathIcon } from '../components/common/IconMask';
@@ -30,10 +30,7 @@ export function History() {
         return (
           <history.entry key={index}>
             <div>
-              <IconComponent
-                size={24}
-                color={VAR(VARIABLES.COLOR_PRIMARY_TEXT_ACCENT)}
-              />
+              <IconComponent size={24} color={vars.color_primary_text_accent} />
             </div>
             <div>
               <history.argument>{historyEntry.argument}</history.argument>
@@ -71,17 +68,17 @@ const history = {
     align-items: center;
     gap: 16px;
     padding: 16px 32px;
-    background-color: ${VAR(VARIABLES.COLOR_BACKGROUND_PANEL)};
-    box-shadow: ${VAR(VARIABLES.BOX_SHADOW_DEFAULT)};
+    background-color: ${vars.color_background_panel};
+    box-shadow: ${vars.box_shadow_default};
     word-break: break-all;
     overflow: hidden;
     border-radius: 3px;
   `,
   argument: styled.div`
-    color: ${VAR(VARIABLES.COLOR_PRIMARY_TEXT)};
+    color: ${vars.color_primary_text};
   `,
   time: styled.div`
-    color: ${VAR(VARIABLES.COLOR_PRIMARY_TEXT_ACCENT)};
+    color: ${vars.color_primary_text_accent};
     font-weight: 500;
     margin-top: 8px;
   `,

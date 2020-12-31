@@ -4,7 +4,7 @@ import { ipcRenderer } from 'electron';
 
 import { history } from './memoryHistory';
 import { REND } from '../shared/events';
-import { VAR, VARIABLES } from './theme/GlobalStyles';
+import { vars } from './theme/GlobalStyles';
 
 import { Connections } from './containers/Connections';
 import { History } from './containers/History';
@@ -66,9 +66,9 @@ const sc = {
     grid-area: header;
     min-height: 0;
     padding: 0 8px;
-    z-index: ${VAR(VARIABLES.Z_INDEX_HEADER)};
-    background-color: ${VAR(VARIABLES.COLOR_BACKGROUND_PANEL)};
-    box-shadow: ${VAR(VARIABLES.BOX_SHADOW_HEADER)};
+    z-index: ${vars.z_index_header};
+    background-color: ${vars.color_background_panel};
+    box-shadow: ${vars.box_shadow_header};
   `,
   main: styled.main`
     grid-area: main;
