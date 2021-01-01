@@ -1,7 +1,7 @@
 const { shell, Notification } = require('electron');
 const http = require('http');
 const { exec } = require('child_process');
-const Server = require('socket.io');
+const { Server } = require('socket.io');
 const db = require('./db');
 const windowManager = require('../managers/windowManager');
 
@@ -17,16 +17,10 @@ class ServerSocket {
       pingTimeout: 5000,
       pingInterval: 25000,
       upgradeTimeout: 10000,
-      maxHttpBufferSize: 10e7,
+      maxHttpBufferSize: 10e7
     };
 
     this.io = new Server(this.httpServer, this.options);
-
-    this.io.use((socket, next) => {
-      let handshake = socket.handshake;
-      console.log('handshake:', handshake);
-      next();
-    });
 
     this.io.on('connect', this.handleConnect.bind(this));
 
@@ -109,7 +103,7 @@ class ServerSocket {
       const historyEntry = await db.insertHistoryEntry({
         name: 'browser:open',
         argument: data.url,
-        date: new Date(),
+        date: new Date()
       });
 
       windowManager.send(MAIN.HISTORY_PUSH, historyEntry);
@@ -126,7 +120,7 @@ class ServerSocket {
       const historyEntry = await db.insertHistoryEntry({
         name: 'path:open',
         argument: data.path,
-        date: new Date(),
+        date: new Date()
       });
 
       windowManager.send(MAIN.HISTORY_PUSH, historyEntry);
@@ -143,7 +137,7 @@ class ServerSocket {
       const notification = new Notification({
         title: data.title != null ? data.title : 'Homey Desktop',
         body: data.body,
-        silent: data.silent === 'true',
+        silent: data.silent === 'true'
       });
       notification.show();
       callback();
@@ -159,7 +153,7 @@ class ServerSocket {
           data.command,
           {
             timeout: data.timeout == null ? 0 : data.timeout,
-            cwd: data.cwd == null ? '/' : data.cwd,
+            cwd: data.cwd == null ? '/' : data.cwd
           },
           (error, stdout, stderr) => {
             if (error) {
@@ -213,7 +207,7 @@ class ServerSocket {
   }
 
   getConnected() {
-    return Object.values(this.io.sockets.connected);
+    return [...this.io.sockets.sockets.values()];
   }
 
   getConnections() {
@@ -223,7 +217,7 @@ class ServerSocket {
         socketId: socket.id,
         cloudId: socket.handshake.query.cloudId,
         name: socket.handshake.query.name,
-        connected: socket.connected,
+        connected: socket.connected
       };
     });
   }
