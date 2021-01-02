@@ -15,13 +15,13 @@ export function Accelerators() {
   const accelerators = acceleratorStore((state) => state.accelerators);
 
   return (
-    <sc.root>
+    <sc.container>
       <Route
         exact
         path="/accelerator"
         render={(routeProps) => {
           return (
-            <AcceleratorDialog {...routeProps} accelerators={accelerators}/>
+            <AcceleratorDialog {...routeProps} accelerators={accelerators} />
           );
         }}
       />
@@ -37,7 +37,7 @@ export function Accelerators() {
                 accelerator={accelerator}
                 onPress={(event) => {
                   ipcRenderer.send(REND.ACCELERATOR_RUN, {
-                    id: event.target.id
+                    id: event.target.id,
                   });
                 }}
                 onContextMenu={(event) => {
@@ -48,12 +48,12 @@ export function Accelerators() {
           })}
         </sc.grid>
       </sc.section>
-    </sc.root>
+    </sc.container>
   );
 }
 
 const sc = {
-  root: styled.div`
+  container: styled.div`
     display: flex;
     align-items: flex-start;
     gap: 32px;
@@ -86,5 +86,5 @@ const sc = {
     @media only screen and (min-width: 1840px) {
       grid-template-columns: repeat(8, 1fr);
     }
-  `
+  `,
 };

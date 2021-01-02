@@ -9,23 +9,23 @@ export function Connections() {
   const connectionList = useConnectionList();
 
   return (
-    <connections.list>
+    <sc.list>
       {connectionList.map((connectionEntry) => {
         return (
-          <connections.entry
+          <sc.entry
             key={connectionEntry.id}
             title={connectionEntry.cloudId}
             connected={connectionEntry.connected}
           >
             {connectionEntry.name}
-          </connections.entry>
+          </sc.entry>
         );
       })}
-    </connections.list>
+    </sc.list>
   );
 }
 
-const connections = {
+const sc = {
   list: styled.div`
     display: flex;
     align-items: center;

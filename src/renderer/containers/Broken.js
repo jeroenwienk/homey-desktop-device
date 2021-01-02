@@ -12,27 +12,27 @@ export function Broken() {
   const brokenAccelerators = acceleratorStore((state) => state.broken);
 
   return (
-    <Container>
+    <sc.container>
       {brokenButtons.map((brokenButton) => {
         if (!brokenButton.button) {
           return (
-            <BrokenEntry key={brokenButton.flow.id}>
+            <sc.brokenEntry key={brokenButton.flow.id}>
               <ErrorIcon color={vars.color_red} />
               <div>
                 <div>
                   <strong>Flow: </strong>
                   {brokenButton.flow.name}
                 </div>
-                <Message>
+                <sc.message>
                   The Flow is broken because the button no longer exists.
-                </Message>
+                </sc.message>
               </div>
-            </BrokenEntry>
+            </sc.brokenEntry>
           );
         }
 
         return (
-          <BrokenEntry key={brokenButton.flow.id}>
+          <sc.brokenEntry key={brokenButton.flow.id}>
             <WarningIcon color={vars.color_yellow} />
             <div>
               <div>
@@ -40,34 +40,34 @@ export function Broken() {
                 {brokenButton.flow.name}
               </div>
               <div>{parseBrokenButton(brokenButton)}</div>
-              <Message>
+              <sc.message>
                 The Flow isn't broken but it's arguments no longer match. Update
                 and save the Flow.
-              </Message>
+              </sc.message>
             </div>
-          </BrokenEntry>
+          </sc.brokenEntry>
         );
       })}
       {brokenAccelerators.map((brokenAccelerator) => {
         if (!brokenAccelerator.accelerator) {
           return (
-            <BrokenEntry key={brokenAccelerator.flow.id}>
+            <sc.brokenEntry key={brokenAccelerator.flow.id}>
               <ErrorIcon color={vars.color_red} />
               <div>
                 <div>
                   <strong>Flow: </strong>
                   {brokenAccelerator.flow.name}
                 </div>
-                <Message>
+                <sc.message>
                   The Flow is broken because the shortcut no longer exists.
-                </Message>
+                </sc.message>
               </div>
-            </BrokenEntry>
+            </sc.brokenEntry>
           );
         }
 
         return (
-          <BrokenEntry key={brokenAccelerator.flow.id}>
+          <sc.brokenEntry key={brokenAccelerator.flow.id}>
             <WarningIcon color={vars.color_yellow} />
             <div>
               <div>
@@ -75,15 +75,15 @@ export function Broken() {
                 {brokenAccelerator.flow.name}
               </div>
               <div>{parseBrokenAccelerator(brokenAccelerator)}</div>
-              <Message>
+              <sc.message>
                 The Flow isn't broken but it's arguments no longer match. Update
                 and save the Flow.
-              </Message>
+              </sc.message>
             </div>
-          </BrokenEntry>
+          </sc.brokenEntry>
         );
       })}
-    </Container>
+    </sc.container>
   );
 }
 
@@ -113,8 +113,8 @@ function parseBrokenButton(brokenButton) {
     return (
       <div key={index}>
         <strong>{entry.name}:</strong> expected{' '}
-        <Argument>{entry.expected}</Argument> actual{' '}
-        <Argument>{entry.actual}</Argument>
+        <sc.argument>{entry.expected}</sc.argument> actual{' '}
+        <sc.argument>{entry.actual}</sc.argument>
       </div>
     );
   });
@@ -138,37 +138,36 @@ function parseBrokenAccelerator(brokenAccelerator) {
     return (
       <div key={index}>
         <strong>{entry.name}:</strong> expected{' '}
-        <Argument>{entry.expected}</Argument> actual{' '}
-        <Argument>{entry.actual}</Argument>
+        <sc.argument>{entry.expected}</sc.argument> actual{' '}
+        <sc.argument>{entry.actual}</sc.argument>
       </div>
     );
   });
 }
 
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  flex-wrap: wrap;
-  gap: 16px;
-`;
-
-const BrokenEntry = styled.div`
-  display: flex;
-  align-items: center;
-  padding: 16px;
-  gap: 16px;
-  background-color: ${vars.color_background_panel};
-  color: ${vars.color_primary_text};
-  box-shadow: ${vars.box_shadow_default};
-  border-radius: 3px;
-  line-height: 22px;
-`;
-
-const Message = styled.div`
-  color: ${vars.color_primary_text_accent};
-`;
-
-const Argument = styled.div`
-  display: inline-block;
-  color: ${vars.color_primary_text_accent};
-`;
+const sc = {
+  container: styled.div`
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    gap: 16px;
+  `,
+  brokenEntry: styled.div`
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    gap: 16px;
+    background-color: ${vars.color_background_panel};
+    color: ${vars.color_primary_text};
+    box-shadow: ${vars.box_shadow_default};
+    border-radius: 3px;
+    line-height: 22px;
+  `,
+  message: styled.div`
+    color: ${vars.color_primary_text_accent};
+  `,
+  argument: styled.div`
+    display: inline-block;
+    color: ${vars.color_primary_text_accent};
+  `,
+};

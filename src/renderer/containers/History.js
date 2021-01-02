@@ -14,7 +14,7 @@ const dateOptions = {
   hour: 'numeric',
   minute: 'numeric',
   second: 'numeric',
-  hourCycle: 'h23',
+  hourCycle: 'h23'
 };
 
 const dateFormatter = new Intl.DateTimeFormat('default', dateOptions);
@@ -23,25 +23,25 @@ export function History() {
   const historyList = useHistoryList();
 
   return (
-    <history.list>
+    <sc.list>
       {historyList.map((historyEntry, index) => {
         const IconComponent = getIconComponent(historyEntry.name);
 
         return (
-          <history.entry key={index}>
+          <sc.entry key={index}>
             <div>
-              <IconComponent size={24} color={vars.color_primary_text_accent} />
+              <IconComponent size={24} color={vars.color_primary_text_accent}/>
             </div>
             <div>
-              <history.argument>{historyEntry.argument}</history.argument>
-              <history.time>
+              <sc.argument>{historyEntry.argument}</sc.argument>
+              <sc.time>
                 {dateFormatter.format(historyEntry.date)}
-              </history.time>
+              </sc.time>
             </div>
-          </history.entry>
+          </sc.entry>
         );
       })}
-    </history.list>
+    </sc.list>
   );
 }
 
@@ -56,7 +56,7 @@ function getIconComponent(name) {
   }
 }
 
-const history = {
+const sc = {
   list: styled.ul`
     display: flex;
     flex-direction: column;
@@ -81,5 +81,5 @@ const history = {
     color: ${vars.color_primary_text_accent};
     font-weight: 500;
     margin-top: 8px;
-  `,
+  `
 };

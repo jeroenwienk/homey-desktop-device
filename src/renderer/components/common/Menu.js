@@ -29,7 +29,7 @@ export function MenuButton(props) {
   );
 
   return (
-    <MenuButtonContainer>
+    <sc.menuButtonContainer>
       <Add
         {...menuTrigger.menuTriggerProps}
         ref={menuTriggerRef}
@@ -45,7 +45,7 @@ export function MenuButton(props) {
           {props.children}
         </MenuPopup>
       )}
-    </MenuButtonContainer>
+    </sc.menuButtonContainer>
   );
 }
 
@@ -82,9 +82,9 @@ function MenuPopup(props) {
 
   return (
     <FocusScope restoreFocus contain>
-      <MenuPopupOverlay {...overlay.overlayProps} ref={overlayRef}>
+      <sc.menuPopupOverlay {...overlay.overlayProps} ref={overlayRef}>
         <DismissButton onDismiss={props.onClose} />
-        <MenuList
+        <sc.menuList
           {...mergeProps(menu.menuProps, props.menuTrigger.menuProps)}
           ref={menuRef}
         >
@@ -97,9 +97,9 @@ function MenuPopup(props) {
               onClose={props.onClose}
             />
           ))}
-        </MenuList>
+        </sc.menuList>
         <DismissButton onDismiss={props.onClose} />
-      </MenuPopupOverlay>
+      </sc.menuPopupOverlay>
     </FocusScope>
   );
 }
@@ -123,48 +123,47 @@ function MenuItem({ item, treeState, onAction, onClose }) {
   const focus = useFocus({ onFocusChange: setFocused });
 
   return (
-    <MenuItemListItem
+    <sc.menuListItem
       {...mergeProps(menuItem.menuItemProps, focus.focusProps)}
       ref={menuItemRef}
       isFocused={isFocused}
     >
       {item.rendered}
-    </MenuItemListItem>
+    </sc.menuListItem>
   );
 }
 
-const MenuButtonContainer = styled.div`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-`;
+const sc = {
+  menuButtonContainer: styled.div`
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  `,
+  menuPopupOverlay: styled.div`
+    position: absolute;
+    left: 24px;
+    top: 48px;
+    background-color: ${vars.color_background_panel};
+    border-radius: 3px;
+    box-shadow: ${vars.box_shadow_default};
+  `,
+  menuList: styled.ul`
+    min-width: 256px;
+  `,
+  menuListItem: styled.li`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 48px;
+    outline: 0;
+    font-weight: 500;
+    cursor: pointer;
+    color: ${(props) =>
+      props.isFocused ? vars.color_focus : vars.color_primary_text};
 
-const MenuPopupOverlay = styled.div`
-  position: absolute;
-  left: 24px;
-  top: 48px;
-  background-color: ${vars.color_background_panel};
-  border-radius: 3px;
-  box-shadow: ${vars.box_shadow_default};
-`;
-
-const MenuList = styled.ul`
-  min-width: 256px;
-`;
-
-const MenuItemListItem = styled.li`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 48px;
-  outline: 0;
-  font-weight: 500;
-  cursor: pointer;
-  color: ${(props) =>
-    props.isFocused ? vars.color_focus : vars.color_primary_text};
-
-  &:hover {
-    background-color: ${vars.color_hover};
-  }
-`;
+    &:hover {
+      background-color: ${vars.color_hover};
+    }
+  `,
+};

@@ -91,17 +91,17 @@ export function AcceleratorField(props) {
   }, [state]);
 
   return (
-    <Container>
-      <LabelContainer>
-        <Label {...label.labelProps}>{props.label}</Label>
+    <sc.container>
+      <sc.labelContainer>
+        <sc.label {...label.labelProps}>{props.label}</sc.label>
         <Clear
           size={24}
           onPress={() => {
             setState({});
           }}
         />
-      </LabelContainer>
-      <Input
+      </sc.labelContainer>
+      <sc.input
         {...label.fieldProps}
         {...keyboard.keyboardProps}
         readOnly
@@ -111,40 +111,39 @@ export function AcceleratorField(props) {
         hasError={props.error != null}
         ref={mergeRefs([acceleratorFieldRef, register])}
       />
-    </Container>
+    </sc.container>
   );
 }
 
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
+const sc = {
+  container: styled.div`
+    display: flex;
+    flex-direction: column;
+  `,
+  labelContainer: styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  `,
+  label: styled.label`
+    color: ${vars.color_primary_text};
+    font-weight: 500;
+  `,
+  input: styled.input`
+    position: relative;
+    display: block;
+    min-width: 256px;
+    height: 48px;
+    padding: 8px;
+    color: ${vars.color_primary_text};
+    background-color: ${vars.color_background_input};
+    border: 1px solid ${vars.color_background_input};
+    border-radius: 3px;
+    outline: ${(props) => props.hasError && vars.border_error};
 
-const LabelContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 8px;
-`;
-
-const Label = styled.label`
-  color: ${vars.color_primary_text};
-  font-weight: 500;
-`;
-
-const Input = styled.input`
-  position: relative;
-  display: block;
-  min-width: 256px;
-  height: 48px;
-  padding: 8px;
-  color: ${vars.color_primary_text};
-  background-color: ${vars.color_background_input};
-  border: 1px solid ${vars.color_background_input};
-  border-radius: 3px;
-  outline: ${(props) => props.hasError && vars.border_error};
-
-  &:focus {
-    outline: ${vars.border_focus};
-  }
-`;
+    &:focus {
+      outline: ${vars.border_focus};
+    }
+  `,
+};

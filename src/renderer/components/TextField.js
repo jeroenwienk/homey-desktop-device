@@ -28,37 +28,37 @@ export function TextField(props) {
   );
 
   return (
-    <Container>
-      <Label {...textField.labelProps}>{props.label}</Label>
-      <Input
+    <sc.container>
+      <sc.label {...textField.labelProps}>{props.label}</sc.label>
+      <sc.input
         {...textField.inputProps}
         hasError={props.error != null}
         ref={mergeRefs([textFieldRef, register])}
       />
-    </Container>
+    </sc.container>
   );
 }
 
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const Label = styled.label`
-  margin-bottom: 8px;
-  color: ${vars.color_primary_text};
-  font-weight: 500;
-`;
-
-const Input = styled.input`
-  position: relative;
-  display: block;
-  min-width: 256px;
-  height: 48px;
-  padding: 8px;
-  color: ${vars.color_primary_text};
-  background-color: ${vars.color_background_input};
-  border: 1px solid ${vars.color_background_input};
-  border-radius: 3px;
-  outline: ${(props) => props.hasError && vars.border_error};
-`;
+const sc = {
+  container: styled.div`
+    display: flex;
+    flex-direction: column;
+  `,
+  label: styled.label`
+    margin-bottom: 8px;
+    color: ${vars.color_primary_text};
+    font-weight: 500;
+  `,
+  input: styled.input`
+    position: relative;
+    display: block;
+    min-width: 256px;
+    height: 48px;
+    padding: 8px;
+    color: ${vars.color_primary_text};
+    background-color: ${vars.color_background_input};
+    border: 1px solid ${vars.color_background_input};
+    border-radius: 3px;
+    outline: ${(props) => props.hasError && vars.border_error};
+  `,
+};

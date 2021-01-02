@@ -30,8 +30,8 @@ export function ButtonDialog(props) {
 
   return (
     <DialogBase onClose={handleClose} isOpen>
-      <DialogContent>
-        <Actions>
+      <sc.dialogContent>
+        <sc.actions>
           {editId !== 'create' && (
             <Remove
               onPress={() => {
@@ -42,7 +42,7 @@ export function ButtonDialog(props) {
           )}
 
           <Cancel onPress={handleClose} />
-        </Actions>
+        </sc.actions>
 
         <ButtonForm
           formId={formId}
@@ -50,7 +50,7 @@ export function ButtonDialog(props) {
           buttonList={props.buttonList}
           onSubmit={handleClose}
         />
-      </DialogContent>
+      </sc.dialogContent>
     </DialogBase>
   );
 }
@@ -79,7 +79,7 @@ function ButtonForm(props) {
   }, [props.editId, props.buttonList]);
 
   return (
-    <EditForm id={props.formId} key={props.editId}>
+    <sc.editForm id={props.formId} key={props.editId}>
       <TextField
         autoFocus
         label="Name"
@@ -99,29 +99,29 @@ function ButtonForm(props) {
       />
 
       <Button onPress={handleSubmit(onSubmit)}>Save</Button>
-    </EditForm>
+    </sc.editForm>
   );
 }
 
-const DialogContent = styled.div`
-  display: flex;
-  flex-direction: column;
-  padding: 16px;
-  gap: 16px;
-  background-color: ${vars.color_background_dialog};
-  border-radius: 3px;
-  box-shadow: ${vars.box_shadow_dialog};
-`;
-
-const Actions = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  gap: 16px;
-`;
-
-const EditForm = styled.form`
-  display: flex;
-  flex-direction: column;
-  min-width: 512px;
-  gap: 16px;
-`;
+const sc = {
+  dialogContent: styled.div`
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+    gap: 16px;
+    background-color: ${vars.color_background_dialog};
+    border-radius: 3px;
+    box-shadow: ${vars.box_shadow_dialog};
+  `,
+  actions: styled.div`
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+  `,
+  editForm: styled.form`
+    display: flex;
+    flex-direction: column;
+    min-width: 512px;
+    gap: 16px;
+  `,
+};

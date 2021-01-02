@@ -16,7 +16,7 @@ export function Buttons() {
   const buttonList = useButtonList();
 
   return (
-    <sc.root>
+    <sc.container>
       <Route
         exact
         path="/button"
@@ -45,12 +45,12 @@ export function Buttons() {
           })}
         </sc.grid>
       </sc.section>
-    </sc.root>
+    </sc.container>
   );
 }
 
 const sc = {
-  root: styled.div`
+  container: styled.div`
     display: flex;
     align-items: flex-start;
     gap: 32px;
