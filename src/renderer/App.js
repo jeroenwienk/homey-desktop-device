@@ -22,7 +22,6 @@ export function App() {
     <sc.grid>
       <sc.header>
         <MenuButton
-          key={1}
           label="Create"
           onAction={(key) => {
             history.push(`/${key}?id=create`);

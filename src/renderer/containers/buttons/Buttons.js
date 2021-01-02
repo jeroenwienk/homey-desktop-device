@@ -16,18 +16,18 @@ export function Buttons() {
   const buttonList = useButtonList();
 
   return (
-    <buttons.root>
+    <sc.root>
       <Route
         exact
         path="/button"
         render={(routeProps) => {
-          return <ButtonDialog {...routeProps} buttonList={buttonList} />;
+          return <ButtonDialog {...routeProps} buttonList={buttonList}/>;
         }}
       />
 
-      <buttons.section>
+      <sc.section>
         <Heading>Buttons</Heading>
-        <buttons.list>
+        <sc.grid>
           {buttonList.map((buttonEntry) => {
             return (
               <ButtonEntry
@@ -43,13 +43,13 @@ export function Buttons() {
               />
             );
           })}
-        </buttons.list>
-      </buttons.section>
-    </buttons.root>
+        </sc.grid>
+      </sc.section>
+    </sc.root>
   );
 }
 
-const buttons = {
+const sc = {
   root: styled.div`
     display: flex;
     align-items: flex-start;
@@ -58,11 +58,30 @@ const buttons = {
   section: styled.div`
     flex: 1 1 auto;
   `,
-  list: styled.div`
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
+  grid: styled.div`
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
     gap: 16px;
     margin: 16px 0 0;
-  `,
+
+    @media only screen and (min-width: 720px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media only screen and (min-width: 1000px) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    @media only screen and (min-width: 1280px) {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    @media only screen and (min-width: 1560px) {
+      grid-template-columns: repeat(6, 1fr);
+    }
+
+    @media only screen and (min-width: 1840px) {
+      grid-template-columns: repeat(8, 1fr);
+    }
+  `
 };

@@ -31,8 +31,7 @@ const ButtonBase = styled.button`
   position: relative;
   flex-direction: column;
   align-items: stretch;
-  width: 128px;
-  height: 128px;
+  height: 64px;
   padding: 8px;
   cursor: pointer;
   border-radius: 10px;

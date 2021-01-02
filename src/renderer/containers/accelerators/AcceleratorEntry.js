@@ -18,7 +18,7 @@ export const AcceleratorEntry = forwardRef(function (props, forwardedRef) {
       isFocusVisible={focusRing.isFocusVisible}
       onContextMenu={props.onContextMenu}
     >
-      <div className="top" />
+      <div className="top"/>
       <div className="name" title={props.accelerator.keys}>
         {props.accelerator.keys}
       </div>
@@ -31,8 +31,7 @@ const ButtonBase = styled.button`
   position: relative;
   flex-direction: column;
   align-items: stretch;
-  width: 128px;
-  height: 128px;
+  height: 64px;
   padding: 8px;
   cursor: pointer;
   border-radius: 10px;

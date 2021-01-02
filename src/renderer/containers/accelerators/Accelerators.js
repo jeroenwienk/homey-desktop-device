@@ -15,20 +15,20 @@ export function Accelerators() {
   const accelerators = acceleratorStore((state) => state.accelerators);
 
   return (
-    <Container>
+    <sc.root>
       <Route
         exact
         path="/accelerator"
         render={(routeProps) => {
           return (
-            <AcceleratorDialog {...routeProps} accelerators={accelerators} />
+            <AcceleratorDialog {...routeProps} accelerators={accelerators}/>
           );
         }}
       />
 
-      <AcceleratorSection>
+      <sc.section>
         <Heading>Shortcuts</Heading>
-        <AcceleratorList>
+        <sc.grid>
           {accelerators.map((accelerator) => {
             return (
               <AcceleratorEntry
@@ -37,7 +37,7 @@ export function Accelerators() {
                 accelerator={accelerator}
                 onPress={(event) => {
                   ipcRenderer.send(REND.ACCELERATOR_RUN, {
-                    id: event.target.id,
+                    id: event.target.id
                   });
                 }}
                 onContextMenu={(event) => {
@@ -46,26 +46,45 @@ export function Accelerators() {
               />
             );
           })}
-        </AcceleratorList>
-      </AcceleratorSection>
-    </Container>
+        </sc.grid>
+      </sc.section>
+    </sc.root>
   );
 }
 
-const Container = styled.div`
-  display: flex;
-  align-items: flex-start;
-  gap: 32px;
-`;
+const sc = {
+  root: styled.div`
+    display: flex;
+    align-items: flex-start;
+    gap: 32px;
+  `,
+  section: styled.div`
+    flex: 1 1 auto;
+  `,
+  grid: styled.div`
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 16px;
+    margin: 16px 0 0;
 
-const AcceleratorSection = styled.div`
-  flex: 1 1 auto;
-`;
+    @media only screen and (min-width: 720px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
 
-const AcceleratorList = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 16px;
-  margin: 16px 0 0;
-`;
+    @media only screen and (min-width: 1000px) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    @media only screen and (min-width: 1280px) {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    @media only screen and (min-width: 1560px) {
+      grid-template-columns: repeat(6, 1fr);
+    }
+
+    @media only screen and (min-width: 1840px) {
+      grid-template-columns: repeat(8, 1fr);
+    }
+  `
+};
