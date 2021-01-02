@@ -1,8 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import styled from 'styled-components';
 
-import { useLabel } from '@react-aria/label';
-import { useKeyboard } from '@react-aria/interactions';
+import { useLabel, useKeyboard } from 'react-aria';
 
 import { mergeRefs } from '../lib/mergeRefs';
 import { vars } from '../theme/GlobalStyles';

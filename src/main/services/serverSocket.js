@@ -1,6 +1,7 @@
-const { shell, Notification } = require('electron');
-const http = require('http');
+const { shell, Notification, dialog } = require('electron');
+const https = require('https');
 const { exec } = require('child_process');
+const selfsigned = require('selfsigned');
 const { Server } = require('socket.io');
 const db = require('./db');
 const windowManager = require('../managers/windowManager');
@@ -10,7 +11,14 @@ const { MAIN, REND, IO_EMIT, IO_ON } = require('../../shared/events');
 class ServerSocket {
   constructor() {
     console.log('socket:constructor');
-    this.httpServer = http.createServer();
+
+    const attrs = [{ name: 'commonName', value: 'nl.jwienk.desktop' }];
+    const pems = selfsigned.generate(attrs, { days: 365 });
+
+    this.httpsServer = https.createServer({
+      key: pems.private,
+      cert: pems.cert
+    });
     this.options = {
       path: '/desktop',
       serveClient: false,
@@ -20,9 +28,35 @@ class ServerSocket {
       maxHttpBufferSize: 10e7
     };
 
-    this.io = new Server(this.httpServer, this.options);
+    this.io = new Server(this.httpsServer, this.options);
 
     this.io.on('connect', this.handleConnect.bind(this));
+
+    this.io.use((socket, next) => {
+      let handshake = socket.handshake;
+      // ...
+
+      // console.log(handshake);
+      //
+      // const res = dialog.showMessageBoxSync({
+      //   type: 'question',
+      //   buttons: ['accept', 'cancel'],
+      //   defaultId: 0,
+      //   cancelId: 1,
+      //   title: 'Accept connection',
+      //   message: handshake.query.name,
+      // });
+      //
+      // console.log(res);
+      //
+      // if (res === 0) {
+      //   next();
+      // } else {
+      //   socket.disconnect(true);
+      // }
+
+      next();
+    });
 
     windowManager.once('main-window-dom-ready', (event) => {
       this.listen();
@@ -30,8 +64,8 @@ class ServerSocket {
   }
 
   listen() {
-    if (this.httpServer.listening === false) {
-      this.httpServer.listen(3106, () => {
+    if (this.httpsServer.listening === false) {
+      this.httpsServer.listen(3106, () => {
         console.log('listening on *:3106');
       });
     }

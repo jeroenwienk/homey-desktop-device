@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import styled from 'styled-components';
 
-import { useTextField } from '@react-aria/textfield';
+import { useTextField } from 'react-aria';
 
 import { mergeRefs } from '../lib/mergeRefs';
 import { vars } from '../theme/GlobalStyles';

@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 import { Router as MemoryRouter } from 'react-router';
-import { OverlayProvider } from '@react-aria/overlays';
+import { OverlayProvider } from 'react-aria';
 
 import { history } from './memoryHistory';
 

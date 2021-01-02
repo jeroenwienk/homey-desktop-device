@@ -5,11 +5,10 @@ import {
   useOverlay,
   usePreventScroll,
   useModal,
+  useDialog,
+  FocusScope,
   OverlayContainer,
-} from '@react-aria/overlays';
-
-import { FocusScope } from '@react-aria/focus';
-import { useDialog } from '@react-aria/dialog';
+} from 'react-aria';
 
 import { vars } from '../../theme/GlobalStyles';
 

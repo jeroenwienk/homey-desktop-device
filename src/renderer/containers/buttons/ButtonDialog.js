@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { v4 as uuid } from 'uuid';
 
 import { useForm } from 'react-hook-form';
-import { useId } from '@react-aria/utils';
+import { useId } from 'react-aria';
 
 import { history } from '../../memoryHistory';
 import {

@@ -1,14 +1,17 @@
 import React, { useRef, useState } from 'react';
 import styled from 'styled-components';
 
-import { Item } from '@react-stately/collections';
-import { useTreeState } from '@react-stately/tree';
-import { useMenuTriggerState } from '@react-stately/menu';
-import { useMenuTrigger, useMenu, useMenuItem } from '@react-aria/menu';
-import { mergeProps } from '@react-aria/utils';
-import { FocusScope } from '@react-aria/focus';
-import { useFocus } from '@react-aria/interactions';
-import { useOverlay, DismissButton } from '@react-aria/overlays';
+import { Item, useTreeState, useMenuTriggerState } from 'react-stately';
+import {
+  useMenuTrigger,
+  useMenu,
+  useMenuItem,
+  useFocus,
+  useOverlay,
+  DismissButton,
+  FocusScope,
+  mergeProps,
+} from 'react-aria';
 
 import { vars } from '../../theme/GlobalStyles';
 

@@ -1,8 +1,6 @@
 import React, { forwardRef, useRef } from 'react';
 
-import { useButton } from '@react-aria/button';
-import { useFocusRing } from '@react-aria/focus';
-import { mergeProps } from '@react-aria/utils';
+import { useButton, useFocusRing, mergeProps } from 'react-aria';
 
 import { mergeRefs } from '../../lib/mergeRefs';
 import { vars } from '../../theme/GlobalStyles';
