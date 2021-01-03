@@ -95,9 +95,9 @@ class WindowManager extends EventEmitter {
     //overlayWindow.setSkipTaskbar(true);
     overlayWindow.loadURL(OVERLAY_WINDOW_WEBPACK_ENTRY);
 
-    if (process.env.NODE_ENV !== 'production') {
-      overlayWindow.webContents.openDevTools();
-    }
+    // if (process.env.NODE_ENV !== 'production') {
+    //   overlayWindow.webContents.openDevTools();
+    // }
 
     overlayWindow.on('minimize', (event) => {
       console.log('overlayWindow:minimize');

@@ -3,10 +3,13 @@ const db = require('./services/db');
 const serverSocket = require('./services/serverSocket');
 const { exec } = require('child_process');
 
-const { REND, MAIN, IO_EMIT, IO_ON } = require('../shared/events');
+const windowManager = require('./managers/windowManager');
+
+const { REND, OVERLAY, MAIN, IO_EMIT, IO_ON } = require('../shared/events');
 
 function init() {
-  ipcMain.on(REND.INIT, handleInit);
+  ipcMain.on(REND.INIT, handleRendererInit);
+  ipcMain.on(OVERLAY.INIT, handleOverlayInit);
   ipcMain.on(REND.BUTTON_CREATE, handleButtonCreate);
   ipcMain.on(REND.BUTTON_UPDATE, handleButtonUpdate);
   ipcMain.on(REND.BUTTON_REMOVE, handleButtonRemove);
@@ -15,6 +18,11 @@ function init() {
   ipcMain.on(REND.ACCELERATOR_UPDATE, handleAcceleratorUpdate);
   ipcMain.on(REND.ACCELERATOR_REMOVE, handleAcceleratorRemove);
   ipcMain.on(REND.ACCELERATOR_RUN, handleAcceleratorRun);
+
+  ipcMain.on(REND.DISPLAY_CREATE, handleDisplayCreate);
+  ipcMain.on(REND.DISPLAY_UPDATE, handleDisplayUpdate);
+  ipcMain.on(REND.DISPLAY_REMOVE, handleDisplayRemove);
+
   ipcMain.handle(REND.TEST, handleExecRunTest);
 }
 
@@ -33,7 +41,7 @@ async function handleExecRunTest(event, args) {
   });
 }
 
-async function handleInit(event, args) {
+async function handleRendererInit(event, args) {
   const history = await db.getHistory();
   const buttons = await db.getButtons();
   const accelerators = await db.getAccelerators();
@@ -49,6 +57,12 @@ async function handleInit(event, args) {
   serverSocket.getConnected().forEach((socket) => {
     serverSocket.sync(socket);
   });
+}
+
+async function handleOverlayInit(event, args) {
+  const displays = await db.getDisplays();
+
+  event.reply(MAIN.DISPLAYS_INIT, displays);
 }
 
 async function handleButtonCreate(event, args) {
@@ -164,6 +178,50 @@ function registerAccelerators(accelerators) {
     } catch (error) {
       console.log(error);
     }
+  });
+}
+
+async function handleDisplayCreate(event, args) {
+  try {
+    await db.insertDisplay(args);
+    await emitDisplaySync(event);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+async function handleDisplayUpdate(event, args) {
+  try {
+    await db.updateDisplay(args.id, args);
+    await emitDisplaySync(event);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+async function handleDisplayRemove(event, args) {
+  try {
+    await db.removeDisplay(args.id);
+    await emitDisplaySync(event);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+async function emitDisplaySync(event) {
+  const displays = await db.getDisplays();
+  windowManager.sendToOverlayWindow(MAIN.DISPLAYS_INIT, displays);
+
+  serverSocket.getConnected().forEach((socket) => {
+    socket.emit(
+      IO_EMIT.DISPLAYS_SYNC,
+      {
+        displays,
+      },
+      ({ broken }) => {
+        event.reply(MAIN.DISPLAYS_BROKEN, broken);
+      }
+    );
   });
 }
 

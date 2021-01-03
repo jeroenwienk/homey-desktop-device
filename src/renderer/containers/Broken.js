@@ -3,6 +3,7 @@ import styled from 'styled-components';
 
 import { buttonStore } from '../store/buttonStore';
 import { acceleratorStore } from '../store/acceleratorStore';
+import { displayStore } from '../store/displayStore';
 import { vars } from '../theme/GlobalStyles';
 
 import { WarningIcon, ErrorIcon } from '../components/common/IconMask';
@@ -10,6 +11,7 @@ import { WarningIcon, ErrorIcon } from '../components/common/IconMask';
 export function Broken() {
   const brokenButtons = buttonStore((state) => state.broken);
   const brokenAccelerators = acceleratorStore((state) => state.broken);
+  const brokenDisplays = displayStore((state) => state.broken);
 
   return (
     <sc.container>
@@ -48,6 +50,7 @@ export function Broken() {
           </sc.brokenEntry>
         );
       })}
+
       {brokenAccelerators.map((brokenAccelerator) => {
         if (!brokenAccelerator.accelerator) {
           return (
@@ -75,6 +78,43 @@ export function Broken() {
                 {brokenAccelerator.flow.name}
               </div>
               <div>{parseBrokenAccelerator(brokenAccelerator)}</div>
+              <sc.message>
+                The Flow isn't broken but it's arguments no longer match. Update
+                and save the Flow.
+              </sc.message>
+            </div>
+          </sc.brokenEntry>
+        );
+      })}
+
+      {brokenDisplays.map((brokenDisplay) => {
+        if (!brokenDisplay.display) {
+          return (
+            <sc.brokenEntry key={brokenDisplay.flow.id}>
+              <ErrorIcon color={vars.color_red} />
+              <div>
+                <div>
+                  <strong>Flow: </strong>
+                  {brokenDisplay.flow.name}
+                </div>
+                <sc.message>
+                  The Flow is broken because the display no longer exists.{' '}
+                  <strong>{brokenDisplay.action.args.display.name}</strong>
+                </sc.message>
+              </div>
+            </sc.brokenEntry>
+          );
+        }
+
+        return (
+          <sc.brokenEntry key={brokenDisplay.flow.id}>
+            <WarningIcon color={vars.color_yellow} />
+            <div>
+              <div>
+                <strong>Flow: </strong>
+                {brokenDisplay.flow.name}
+              </div>
+              <div>{parseBrokenDisplay(brokenDisplay)}</div>
               <sc.message>
                 The Flow isn't broken but it's arguments no longer match. Update
                 and save the Flow.
@@ -131,6 +171,40 @@ function parseBrokenAccelerator(brokenAccelerator) {
       name: 'Name',
       expected: accelerator.keys,
       actual: acceleratorArg.name,
+    });
+  }
+
+  return result.map((entry, index) => {
+    return (
+      <div key={index}>
+        <strong>{entry.name}:</strong> expected{' '}
+        <sc.argument>{entry.expected}</sc.argument> actual{' '}
+        <sc.argument>{entry.actual}</sc.argument>
+      </div>
+    );
+  });
+}
+
+function parseBrokenDisplay(brokenDisplay) {
+  // todo
+  const displayArg = brokenDisplay.action.args.display;
+  const display = brokenDisplay.display;
+
+  const result = [];
+
+  if (display.name !== displayArg.name) {
+    result.push({
+      name: 'Name',
+      expected: display.name,
+      actual: displayArg.name,
+    });
+  }
+
+  if (display.description !== displayArg.description) {
+    result.push({
+      name: 'Description',
+      expected: display.description,
+      actual: displayArg.description,
     });
   }
 

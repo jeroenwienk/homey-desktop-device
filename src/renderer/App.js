@@ -10,6 +10,7 @@ import { Connections } from './containers/Connections';
 import { History } from './containers/History';
 import { Buttons } from './containers/buttons/Buttons';
 import { Accelerators } from './containers/accelerators/Accelerators';
+import { Displays } from './containers/displays/Displays';
 import { Broken } from './containers/Broken';
 import { MenuButton } from './components/common/Menu';
 
@@ -29,12 +30,14 @@ export function App() {
         >
           <MenuButton.Item key="button">Button</MenuButton.Item>
           <MenuButton.Item key="accelerator">Shortcut</MenuButton.Item>
+          <MenuButton.Item key="display">Display</MenuButton.Item>
         </MenuButton>
         <Connections />
       </sc.header>
       <sc.main>
         <Buttons />
         <Accelerators />
+        <Displays />
         <Broken />
       </sc.main>
       <sc.sidebar>

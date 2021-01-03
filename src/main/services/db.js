@@ -5,17 +5,22 @@ class DataBase {
   constructor() {
     this.historyCollection = new DataStore({
       filename: `${app.getPath('userData')}/history`,
-      autoload: true,
+      autoload: true
     });
 
     this.buttonCollection = new DataStore({
       filename: `${app.getPath('userData')}/buttons`,
-      autoload: true,
+      autoload: true
     });
 
     this.acceleratorCollection = new DataStore({
       filename: `${app.getPath('userData')}/accelerators`,
-      autoload: true,
+      autoload: true
+    });
+
+    this.displayCollection = new DataStore({
+      filename: `${app.getPath('userData')}/displays`,
+      autoload: true
     });
   }
 
@@ -107,6 +112,42 @@ class DataBase {
   async removeAccelerator(id) {
     return new Promise((resolve, reject) => {
       this.acceleratorCollection.remove({ id }, {}, (error) => {
+        if (error) return reject(error);
+        resolve();
+      });
+    });
+  }
+
+  async getDisplays() {
+    return new Promise((resolve, reject) => {
+      this.displayCollection.find({}).exec((error, docs) => {
+        if (error) return reject(error);
+        resolve(docs);
+      });
+    });
+  }
+
+  async insertDisplay(args) {
+    return new Promise((resolve, reject) => {
+      this.displayCollection.insert(args, (error, entry) => {
+        if (error) return reject(error);
+        resolve(entry);
+      });
+    });
+  }
+
+  async updateDisplay(id, args) {
+    return new Promise((resolve, reject) => {
+      this.displayCollection.update({ id }, { $set: args }, (error) => {
+        if (error) return reject(error);
+        resolve();
+      });
+    });
+  }
+
+  async removeDisplay(id) {
+    return new Promise((resolve, reject) => {
+      this.displayCollection.remove({ id }, {}, (error) => {
         if (error) return reject(error);
         resolve();
       });

@@ -45,6 +45,13 @@ class TrayManager extends EventEmitter {
         },
       },
       {
+        label: 'Show overlay',
+        click() {
+          const overlayWindow = windowManager.getOverlayWindow();
+          overlayWindow.show();
+        },
+      },
+      {
         label: 'Quit',
         click() {
           windowManager.getMainWindow().destroy();
