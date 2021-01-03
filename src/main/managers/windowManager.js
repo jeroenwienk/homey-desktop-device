@@ -94,7 +94,7 @@ class WindowManager extends EventEmitter {
 
     //overlayWindow.setSkipTaskbar(true);
     overlayWindow.loadURL(OVERLAY_WINDOW_WEBPACK_ENTRY);
-
+    //
     // if (process.env.NODE_ENV !== 'production') {
     //   overlayWindow.webContents.openDevTools();
     // }

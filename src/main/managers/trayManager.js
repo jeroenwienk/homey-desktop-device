@@ -11,10 +11,12 @@ class TrayManager extends EventEmitter {
   }
 
   createTray() {
-    // TODO: seperate os dependant cases
+    // todo: seperate os dependant cases
     const imagepath = path.resolve(__dirname, '../../assets/home.png');
     const tray = new Tray(imagepath);
+    const overlayWindow = windowManager.getOverlayWindow();
 
+    // todo: labels arent dynamic
     const contextMenu = Menu.buildFromTemplate([
       { type: 'separator' },
       {
@@ -24,31 +26,33 @@ class TrayManager extends EventEmitter {
         },
       },
       {
-        label: 'Set overlay always on top',
+        label: overlayWindow.isAlwaysOnTop()
+          ? 'Overlay disable always on top'
+          : 'Overlay enable always on top',
         click() {
-          const overlayWindow = windowManager.getOverlayWindow();
           overlayWindow.setAlwaysOnTop(!overlayWindow.isAlwaysOnTop());
         },
       },
       {
         label: 'Disable overlay mouse',
         click() {
-          const overlayWindow = windowManager.getOverlayWindow();
           overlayWindow.setIgnoreMouseEvents(true);
         },
       },
       {
         label: 'Enable overlay mouse',
         click() {
-          const overlayWindow = windowManager.getOverlayWindow();
           overlayWindow.setIgnoreMouseEvents(false);
         },
       },
       {
-        label: 'Show overlay',
+        label: overlayWindow.isVisible() ? 'Hide overlay' : 'Show Overlay',
         click() {
-          const overlayWindow = windowManager.getOverlayWindow();
-          overlayWindow.show();
+          if (overlayWindow.isVisible()) {
+            overlayWindow.hide();
+          } else {
+            overlayWindow.show();
+          }
         },
       },
       {

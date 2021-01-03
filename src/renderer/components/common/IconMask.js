@@ -8,6 +8,7 @@ import save from '../../../assets/actions/save.svg';
 import cancel from '../../../assets/actions/cancel.svg';
 import remove from '../../../assets/actions/remove.svg';
 import clear from '../../../assets/actions/clear.svg';
+import drag from '../../../assets/actions/drag.svg';
 
 import nolink from '../../../assets/status/nolink.svg';
 import warning from '../../../assets/status/warning.svg';
@@ -65,4 +66,8 @@ export const ErrorIcon = forwardRef((props, forwardedRef) => (
 
 export const WarningIcon = forwardRef((props, forwardedRef) => (
   <IconMask {...props} ref={forwardedRef} mask={warning} />
+));
+
+export const DragIcon = forwardRef((props, forwardedRef) => (
+  <IconMask {...props} ref={forwardedRef} mask={drag} />
 ));

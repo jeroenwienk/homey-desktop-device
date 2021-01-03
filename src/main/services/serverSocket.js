@@ -133,7 +133,7 @@ class ServerSocket {
       this.sync(socket);
     });
 
-    socket.on(IO_ON.FLOW_ACCELERATOR_SAVED, (...args) => {
+    socket.on(IO_ON.FLOW_DISPLAY_SAVED, (...args) => {
       this.sync(socket);
     });
 
@@ -222,8 +222,9 @@ class ServerSocket {
     }
   }
 
-  handleDisplaySet(data, callback) {
+  async handleDisplaySet(data, callback) {
     try {
+      await db.updateDisplay(data.display.id, { text: data.text });
       windowManager.sendToOverlayWindow(MAIN.DISPLAY_SET, data);
       callback();
     } catch (error) {
