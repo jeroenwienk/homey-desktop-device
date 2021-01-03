@@ -73,11 +73,11 @@ class ServerSocket {
 
   handleConnect(socket) {
     console.log('connect:', socket.id);
-    windowManager.sendMainWindow(MAIN.SOCKETS_INIT, this.getConnections());
+    windowManager.sendToMainWindow(MAIN.SOCKETS_INIT, this.getConnections());
 
     socket.on('disconnect', (reason) => {
       console.log('disconnect:', reason);
-      windowManager.sendMainWindow(MAIN.SOCKETS_INIT, this.getConnections());
+      windowManager.sendToMainWindow(MAIN.SOCKETS_INIT, this.getConnections());
     });
 
     socket.on('disconnecting', (reason) => {
@@ -101,6 +101,10 @@ class ServerSocket {
 
     socket.on(IO_ON.COMMAND_RUN, (...args) => {
       this.handleCommand(...args);
+    });
+
+    socket.on(IO_ON.DISPLAY_SET_RUN, (...args) => {
+      this.handleDisplaySet(...args);
     });
 
     socket.on(IO_ON.BUTTON_RUN_SUCCESS, (args) => {
@@ -140,7 +144,7 @@ class ServerSocket {
         date: new Date()
       });
 
-      windowManager.sendMainWindow(MAIN.HISTORY_PUSH, historyEntry);
+      windowManager.sendToMainWindow(MAIN.HISTORY_PUSH, historyEntry);
       await shell.openExternal(data.url);
       callback();
     } catch (error) {
@@ -157,7 +161,7 @@ class ServerSocket {
         date: new Date()
       });
 
-      windowManager.sendMainWindow(MAIN.HISTORY_PUSH, historyEntry);
+      windowManager.sendToMainWindow(MAIN.HISTORY_PUSH, historyEntry);
       await shell.openPath(data.path);
       callback();
     } catch (error) {
@@ -214,17 +218,37 @@ class ServerSocket {
     }
   }
 
+  handleDisplaySet(data, callback) {
+    try {
+      windowManager.sendToOverlayWindow(MAIN.DISPLAY_SET, data);
+      callback();
+    } catch (error) {
+      callback(error);
+    }
+  }
+
   async sync(socket) {
     try {
       const buttons = await db.getButtons();
       const accelerators = await db.getAccelerators();
+      const displays = [
+        {
+          id: 1,
+          name: 'one',
+          description: 'one'
+        }
+      ];
 
       socket.emit(IO_EMIT.BUTTONS_SYNC, { buttons }, ({ broken }) => {
-        windowManager.sendMainWindow(MAIN.BUTTONS_BROKEN, broken);
+        windowManager.sendToMainWindow(MAIN.BUTTONS_BROKEN, broken);
       });
 
       socket.emit(IO_EMIT.ACCELERATORS_SYNC, { accelerators }, ({ broken }) => {
-        windowManager.sendMainWindow(MAIN.ACCELERATORS_BROKEN, broken);
+        windowManager.sendToMainWindow(MAIN.ACCELERATORS_BROKEN, broken);
+      });
+
+      socket.emit(IO_EMIT.DISPLAYS_SYNC, { displays }, ({ broken }) => {
+        //windowManager.sendMainWindow(MAIN.ACCELERATORS_BROKEN, broken);
       });
     } catch (error) {
       console.error(error);

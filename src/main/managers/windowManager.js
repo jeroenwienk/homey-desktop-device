@@ -58,7 +58,7 @@ class WindowManager extends EventEmitter {
     this.mainWindow = mainWindow;
   }
 
-  sendMainWindow(...args) {
+  sendToMainWindow(...args) {
     if (this.mainWindow.webContents) {
       this.mainWindow.webContents.send(...args);
     }
@@ -95,9 +95,9 @@ class WindowManager extends EventEmitter {
     //overlayWindow.setSkipTaskbar(true);
     overlayWindow.loadURL(OVERLAY_WINDOW_WEBPACK_ENTRY);
 
-    // if (process.env.NODE_ENV !== 'production') {
-    //   overlayWindow.webContents.openDevTools();
-    // }
+    if (process.env.NODE_ENV !== 'production') {
+      overlayWindow.webContents.openDevTools();
+    }
 
     overlayWindow.on('minimize', (event) => {
       console.log('overlayWindow:minimize');
@@ -131,6 +131,12 @@ class WindowManager extends EventEmitter {
     });
 
     this.overlayWindow = overlayWindow;
+  }
+
+  sendToOverlayWindow(...args) {
+    if (this.overlayWindow.webContents) {
+      this.overlayWindow.webContents.send(...args);
+    }
   }
 
   getOverlayWindow() {
