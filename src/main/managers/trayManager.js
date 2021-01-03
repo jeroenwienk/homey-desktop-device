@@ -24,9 +24,31 @@ class TrayManager extends EventEmitter {
         },
       },
       {
+        label: 'Set overlay always on top',
+        click() {
+          const overlayWindow = windowManager.getOverlayWindow();
+          overlayWindow.setAlwaysOnTop(!overlayWindow.isAlwaysOnTop());
+        },
+      },
+      {
+        label: 'Disable overlay mouse',
+        click() {
+          const overlayWindow = windowManager.getOverlayWindow();
+          overlayWindow.setIgnoreMouseEvents(true);
+        },
+      },
+      {
+        label: 'Enable overlay mouse',
+        click() {
+          const overlayWindow = windowManager.getOverlayWindow();
+          overlayWindow.setIgnoreMouseEvents(false);
+        },
+      },
+      {
         label: 'Quit',
         click() {
           windowManager.getMainWindow().destroy();
+          windowManager.getOverlayWindow().destroy();
           app.quit();
         },
       },

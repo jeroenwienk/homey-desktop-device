@@ -1,6 +1,8 @@
 const path = require('path');
 const EventEmitter = require('events');
 const { BrowserWindow } = require('electron');
+const Store = require('electron-store');
+const store = new Store();
 
 class WindowManager extends EventEmitter {
   constructor() {
@@ -56,7 +58,7 @@ class WindowManager extends EventEmitter {
     this.mainWindow = mainWindow;
   }
 
-  send(...args) {
+  sendMainWindow(...args) {
     if (this.mainWindow.webContents) {
       this.mainWindow.webContents.send(...args);
     }
@@ -64,6 +66,75 @@ class WindowManager extends EventEmitter {
 
   getMainWindow() {
     return this.mainWindow;
+  }
+
+  createOverlayWindow() {
+    const imagepath = path.resolve(__dirname, '../../assets/home.png');
+    const storeBounds = store.get('overlayWindow.bounds');
+
+    const bounds =
+      storeBounds != null
+        ? storeBounds
+        : { x: null, y: null, width: 800, height: 600 };
+
+    const overlayWindow = new BrowserWindow({
+      x: bounds.x,
+      y: bounds.y,
+      width: bounds.width,
+      height: bounds.height,
+      icon: imagepath,
+      //backgroundColor: '#181818',
+      webPreferences: {
+        nodeIntegration: true,
+      },
+      frame: false,
+      transparent: true,
+      skipTaskbar: true,
+    });
+
+    //overlayWindow.setSkipTaskbar(true);
+    overlayWindow.loadURL(OVERLAY_WINDOW_WEBPACK_ENTRY);
+
+    // if (process.env.NODE_ENV !== 'production') {
+    //   overlayWindow.webContents.openDevTools();
+    // }
+
+    overlayWindow.on('minimize', (event) => {
+      console.log('overlayWindow:minimize');
+    });
+
+    overlayWindow.on('restore', (event) => {
+      console.log('overlayWindow:restore');
+      overlayWindow.show();
+    });
+
+    overlayWindow.on('close', (event) => {
+      console.log('overlayWindow:close');
+      event.preventDefault();
+      overlayWindow.hide();
+    });
+
+    overlayWindow.on('show', (event) => {
+      console.log('overlayWindow:show');
+    });
+
+    overlayWindow.on('hide', (event) => {
+      console.log('overlayWindow:hide');
+    });
+
+    overlayWindow.on('move', (event) => {
+      store.set('overlayWindow.bounds', overlayWindow.getBounds());
+    });
+
+    overlayWindow.on('resize', (event) => {
+      store.set('overlayWindow.bounds', overlayWindow.getBounds());
+    });
+
+    this.overlayWindow = overlayWindow;
+  }
+
+  getOverlayWindow() {
+    return this.overlayWindow;
   }
 }
 

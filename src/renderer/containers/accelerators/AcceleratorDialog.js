@@ -9,7 +9,7 @@ import { history } from '../../memoryHistory';
 import {
   createAccelerator,
   editAccelerator,
-  removeAccelerator,
+  removeAccelerator
 } from '../../store/acceleratorStore';
 
 import { vars } from '../../theme/GlobalStyles';
@@ -41,13 +41,13 @@ export function AcceleratorDialog(props) {
             />
           )}
 
-          <Cancel onPress={handleClose} />
+          <Cancel onPress={handleClose}/>
         </sc.actions>
 
         <AcceleratorForm
           formId={formId}
           editId={editId}
-          accelerators={props.accelerators}
+          acceleratorList={props.acceleratorList}
           onSubmit={handleClose}
         />
       </sc.dialogContent>
@@ -71,13 +71,13 @@ function AcceleratorForm(props) {
 
   useEffect(() => {
     if (props.editId !== 'create') {
-      const accelerator = props.accelerators.find((accelerator) => {
+      const accelerator = props.acceleratorList.find((accelerator) => {
         return accelerator.id === props.editId;
       });
 
       reset(accelerator);
     }
-  }, [props.editId, props.accelerators]);
+  }, [props.editId, props.acceleratorList]);
 
   return (
     <sc.editForm id={props.formId} key={props.editId}>
@@ -114,5 +114,5 @@ const sc = {
     flex-direction: column;
     min-width: 512px;
     gap: 16px;
-  `,
+  `
 };

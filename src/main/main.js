@@ -31,6 +31,7 @@ app.on('ready', async () => {
   console.log('app:ready');
 
   windowManager.createMainWindow();
+  windowManager.createOverlayWindow();
   trayManager.createTray();
 
   await mdns.init();

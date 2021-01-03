@@ -59,6 +59,11 @@
                   "html": "./src/renderer/index.html",
                   "js": "./src/renderer/renderer.js",
                   "name": "main_window"
+                },
+                {
+                  "html": "./src/renderer/index.html",
+                  "js": "./src/renderer/overlay.js",
+                  "name": "overlay_window"
                 }
               ]
             },
@@ -91,6 +96,7 @@
   "dependencies": {
     "@homebridge/ciao": "^1.1.2",
     "electron-squirrel-startup": "^1.0.0",
+    "electron-store": "^6.0.1",
     "history": "^4.10.1",
     "macaddress": "^0.5.1",
     "nedb": "^1.8.0",

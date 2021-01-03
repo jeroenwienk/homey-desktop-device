@@ -5,14 +5,15 @@ import { Route } from 'react-router';
 
 import { history } from '../../memoryHistory';
 import { REND } from '../../../shared/events';
-import { acceleratorStore } from '../../store/acceleratorStore';
+
+import { useAcceleratorList } from '../../store/acceleratorStore';
 
 import { AcceleratorDialog } from './AcceleratorDialog';
 import { AcceleratorEntry } from './AcceleratorEntry';
 import { Heading } from '../../components/common/Heading';
 
 export function Accelerators() {
-  const accelerators = acceleratorStore((state) => state.accelerators);
+  const acceleratorList = useAcceleratorList();
 
   return (
     <sc.container>
@@ -21,7 +22,7 @@ export function Accelerators() {
         path="/accelerator"
         render={(routeProps) => {
           return (
-            <AcceleratorDialog {...routeProps} accelerators={accelerators} />
+            <AcceleratorDialog {...routeProps} acceleratorList={acceleratorList}/>
           );
         }}
       />
@@ -29,15 +30,15 @@ export function Accelerators() {
       <sc.section>
         <Heading>Shortcuts</Heading>
         <sc.grid>
-          {accelerators.map((accelerator) => {
+          {acceleratorList.map((acceleratorEntry) => {
             return (
               <AcceleratorEntry
-                key={accelerator.id}
-                id={accelerator.id}
-                accelerator={accelerator}
+                key={acceleratorEntry.id}
+                id={acceleratorEntry.id}
+                accelerator={acceleratorEntry}
                 onPress={(event) => {
                   ipcRenderer.send(REND.ACCELERATOR_RUN, {
-                    id: event.target.id,
+                    id: event.target.id
                   });
                 }}
                 onContextMenu={(event) => {
@@ -86,5 +87,5 @@ const sc = {
     @media only screen and (min-width: 1840px) {
       grid-template-columns: repeat(8, 1fr);
     }
-  `,
+  `
 };

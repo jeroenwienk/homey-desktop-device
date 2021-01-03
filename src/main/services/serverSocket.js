@@ -73,11 +73,11 @@ class ServerSocket {
 
   handleConnect(socket) {
     console.log('connect:', socket.id);
-    windowManager.send(MAIN.SOCKETS_INIT, this.getConnections());
+    windowManager.sendMainWindow(MAIN.SOCKETS_INIT, this.getConnections());
 
     socket.on('disconnect', (reason) => {
       console.log('disconnect:', reason);
-      windowManager.send(MAIN.SOCKETS_INIT, this.getConnections());
+      windowManager.sendMainWindow(MAIN.SOCKETS_INIT, this.getConnections());
     });
 
     socket.on('disconnecting', (reason) => {
@@ -140,7 +140,7 @@ class ServerSocket {
         date: new Date()
       });
 
-      windowManager.send(MAIN.HISTORY_PUSH, historyEntry);
+      windowManager.sendMainWindow(MAIN.HISTORY_PUSH, historyEntry);
       await shell.openExternal(data.url);
       callback();
     } catch (error) {
@@ -157,7 +157,7 @@ class ServerSocket {
         date: new Date()
       });
 
-      windowManager.send(MAIN.HISTORY_PUSH, historyEntry);
+      windowManager.sendMainWindow(MAIN.HISTORY_PUSH, historyEntry);
       await shell.openPath(data.path);
       callback();
     } catch (error) {
@@ -220,11 +220,11 @@ class ServerSocket {
       const accelerators = await db.getAccelerators();
 
       socket.emit(IO_EMIT.BUTTONS_SYNC, { buttons }, ({ broken }) => {
-        windowManager.send(MAIN.BUTTONS_BROKEN, broken);
+        windowManager.sendMainWindow(MAIN.BUTTONS_BROKEN, broken);
       });
 
       socket.emit(IO_EMIT.ACCELERATORS_SYNC, { accelerators }, ({ broken }) => {
-        windowManager.send(MAIN.ACCELERATORS_BROKEN, broken);
+        windowManager.sendMainWindow(MAIN.ACCELERATORS_BROKEN, broken);
       });
     } catch (error) {
       console.error(error);
