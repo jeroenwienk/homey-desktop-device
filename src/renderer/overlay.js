@@ -87,10 +87,6 @@ const sc = {
   `,
   dragHandle: styled(DragIcon)`
     -webkit-app-region: drag;
-    
-    &:hover {
-      background-color: ${vars.color_green};
-    }
   `,
 };
 
