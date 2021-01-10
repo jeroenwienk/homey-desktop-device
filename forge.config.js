@@ -6,6 +6,7 @@ module.exports = {
   packagerConfig: {
     asar: true,
     icon: './src/assets/home.png',
+    name: 'desktop-device',
     executeableName: 'desktop-device',
   },
   makers: [
@@ -24,12 +25,18 @@ module.exports = {
     {
       name: '@electron-forge/maker-deb',
       config: {
+        bin: 'desktop-device',
         name: 'desktop-device',
+        productName: 'desktop-device'
       },
     },
     {
       name: '@electron-forge/maker-rpm',
-      config: {},
+      config: {
+        bin: 'desktop-device',
+        name: 'desktop-device',
+        productName: 'desktop-device'
+      },
     },
   ],
   publishers: [
