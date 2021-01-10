@@ -12,13 +12,14 @@ class ServerSocket {
   constructor() {
     console.log('socket:constructor');
 
-    const attrs = [{ name: 'commonName', value: 'nl.jwienk.desktop' }];
+    const attrs = [{ name: 'commonName', value: 'nl.jwienk.desktop-device' }];
     const pems = selfsigned.generate(attrs, { days: 365 });
 
     this.httpsServer = https.createServer({
       key: pems.private,
       cert: pems.cert,
     });
+
     this.options = {
       path: '/desktop',
       serveClient: false,
@@ -35,6 +36,8 @@ class ServerSocket {
     this.io.use((socket, next) => {
       let handshake = socket.handshake;
       // ...
+
+      console.log(handshake);
 
       // console.log(handshake);
       //

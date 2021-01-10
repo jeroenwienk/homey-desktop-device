@@ -1,11 +1,12 @@
 {
-  "name": "homey-desktop",
-  "productName": "Homey Desktop",
+  "name": "homey-desktop-device",
+  "productName": "Homey Desktop Device",
   "version": "1.0.0",
-  "description": "Homey Desktop",
+  "description": "Homey Desktop Device",
   "main": ".webpack/main",
   "scripts": {
     "start": "electron-forge start",
+    "start:debug": "cross-env DEBUG=engine,socket.io* electron-forge start",
     "package": "electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
@@ -17,63 +18,6 @@
     "email": "jeroenwienk@gmail.com"
   },
   "license": "MIT",
-  "config": {
-    "forge": {
-      "packagerConfig": {
-        "asar": true,
-        "icon": "./src/assets/home.png",
-        "executeableName": "homey-desktop"
-      },
-      "makers": [
-        {
-          "name": "@electron-forge/maker-squirrel",
-          "config": {
-            "name": "homey-desktop",
-            "setupIcon": "./src/assets/home.ico"
-          }
-        },
-        {
-          "name": "@electron-forge/maker-zip",
-          "platforms": [
-            "darwin"
-          ]
-        },
-        {
-          "name": "@electron-forge/maker-deb",
-          "config": {}
-        },
-        {
-          "name": "@electron-forge/maker-rpm",
-          "config": {}
-        }
-      ],
-      "plugins": [
-        [
-          "@electron-forge/plugin-webpack",
-          {
-            "mainConfig": "./webpack/webpack.main.config.js",
-            "renderer": {
-              "config": "./webpack/webpack.renderer.config.js",
-              "entryPoints": [
-                {
-                  "html": "./src/renderer/index.html",
-                  "js": "./src/renderer/renderer.js",
-                  "name": "main_window"
-                },
-                {
-                  "html": "./src/renderer/index.html",
-                  "js": "./src/renderer/overlay.js",
-                  "name": "overlay_window"
-                }
-              ]
-            },
-            "port": 9000,
-            "loggerPort": 9001
-          }
-        ]
-      ]
-    }
-  },
   "devDependencies": {
     "@babel/core": "^7.12.10",
     "@babel/preset-env": "^7.12.11",
@@ -84,9 +28,12 @@
     "@electron-forge/maker-squirrel": "6.0.0-beta.54",
     "@electron-forge/maker-zip": "6.0.0-beta.54",
     "@electron-forge/plugin-webpack": "6.0.0-beta.54",
+    "@electron-forge/publisher-github": "^6.0.0-beta.54",
     "@marshallofsound/webpack-asset-relocator-loader": "^0.5.0",
     "babel-loader": "^8.2.2",
     "copy-webpack-plugin": "^6.4.1",
+    "cross-env": "^7.0.3",
+    "dotenv": "^8.2.0",
     "electron": "^10.2.0",
     "file-loader": "^6.2.0",
     "node-loader": "^1.0.2",
@@ -108,7 +55,7 @@
     "react-router": "^5.2.0",
     "react-stately": "^3.2.0",
     "selfsigned": "^1.10.8",
-    "socket.io": "^3.0.4",
+    "socket.io": "^3.0.5",
     "styled-components": "^5.2.1",
     "uuid": "^8.3.2",
     "zustand": "^3.2.0"
