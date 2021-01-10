@@ -1,8 +1,8 @@
 {
   "name": "homey-desktop-device",
-  "productName": "Homey Desktop Device",
+  "productName": "Desktop Device",
   "version": "1.0.0",
-  "description": "Homey Desktop Device",
+  "description": "Interact with your desktop as a Homey device",
   "main": ".webpack/main",
   "scripts": {
     "start": "electron-forge start",

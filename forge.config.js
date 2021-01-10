@@ -1,17 +1,20 @@
+const path = require('path');
+
 require('dotenv').config();
 
 module.exports = {
   packagerConfig: {
     asar: true,
     icon: './src/assets/home.png',
-    executeableName: 'homey-desktop-device',
+    executeableName: 'desktop-device',
   },
   makers: [
     {
       name: '@electron-forge/maker-squirrel',
       config: {
-        name: 'homey-desktop-device',
-        setupIcon: './src/assets/home.ico',
+        name: 'desktop-device',
+        iconUrl: path.resolve('src/assets/home.ico'),
+        setupIcon: path.resolve('src/assets/home.ico'),
       },
     },
     {
@@ -20,7 +23,9 @@ module.exports = {
     },
     {
       name: '@electron-forge/maker-deb',
-      config: {},
+      config: {
+        name: 'desktop-device',
+      },
     },
     {
       name: '@electron-forge/maker-rpm',
