@@ -33,9 +33,9 @@ module.exports = {
   //   //   ],
   //   // }),
   // ],
-  plugins: [
-    new CopyPlugin({
-      patterns: [{ from: path.resolve('src/assets'), to: './native_modules' }],
-    }),
-  ],
+  // plugins: [
+  //   new CopyPlugin({
+  //     patterns: [{ from: path.resolve('src/assets'), to: './native_modules' }],
+  //   }),
+  // ],
 };
