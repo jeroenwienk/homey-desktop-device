@@ -18,10 +18,10 @@ module.exports = {
         setupIcon: path.resolve('src/assets/home.ico'),
       },
     },
-    {
-      name: '@electron-forge/maker-zip',
-      platforms: ['darwin'],
-    },
+    // {
+    //   name: '@electron-forge/maker-zip',
+    //   platforms: ['darwin'],
+    // },
     {
       name: '@electron-forge/maker-deb',
       config: {
@@ -36,6 +36,13 @@ module.exports = {
         bin: 'desktop-device',
         name: 'desktop-device',
         productName: 'desktop-device'
+      },
+    },
+    {
+      name: '@electron-forge/maker-dmg',
+      config: {
+        name: 'desktop-device',
+        overwrite: true
       },
     },
   ],

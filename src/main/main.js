@@ -1,11 +1,13 @@
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 // DO NOT MOVE
 const squirrelStartup = require('electron-squirrel-startup');
+
+const path = require('path');
 const { app, globalShortcut } = require('electron');
 
 if (squirrelStartup) {
   //app.quit();
-  app.exit(0)
+  app.exit(0);
 }
 
 // if (true) {
@@ -43,7 +45,10 @@ app.on('ready', async () => {
 // explicitly with Cmd + Q.
 app.on('window-all-closed', (event) => {
   console.log('app:window-all-closed');
-  app.quit();
+
+  if (process.platform !== 'darwin') {
+    app.quit();
+  }
 });
 
 app.on('will-quit', async (event) => {
@@ -60,3 +65,7 @@ app.on('will-quit', async (event) => {
 
   app.exit(0);
 });
+
+if (process.platform !== 'darwin') {
+  app.dock.setIcon(path.resolve(__dirname, '../assets/home.png'));
+}

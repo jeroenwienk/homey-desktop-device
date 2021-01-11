@@ -14,7 +14,7 @@ const dateOptions = {
   hour: 'numeric',
   minute: 'numeric',
   second: 'numeric',
-  hourCycle: 'h23'
+  hourCycle: 'h23',
 };
 
 const dateFormatter = new Intl.DateTimeFormat('default', dateOptions);
@@ -24,23 +24,28 @@ export function History() {
 
   return (
     <sc.list>
-      {historyList.map((historyEntry, index) => {
-        const IconComponent = getIconComponent(historyEntry.name);
+      {historyList.length === 0 ? (
+        <div>History empty</div>
+      ) : (
+        historyList.map((historyEntry, index) => {
+          const IconComponent = getIconComponent(historyEntry.name);
 
-        return (
-          <sc.entry key={index}>
-            <div>
-              <IconComponent size={24} color={vars.color_primary_text_accent}/>
-            </div>
-            <div>
-              <sc.argument>{historyEntry.argument}</sc.argument>
-              <sc.time>
-                {dateFormatter.format(historyEntry.date)}
-              </sc.time>
-            </div>
-          </sc.entry>
-        );
-      })}
+          return (
+            <sc.entry key={index}>
+              <div>
+                <IconComponent
+                  size={24}
+                  color={vars.color_primary_text_accent}
+                />
+              </div>
+              <div>
+                <sc.argument>{historyEntry.argument}</sc.argument>
+                <sc.time>{dateFormatter.format(historyEntry.date)}</sc.time>
+              </div>
+            </sc.entry>
+          );
+        })
+      )}
     </sc.list>
   );
 }
@@ -81,5 +86,5 @@ const sc = {
     color: ${vars.color_primary_text_accent};
     font-weight: 500;
     margin-top: 8px;
-  `
+  `,
 };
