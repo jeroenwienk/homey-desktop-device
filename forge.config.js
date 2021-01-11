@@ -25,6 +25,7 @@ module.exports = {
     {
       name: '@electron-forge/maker-deb',
       config: {
+        icon: path.resolve('src/assets/home.png'),
         bin: 'desktop-device',
         name: 'desktop-device',
         productName: 'desktop-device',
@@ -33,6 +34,7 @@ module.exports = {
     {
       name: '@electron-forge/maker-rpm',
       config: {
+        icon: path.resolve('src/assets/home.png'),
         bin: 'desktop-device',
         name: 'desktop-device',
         productName: 'desktop-device',
