@@ -22,15 +22,20 @@ module.exports = {
       },
     ],
   },
+  // plugins: [
+  //   // new Plugin(),
+  //   // new CopyPlugin({
+  //   //   patterns: [
+  //   //     {
+  //   //       from: path.resolve('node_modules'),
+  //   //       to: '../node_modules',
+  //   //     },
+  //   //   ],
+  //   // }),
+  // ],
   plugins: [
-    // new Plugin(),
-    // new CopyPlugin({
-    //   patterns: [
-    //     {
-    //       from: path.resolve('node_modules'),
-    //       to: '../node_modules',
-    //     },
-    //   ],
-    // }),
+    new CopyPlugin({
+      patterns: [{ from: path.resolve('src/assets'), to: './native_modules' }],
+    }),
   ],
 };
