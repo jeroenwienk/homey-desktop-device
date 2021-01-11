@@ -27,7 +27,7 @@ module.exports = {
       config: {
         bin: 'desktop-device',
         name: 'desktop-device',
-        productName: 'desktop-device'
+        productName: 'desktop-device',
       },
     },
     {
@@ -35,14 +35,15 @@ module.exports = {
       config: {
         bin: 'desktop-device',
         name: 'desktop-device',
-        productName: 'desktop-device'
+        productName: 'desktop-device',
       },
     },
     {
       name: '@electron-forge/maker-dmg',
       config: {
         name: 'desktop-device',
-        overwrite: true
+        overwrite: true,
+        icon: path.resolve('src/assets/home.png'),
       },
     },
   ],
