@@ -8,13 +8,24 @@ class WindowManager extends EventEmitter {
   constructor() {
     super();
     this.mainWindow = null;
+    this.overlayWindow = null;
   }
 
   createMainWindow() {
     const imagepath = path.resolve(__dirname, '../../assets/home.png');
+
+    const storeBounds = store.get('mainWindow.bounds');
+
+    const bounds =
+      storeBounds != null
+        ? storeBounds
+        : { x: null, y: null, width: 1440, height: 900 };
+
     const mainWindow = new BrowserWindow({
-      width: 800,
-      height: 600,
+      x: bounds.x,
+      y: bounds.y,
+      width: bounds.width,
+      height: bounds.height,
       icon: imagepath,
       backgroundColor: '#181818',
       webPreferences: {
@@ -51,6 +62,14 @@ class WindowManager extends EventEmitter {
       console.log('mainWindow:hide');
     });
 
+    mainWindow.on('move', (event) => {
+      store.set('mainWindow.bounds', mainWindow.getBounds());
+    });
+
+    mainWindow.on('resize', (event) => {
+      store.set('mainWindow.bounds', mainWindow.getBounds());
+    });
+
     mainWindow.webContents.on('dom-ready', (event) => {
       this.emit('main-window-dom-ready', event);
     });
@@ -59,7 +78,10 @@ class WindowManager extends EventEmitter {
   }
 
   sendToMainWindow(...args) {
-    if (this.mainWindow.webContents) {
+    if (
+      this.mainWindow.isDestroyed() === false &&
+      this.mainWindow.webContents
+    ) {
       this.mainWindow.webContents.send(...args);
     }
   }
@@ -134,13 +156,22 @@ class WindowManager extends EventEmitter {
   }
 
   sendToOverlayWindow(...args) {
-    if (this.overlayWindow.webContents) {
+    if (
+      this.overlayWindow.isDestroyed() === false &&
+      this.overlayWindow.webContents
+    ) {
       this.overlayWindow.webContents.send(...args);
     }
   }
 
   getOverlayWindow() {
     return this.overlayWindow;
+  }
+
+  // todo: this is not the way
+  destroy() {
+    this.getMainWindow().destroy();
+    this.getOverlayWindow().destroy();
   }
 }
 

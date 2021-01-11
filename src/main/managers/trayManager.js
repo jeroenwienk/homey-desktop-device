@@ -11,19 +11,21 @@ class TrayManager extends EventEmitter {
   }
 
   createTray() {
-    // todo: seperate os dependant cases
     const imagepath = path.resolve(__dirname, '../../assets/home.png');
     const tray = new Tray(imagepath);
 
-    // todo: labels arent dynamic
     const contextMenu = this.buildMenu();
 
     tray.on('click', (event) => {
       windowManager.getMainWindow().show();
     });
 
-    tray.setToolTip('Homey Desktop');
+    tray.setToolTip('Desktop Device');
     tray.setContextMenu(contextMenu);
+
+    tray.on('right-click', (event) => {
+      this.rebuildMenu();
+    });
 
     this.tray = tray;
   }
@@ -85,9 +87,7 @@ class TrayManager extends EventEmitter {
       {
         label: 'Quit',
         click() {
-          windowManager.getMainWindow().destroy();
-          windowManager.getOverlayWindow().destroy();
-          app.quit();
+          windowManager.destroy();
         },
       },
     ]);

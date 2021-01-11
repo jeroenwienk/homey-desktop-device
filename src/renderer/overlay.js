@@ -34,9 +34,8 @@ ipcRenderer.on(MAIN.DISPLAYS_INIT, (event, data) => {
 const OverlayStyles = createGlobalStyle`
   body {
     color: white;
-    background-color: rgba(41,41,41,1);
+    background-color: ${vars.color_background_app};
     padding: 10px;
-    border: 1px solid white;
   }
 `;
 

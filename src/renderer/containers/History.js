@@ -25,7 +25,12 @@ export function History() {
   return (
     <sc.list>
       {historyList.length === 0 ? (
-        <div>History empty</div>
+        <sc.entry>
+          <div />
+          <div>
+            <sc.argument>History empty</sc.argument>
+          </div>
+        </sc.entry>
       ) : (
         historyList.map((historyEntry, index) => {
           const IconComponent = getIconComponent(historyEntry.name);
