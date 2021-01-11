@@ -66,6 +66,6 @@ app.on('will-quit', async (event) => {
   app.exit(0);
 });
 
-if (process.platform !== 'darwin') {
+if (process.platform === 'darwin') {
   app.dock.setIcon(path.resolve(__dirname, '../assets/home.png'));
 }
