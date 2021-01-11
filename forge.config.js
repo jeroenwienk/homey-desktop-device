@@ -43,7 +43,7 @@ module.exports = {
       config: {
         name: 'desktop-device',
         overwrite: true,
-        icon: path.resolve('src/assets/home.png'),
+        icon: path.resolve('src/assets/home.icns'),
       },
     },
   ],
