@@ -52,6 +52,11 @@ app.on('window-all-closed', (event) => {
   app.quit();
 });
 
+app.on('before-quit', (event) => {
+  console.log('app:before-quit');
+
+})
+
 app.on('will-quit', async (event) => {
   console.log('will:quit');
   event.preventDefault();

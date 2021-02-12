@@ -30,6 +30,7 @@ class WindowManager extends EventEmitter {
       backgroundColor: '#181818',
       webPreferences: {
         nodeIntegration: true,
+        contextIsolation: false,
       },
     });
 
@@ -108,6 +109,7 @@ class WindowManager extends EventEmitter {
       //backgroundColor: '#181818',
       webPreferences: {
         nodeIntegration: true,
+        contextIsolation: false,
       },
       frame: false,
       transparent: true,
