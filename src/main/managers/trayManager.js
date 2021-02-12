@@ -87,7 +87,7 @@ class TrayManager extends EventEmitter {
       {
         label: 'Quit',
         click() {
-          windowManager.destroy();
+          windowManager.closeAll();
         },
       },
     ]);

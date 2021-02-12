@@ -9,6 +9,11 @@ class WindowManager extends EventEmitter {
     super();
     this.mainWindow = null;
     this.overlayWindow = null;
+    this.isQuitting = false;
+  }
+
+  setIsQuitting(value) {
+    this.isQuitting = value;
   }
 
   createMainWindow() {
@@ -51,8 +56,11 @@ class WindowManager extends EventEmitter {
 
     mainWindow.on('close', (event) => {
       console.log('mainWindow:close');
-      event.preventDefault();
-      mainWindow.hide();
+
+      if (this.isQuitting === false) {
+        event.preventDefault();
+        mainWindow.hide();
+      }
     });
 
     mainWindow.on('show', (event) => {
@@ -134,8 +142,11 @@ class WindowManager extends EventEmitter {
 
     overlayWindow.on('close', (event) => {
       console.log('overlayWindow:close');
-      event.preventDefault();
-      overlayWindow.hide();
+
+      if (this.isQuitting === false) {
+        event.preventDefault();
+        overlayWindow.hide();
+      }
     });
 
     overlayWindow.on('show', (event) => {
@@ -170,10 +181,11 @@ class WindowManager extends EventEmitter {
     return this.overlayWindow;
   }
 
-  // todo: this is not the way
-  destroy() {
-    this.getMainWindow().destroy();
-    this.getOverlayWindow().destroy();
+  closeAll() {
+    this.setIsQuitting(true);
+
+    this.getMainWindow().close();
+    this.getOverlayWindow().close();
   }
 }
 

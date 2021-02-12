@@ -48,17 +48,18 @@ app.on('ready', async () => {
 // }
 app.on('window-all-closed', (event) => {
   console.log('app:window-all-closed');
-
   app.quit();
 });
 
 app.on('before-quit', (event) => {
   console.log('app:before-quit');
+  //windowManager.destroy();
 
+  windowManager.setIsQuitting(true);
 })
 
 app.on('will-quit', async (event) => {
-  console.log('will:quit');
+  console.log('app:will:quit');
   event.preventDefault();
   globalShortcut.unregisterAll();
 
@@ -71,6 +72,11 @@ app.on('will-quit', async (event) => {
 
   app.exit(0);
 });
+
+// macOS only
+app.on("activate", (event) => {
+  windowManager.getMainWindow().show();
+})
 
 if (process.platform === 'darwin') {
   app.dock.setIcon(path.resolve(__dirname, '../assets/home.png'));
