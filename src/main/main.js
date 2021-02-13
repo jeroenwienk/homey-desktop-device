@@ -1,12 +1,9 @@
-// Handle creating/removing shortcuts on Windows when installing/uninstalling.
 // DO NOT MOVE
 const squirrelStartup = require('electron-squirrel-startup');
 
-const path = require('path');
 const { app, globalShortcut } = require('electron');
 
 if (squirrelStartup) {
-  //app.quit();
   app.exit(0);
 }
 
@@ -14,20 +11,36 @@ if (squirrelStartup) {
 //   require('inspector').open(9229, '0.0.0.0', true);
 // }
 
-const mdns = require('./services/mdns');
-const serverSocket = require('./services/serverSocket');
-const ipcMainHandlers = require('./ipcMainHandlers');
-const windowManager = require('./managers/windowManager');
-const trayManager = require('./managers/trayManager');
-const makeSingleInstance = require('./makeSingleInstance');
-const setLoginItemSettings = require('./setLoginItemSettings');
+const path = require('path');
+const fetch = require('node-fetch').default;
+
+const { mdns } = require('./services/mdns');
+const { serverSocket } = require('./services/serverSocket');
+
+const { windowManager } = require('./managers/windowManager');
+const { trayManager } = require('./managers/trayManager');
+
+const { makeSingleInstance } = require('./makeSingleInstance');
+const { setLoginItemSettings } = require('./setLoginItemSettings');
 const { setApplicationMenu } = require('./setApplicationMenu');
+
+const { initIpcMainHandlers } = require('./ipcMainHandlers');
 
 setLoginItemSettings();
 makeSingleInstance();
 setApplicationMenu();
 
-ipcMainHandlers.init();
+initIpcMainHandlers();
+
+// console.log(app.getVersion());
+//
+// fetch(
+//   'https://api.github.com/repos/jeroenwienk/homey-desktop-device/releases/latest'
+// )
+//   .then((res) => res.json())
+//   .then((json) => {
+//     console.log(json);
+//   });
 
 app.on('ready', async () => {
   console.log('app:ready');
@@ -40,12 +53,6 @@ app.on('ready', async () => {
   await mdns.advertise();
 });
 
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
-// if (process.platform !== 'darwin') {
-//   app.quit();
-// }
 app.on('window-all-closed', (event) => {
   console.log('app:window-all-closed');
   app.quit();
@@ -53,10 +60,9 @@ app.on('window-all-closed', (event) => {
 
 app.on('before-quit', (event) => {
   console.log('app:before-quit');
-  //windowManager.destroy();
 
   windowManager.setIsQuitting(true);
-})
+});
 
 app.on('will-quit', async (event) => {
   console.log('app:will:quit');
@@ -74,9 +80,9 @@ app.on('will-quit', async (event) => {
 });
 
 // macOS only
-app.on("activate", (event) => {
-  windowManager.getMainWindow().show();
-})
+app.on('activate', (event) => {
+  windowManager.mainWindow.show();
+});
 
 if (process.platform === 'darwin') {
   app.dock.setIcon(path.resolve(__dirname, '../assets/home.png'));

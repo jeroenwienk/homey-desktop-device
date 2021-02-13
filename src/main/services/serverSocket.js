@@ -1,10 +1,12 @@
 const { shell, Notification, dialog } = require('electron');
-const https = require('https');
 const { exec } = require('child_process');
+
+const https = require('https');
 const selfsigned = require('selfsigned');
 const { Server } = require('socket.io');
-const db = require('./db');
-const windowManager = require('../managers/windowManager');
+
+const { db } = require('./db');
+const { windowManager } = require('../managers/windowManager');
 
 const { MAIN, REND, IO_EMIT, IO_ON } = require('../../shared/events');
 
@@ -17,7 +19,7 @@ class ServerSocket {
 
     this.httpsServer = https.createServer({
       key: pems.private,
-      cert: pems.cert,
+      cert: pems.cert
     });
 
     this.options = {
@@ -26,7 +28,7 @@ class ServerSocket {
       pingTimeout: 5000,
       pingInterval: 25000,
       upgradeTimeout: 10000,
-      maxHttpBufferSize: 10e7,
+      maxHttpBufferSize: 10e7
     };
 
     this.io = new Server(this.httpsServer, this.options);
@@ -148,7 +150,7 @@ class ServerSocket {
       const historyEntry = await db.insertHistoryEntry({
         name: 'browser:open',
         argument: data.url,
-        date: new Date(),
+        date: new Date()
       });
 
       windowManager.sendToMainWindow(MAIN.HISTORY_PUSH, historyEntry);
@@ -165,7 +167,7 @@ class ServerSocket {
       const historyEntry = await db.insertHistoryEntry({
         name: 'path:open',
         argument: data.path,
-        date: new Date(),
+        date: new Date()
       });
 
       windowManager.sendToMainWindow(MAIN.HISTORY_PUSH, historyEntry);
@@ -182,7 +184,7 @@ class ServerSocket {
       const notification = new Notification({
         title: data.title != null ? data.title : 'Homey Desktop',
         body: data.body,
-        silent: data.silent === 'true',
+        silent: data.silent === 'true'
       });
       notification.show();
       callback();
@@ -198,7 +200,7 @@ class ServerSocket {
           data.command,
           {
             timeout: data.timeout == null ? 0 : data.timeout,
-            cwd: data.cwd == null ? '/' : data.cwd,
+            cwd: data.cwd == null ? '/' : data.cwd
           },
           (error, stdout, stderr) => {
             if (error) {
@@ -277,10 +279,12 @@ class ServerSocket {
         socketId: socket.id,
         cloudId: socket.handshake.query.cloudId,
         name: socket.handshake.query.name,
-        connected: socket.connected,
+        connected: socket.connected
       };
     });
   }
 }
 
-module.exports = new ServerSocket();
+module.exports = {
+  serverSocket: new ServerSocket()
+};

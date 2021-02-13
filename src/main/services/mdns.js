@@ -43,4 +43,6 @@ class MDNS {
   }
 }
 
-module.exports = new MDNS();
+module.exports = {
+  mdns: new MDNS()
+};

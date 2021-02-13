@@ -1,6 +1,6 @@
 const { app } = require('electron');
 
-const windowManager = require('./managers/windowManager');
+const { windowManager } = require('./managers/windowManager');
 
 function makeSingleInstance() {
   if (process.mas) return;
@@ -9,12 +9,14 @@ function makeSingleInstance() {
 
   app.on('second-instance', () => {
     console.log('app:second-instance');
-    if (windowManager.getMainWindow()) {
-      if (windowManager.getMainWindow().isMinimized())
-        windowManager.getMainWindow().restore();
-      windowManager.getMainWindow().focus();
+    if (windowManager.mainWindow) {
+      if (windowManager.mainWindow.isMinimized())
+        windowManager.mainWindow.restore();
+      windowManager.mainWindow.focus();
     }
   });
 }
 
-module.exports = makeSingleInstance;
+module.exports = {
+  makeSingleInstance,
+};

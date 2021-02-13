@@ -14,9 +14,11 @@ function setLoginItemSettings() {
       '--processStart',
       `"${exeName}"`,
       '--process-start-args',
-      `"--hidden"`,
-    ],
+      `"--hidden"`
+    ]
   });
 }
 
-module.exports = setLoginItemSettings;
+module.exports = {
+  setLoginItemSettings
+};

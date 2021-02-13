@@ -2,6 +2,9 @@ const path = require('path');
 const EventEmitter = require('events');
 const { BrowserWindow } = require('electron');
 const Store = require('electron-store');
+
+const { debounce } = require('../../shared/debounce');
+
 const store = new Store();
 
 class WindowManager extends EventEmitter {
@@ -19,18 +22,29 @@ class WindowManager extends EventEmitter {
   createMainWindow() {
     const imagepath = path.resolve(__dirname, '../../assets/home.png');
 
-    const storeBounds = store.get('mainWindow.bounds');
+    const storeWindowState = store.get('mainWindow.windowState');
 
-    const bounds =
-      storeBounds != null
-        ? storeBounds
-        : { x: null, y: null, width: 1440, height: 900 };
+    let windowState = {
+      bounds: { x: null, y: null, width: 800, height: 600 },
+      isMaximized: true,
+      isHidden: false,
+    };
+
+    if (storeWindowState != null) {
+      windowState = {
+        ...windowState,
+        ...storeWindowState,
+      };
+    }
+
+    store.set('mainWindow.windowState', windowState);
 
     const mainWindow = new BrowserWindow({
-      x: bounds.x,
-      y: bounds.y,
-      width: bounds.width,
-      height: bounds.height,
+      x: windowState.bounds.x,
+      y: windowState.bounds.y,
+      width: windowState.bounds.width,
+      height: windowState.bounds.height,
+      show: windowState.isHidden === false,
       icon: imagepath,
       backgroundColor: '#181818',
       webPreferences: {
@@ -38,6 +52,22 @@ class WindowManager extends EventEmitter {
         contextIsolation: false,
       },
     });
+
+    if (windowState.isMaximized) {
+      mainWindow.maximize();
+    }
+
+    this.mainWindow = mainWindow;
+
+    const saveBounds = debounce(() => {
+      if (mainWindow.isMaximized()) {
+        store.set('mainWindow.windowState.isMaximized', true);
+        return;
+      }
+
+      store.set('mainWindow.windowState.bounds', mainWindow.getBounds());
+      store.set('mainWindow.windowState.isMaximized', false);
+    }, 200);
 
     mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
@@ -65,25 +95,27 @@ class WindowManager extends EventEmitter {
 
     mainWindow.on('show', (event) => {
       console.log('mainWindow:show');
+      store.set('mainWindow.windowState.isHidden', false);
     });
 
     mainWindow.on('hide', (event) => {
       console.log('mainWindow:hide');
+      store.set('mainWindow.windowState.isHidden', true);
     });
 
     mainWindow.on('move', (event) => {
-      store.set('mainWindow.bounds', mainWindow.getBounds());
+      console.log('move');
+      saveBounds();
     });
 
     mainWindow.on('resize', (event) => {
-      store.set('mainWindow.bounds', mainWindow.getBounds());
+      console.log('resize');
+      saveBounds();
     });
 
     mainWindow.webContents.on('dom-ready', (event) => {
       this.emit('main-window-dom-ready', event);
     });
-
-    this.mainWindow = mainWindow;
   }
 
   sendToMainWindow(...args) {
@@ -93,10 +125,6 @@ class WindowManager extends EventEmitter {
     ) {
       this.mainWindow.webContents.send(...args);
     }
-  }
-
-  getMainWindow() {
-    return this.mainWindow;
   }
 
   createOverlayWindow() {
@@ -123,6 +151,12 @@ class WindowManager extends EventEmitter {
       transparent: true,
       skipTaskbar: true,
     });
+
+    this.overlayWindow = overlayWindow;
+
+    const saveBounds = debounce(() => {
+      store.set('overlayWindow.bounds', overlayWindow.getBounds());
+    }, 200);
 
     //overlayWindow.setSkipTaskbar(true);
     overlayWindow.loadURL(OVERLAY_WINDOW_WEBPACK_ENTRY);
@@ -158,14 +192,12 @@ class WindowManager extends EventEmitter {
     });
 
     overlayWindow.on('move', (event) => {
-      store.set('overlayWindow.bounds', overlayWindow.getBounds());
+      saveBounds();
     });
 
     overlayWindow.on('resize', (event) => {
-      store.set('overlayWindow.bounds', overlayWindow.getBounds());
+      saveBounds();
     });
-
-    this.overlayWindow = overlayWindow;
   }
 
   sendToOverlayWindow(...args) {
@@ -177,16 +209,14 @@ class WindowManager extends EventEmitter {
     }
   }
 
-  getOverlayWindow() {
-    return this.overlayWindow;
-  }
-
   closeAll() {
-    this.setIsQuitting(true);
+    this.isQuitting = true;
 
-    this.getMainWindow().close();
-    this.getOverlayWindow().close();
+    this.mainWindow.close();
+    this.overlayWindow.close();
   }
 }
 
-module.exports = new WindowManager();
+module.exports = {
+  windowManager: new WindowManager(),
+};

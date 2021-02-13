@@ -2,7 +2,7 @@ const path = require('path');
 const EventEmitter = require('events');
 const { Tray, Menu, app } = require('electron');
 
-const windowManager = require('./windowManager');
+const { windowManager } = require('./windowManager');
 
 class TrayManager extends EventEmitter {
   constructor() {
@@ -17,7 +17,7 @@ class TrayManager extends EventEmitter {
     const contextMenu = this.buildMenu();
 
     tray.on('click', (event) => {
-      windowManager.getMainWindow().show();
+      windowManager.mainWindow.show();
     });
 
     tray.setToolTip('Desktop Device');
@@ -35,8 +35,8 @@ class TrayManager extends EventEmitter {
   }
 
   buildMenu = () => {
-    const overlayWindow = windowManager.getOverlayWindow();
-    const mainWindow = windowManager.getMainWindow();
+    const overlayWindow = windowManager.overlayWindow;
+    const mainWindow = windowManager.mainWindow;
 
     return Menu.buildFromTemplate([
       { type: 'separator' },
@@ -49,7 +49,7 @@ class TrayManager extends EventEmitter {
             mainWindow.show();
           }
           this.rebuildMenu();
-        },
+        }
       },
       {
         label: overlayWindow.isVisible() ? 'Hide overlay' : 'Show Overlay',
@@ -60,36 +60,36 @@ class TrayManager extends EventEmitter {
             overlayWindow.show();
           }
           this.rebuildMenu();
-        },
+        }
       },
       { type: 'separator' },
       {
         label: overlayWindow.isAlwaysOnTop()
-          ? 'Overlay disable always on top'
-          : 'Overlay enable always on top',
+               ? 'Overlay disable always on top'
+               : 'Overlay enable always on top',
         click: () => {
           overlayWindow.setAlwaysOnTop(!overlayWindow.isAlwaysOnTop());
           this.rebuildMenu();
-        },
+        }
       },
       {
         label: 'Disable overlay mouse',
         click() {
           overlayWindow.setIgnoreMouseEvents(true);
-        },
+        }
       },
       {
         label: 'Enable overlay mouse',
         click() {
           overlayWindow.setIgnoreMouseEvents(false);
-        },
+        }
       },
       {
         label: 'Quit',
         click() {
           windowManager.closeAll();
-        },
-      },
+        }
+      }
     ]);
   };
 
@@ -98,4 +98,6 @@ class TrayManager extends EventEmitter {
   }
 }
 
-module.exports = new TrayManager();
+module.exports = {
+  trayManager: new TrayManager()
+};

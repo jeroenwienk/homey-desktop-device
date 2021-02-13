@@ -155,4 +155,6 @@ class DataBase {
   }
 }
 
-module.exports = new DataBase();
+module.exports = {
+  db: new DataBase()
+};

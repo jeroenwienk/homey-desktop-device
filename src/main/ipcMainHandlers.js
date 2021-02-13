@@ -1,13 +1,13 @@
 const { ipcMain, globalShortcut } = require('electron');
-const db = require('./services/db');
-const serverSocket = require('./services/serverSocket');
+const { db } = require('./services/db');
+const { serverSocket } = require('./services/serverSocket');
 const { exec } = require('child_process');
 
-const windowManager = require('./managers/windowManager');
+const { windowManager } = require('./managers/windowManager');
 
 const { REND, OVERLAY, MAIN, IO_EMIT, IO_ON } = require('../shared/events');
 
-function init() {
+function initIpcMainHandlers() {
   ipcMain.on(REND.INIT, handleRendererInit);
   ipcMain.on(OVERLAY.INIT, handleOverlayInit);
   ipcMain.on(REND.BUTTON_CREATE, handleButtonCreate);
@@ -225,4 +225,4 @@ async function emitDisplaySync(event) {
   });
 }
 
-module.exports = { init };
+module.exports = { initIpcMainHandlers };
