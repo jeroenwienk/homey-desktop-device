@@ -35,44 +35,57 @@ class TrayManager extends EventEmitter {
   }
 
   buildMenu = () => {
-    const overlayWindow = windowManager.overlayWindow;
+    const items = [];
+
+    if (process.platform !== 'win32' && process.platform !== 'darwin') {
+      items.push({
+        label: 'Open',
+        click: () => {
+          windowManager.mainWindow.show();
+          this.rebuildMenu();
+        },
+      });
+    }
 
     return Menu.buildFromTemplate([
       { type: 'separator' },
+      ...items,
       {
         label: 'Show Overlay',
         click: () => {
-          overlayWindow.show();
+          windowManager.overlayWindow.show();
           this.rebuildMenu();
         },
       },
       {
         label: 'Hide Overlay',
         click: () => {
-          overlayWindow.hide();
+          windowManager.overlayWindow.hide();
           this.rebuildMenu();
         },
       },
       { type: 'separator' },
       {
-        label: overlayWindow.isAlwaysOnTop()
+        label: windowManager.overlayWindow.isAlwaysOnTop()
           ? 'Overlay disable always on top'
           : 'Overlay enable always on top',
         click: () => {
-          overlayWindow.setAlwaysOnTop(!overlayWindow.isAlwaysOnTop());
+          windowManager.overlayWindow.setAlwaysOnTop(
+            !windowManager.overlayWindow.isAlwaysOnTop()
+          );
           this.rebuildMenu();
         },
       },
       {
         label: 'Disable overlay mouse',
         click() {
-          overlayWindow.setIgnoreMouseEvents(true);
+          windowManager.overlayWindow.setIgnoreMouseEvents(true);
         },
       },
       {
         label: 'Enable overlay mouse',
         click() {
-          overlayWindow.setIgnoreMouseEvents(false);
+          windowManager.overlayWindow.setIgnoreMouseEvents(false);
         },
       },
       {
