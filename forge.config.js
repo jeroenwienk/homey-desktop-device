@@ -43,7 +43,7 @@ module.exports = {
     {
       name: '@electron-forge/maker-dmg',
       config: {
-        name: 'desktop-device',
+        name: 'Desktop Device',
         overwrite: true,
         icon: path.resolve('src/assets/home.icns'),
       },

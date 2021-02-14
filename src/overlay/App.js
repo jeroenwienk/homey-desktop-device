@@ -4,6 +4,7 @@ import { ipcRenderer } from 'electron';
 import { useHover } from 'react-aria';
 
 import { OVERLAY } from '../shared/events';
+import { displayStore } from './overlay';
 
 import { vars } from '../renderer/theme/GlobalStyles';
 

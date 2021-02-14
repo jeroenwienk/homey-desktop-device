@@ -130,18 +130,29 @@ class WindowManager extends EventEmitter {
 
   createOverlayWindow() {
     const imagepath = path.resolve(__dirname, '../../assets/home.png');
-    const storeBounds = store.get('overlayWindow.bounds');
+    const storeWindowState = store.get('overlayWindow.windowState');
 
-    const bounds =
-      storeBounds != null
-        ? storeBounds
-        : { x: null, y: null, width: 800, height: 600 };
+    let windowState = {
+      bounds: { x: null, y: null, width: 800, height: 600 },
+      isMaximized: false,
+      isHidden: false,
+    };
 
-    const overlayWindow = new BrowserWindow({
-      x: bounds.x,
-      y: bounds.y,
-      width: bounds.width,
-      height: bounds.height,
+    if (storeWindowState != null) {
+      windowState = {
+        ...windowState,
+        ...storeWindowState,
+      };
+    }
+
+    store.set('overlayWindow.windowState', windowState);
+
+    this.overlayWindow = new BrowserWindow({
+      x: windowState.bounds.x,
+      y: windowState.bounds.y,
+      width: windowState.bounds.width,
+      height: windowState.bounds.height,
+      show: windowState.isHidden === false,
       icon: imagepath,
       //backgroundColor: '#181818',
       webPreferences: {
@@ -153,50 +164,63 @@ class WindowManager extends EventEmitter {
       skipTaskbar: true,
     });
 
-    this.overlayWindow = overlayWindow;
+    if (windowState.isMaximized && windowState.isHidden === false) {
+      this.overlayWindow.maximize();
+    }
 
     const saveBounds = debounce(() => {
-      store.set('overlayWindow.bounds', overlayWindow.getBounds());
+      if (this.overlayWindow.isMaximized()) {
+        store.set('overlayWindow.windowState.isMaximized', true);
+        return;
+      }
+
+      store.set(
+        'overlayWindow.windowState.bounds',
+        this.overlayWindow.getBounds()
+      );
+      store.set('overlayWindow.windowState.isMaximized', false);
     }, 200);
 
     //overlayWindow.setSkipTaskbar(true);
-    overlayWindow.loadURL(OVERLAY_WINDOW_WEBPACK_ENTRY);
+    this.overlayWindow.loadURL(OVERLAY_WINDOW_WEBPACK_ENTRY);
     //
     // if (process.env.NODE_ENV !== 'production') {
-    //   overlayWindow.webContents.openDevTools();
+    //   this.overlayWindow.webContents.openDevTools();
     // }
 
-    overlayWindow.on('minimize', (event) => {
+    this.overlayWindow.on('minimize', (event) => {
       console.log('overlayWindow:minimize');
     });
 
-    overlayWindow.on('restore', (event) => {
+    this.overlayWindow.on('restore', (event) => {
       console.log('overlayWindow:restore');
-      overlayWindow.show();
+      this.overlayWindow.show();
     });
 
-    overlayWindow.on('close', (event) => {
+    this.overlayWindow.on('close', (event) => {
       console.log('overlayWindow:close');
 
       if (this.isQuitting === false) {
         event.preventDefault();
-        overlayWindow.hide();
+        this.overlayWindow.hide();
       }
     });
 
-    overlayWindow.on('show', (event) => {
+    this.overlayWindow.on('show', (event) => {
       console.log('overlayWindow:show');
+      store.set('overlayWindow.windowState.isHidden', false);
     });
 
-    overlayWindow.on('hide', (event) => {
+    this.overlayWindow.on('hide', (event) => {
       console.log('overlayWindow:hide');
+      store.set('overlayWindow.windowState.isHidden', true);
     });
 
-    overlayWindow.on('move', (event) => {
+    this.overlayWindow.on('move', (event) => {
       saveBounds();
     });
 
-    overlayWindow.on('resize', (event) => {
+    this.overlayWindow.on('resize', (event) => {
       saveBounds();
     });
   }
