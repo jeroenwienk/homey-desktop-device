@@ -9,6 +9,7 @@ This repository holds the desktop app that connects with the Desktop Device Home
 [Releases](https://github.com/jeroenwienk/homey-desktop-device/releases)
 
 Features
+- input events
 - button events
 - shortcuts events
 - set a display value
