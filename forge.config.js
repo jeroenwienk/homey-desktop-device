@@ -6,14 +6,14 @@ module.exports = {
   packagerConfig: {
     asar: true,
     icon: './src/assets/home.png',
-    name: 'desktop-device',
+    name: 'Desktop Device',
     executeableName: 'desktop-device',
   },
   makers: [
     {
       name: '@electron-forge/maker-squirrel',
       config: {
-        name: 'desktop-device',
+        name: 'DesktopDevice',
         iconUrl: path.resolve('src/assets/home.ico'),
         setupIcon: path.resolve('src/assets/home.ico'),
       },
