@@ -7,7 +7,8 @@ module.exports = {
     asar: true,
     icon: './src/assets/home.png',
     name: 'Desktop Device',
-    executableName: 'desktop-device',
+    // no idea why but maker-squirrel does not like desktop-device
+    executableName: process.platform === 'win32' ? undefined : 'desktop-device',
   },
   makers: [
     {
