@@ -1,7 +1,7 @@
 {
   "name": "homey-desktop-device",
   "productName": "Desktop Device",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Interact with your desktop as a Homey device",
   "main": ".webpack/main",
   "scripts": {
