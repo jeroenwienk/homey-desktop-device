@@ -7,7 +7,7 @@ module.exports = {
     asar: true,
     icon: './src/assets/home.png',
     name: 'Desktop Device',
-    executeableName: 'desktop-device',
+    executableName: 'desktop-device',
   },
   makers: [
     {
