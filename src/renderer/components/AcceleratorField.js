@@ -6,7 +6,8 @@ import { useLabel, useKeyboard } from 'react-aria';
 import { mergeRefs } from '../lib/mergeRefs';
 import { vars } from '../theme/GlobalStyles';
 
-import { Clear } from './common/IconButton';
+import { IconButton } from './common/IconButton';
+import { ClearIcon } from './common/IconMask';
 
 const order = ['Control', 'Command', 'Super', 'Alt', 'AltGr', 'Shift'];
 
@@ -91,17 +92,18 @@ export function AcceleratorField(props) {
   }, [state]);
 
   return (
-    <sc.container>
-      <sc.labelContainer>
-        <sc.label {...label.labelProps}>{props.label}</sc.label>
-        <Clear
-          size={24}
+    <sc.Container>
+      <sc.LabelContainer>
+        <sc.Label {...label.labelProps}>{props.label}</sc.Label>
+        <IconButton
+          iconComponent={ClearIcon}
+          size={vars.icon_size_small}
           onPress={() => {
             setState({});
           }}
         />
-      </sc.labelContainer>
-      <sc.input
+      </sc.LabelContainer>
+      <sc.Input
         {...label.fieldProps}
         {...keyboard.keyboardProps}
         readOnly
@@ -111,39 +113,42 @@ export function AcceleratorField(props) {
         hasError={props.error != null}
         ref={mergeRefs([acceleratorFieldRef, register])}
       />
-    </sc.container>
+    </sc.Container>
   );
 }
 
-const sc = {
-  container: styled.div`
-    display: flex;
-    flex-direction: column;
-  `,
-  labelContainer: styled.div`
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 8px;
-  `,
-  label: styled.label`
-    color: ${vars.color_primary_text};
-    font-weight: 500;
-  `,
-  input: styled.input`
-    position: relative;
-    display: block;
-    min-width: 256px;
-    height: 48px;
-    padding: 8px;
-    color: ${vars.color_primary_text};
-    background-color: ${vars.color_background_input};
-    border: 1px solid ${vars.color_background_input};
-    border-radius: 3px;
-    outline: ${(props) => props.hasError && vars.border_error};
+const sc = {};
 
-    &:focus {
-      outline: ${vars.border_focus};
-    }
-  `,
-};
+sc.Container = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+sc.LabelContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+`;
+
+sc.Label = styled.label`
+  color: ${vars.color_primary_text};
+  font-weight: 500;
+`;
+
+sc.Input = styled.input`
+  position: relative;
+  display: block;
+  min-width: 256px;
+  height: 48px;
+  padding: 8px;
+  color: ${vars.color_primary_text};
+  background-color: ${vars.color_background_input};
+  border: 1px solid ${vars.color_background_input};
+  border-radius: 3px;
+  outline: ${(props) => props.hasError && vars.border_error};
+
+  &:focus {
+    outline: ${vars.border_focus};
+  }
+`;

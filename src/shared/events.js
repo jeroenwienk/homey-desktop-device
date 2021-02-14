@@ -1,5 +1,5 @@
 const REND = {
-  INIT: 'init',
+  INIT: 'renderer:init',
   BUTTON_CREATE: 'button:create',
   BUTTON_UPDATE: 'button:update',
   BUTTON_REMOVE: 'button:remove',
@@ -11,11 +11,15 @@ const REND = {
   DISPLAY_CREATE: 'display:create',
   DISPLAY_UPDATE: 'display:update',
   DISPLAY_REMOVE: 'display:remove',
+  INPUT_CREATE: 'input:create',
+  INPUT_UPDATE: 'input:update',
+  INPUT_REMOVE: 'input:remove',
+  INPUT_RUN: 'input:run',
   TEST: 'test',
 };
 
 const OVERLAY = {
-  INIT: 'init',
+  INIT: 'overlay:init',
 };
 
 const MAIN = {
@@ -28,8 +32,13 @@ const MAIN = {
   DISPLAYS_INIT: 'displays:init',
   DISPLAYS_BROKEN: 'displays:broken',
   DISPLAY_SET: 'display:set',
+  INPUTS_INIT: 'inputs:init',
+  INPUTS_BROKEN: 'inputs:broken',
 
   SOCKETS_INIT: 'sockets:init',
+
+  VESION: 'version',
+
   TEST: 'test',
 };
 
@@ -39,6 +48,8 @@ const IO_EMIT = {
   ACCELERATORS_SYNC: 'accelerators:sync',
   ACCELERATOR_RUN: 'accelerator:run',
   DISPLAYS_SYNC: 'displays:sync',
+  INPUTS_SYNC: 'inputs:sync',
+  INPUT_RUN: 'input:run',
 };
 
 const IO_ON = {
@@ -47,13 +58,16 @@ const IO_ON = {
   COMMAND_RUN: 'command:run',
   BUTTON_RUN_SUCCESS: 'button:run:success',
   BUTTON_RUN_ERROR: 'button:run:error',
+  FLOW_BUTTON_SAVED: 'flow:button:saved',
   ACCELERATOR_RUN_SUCCESS: 'accelerator:run:success',
   ACCELERATOR_RUN_ERROR: 'accelerator:run:error',
-  NOTIFICATION_SHOW_RUN: 'notification:show:run',
-  FLOW_BUTTON_SAVED: 'flow:button:saved',
   FLOW_ACCELERATOR_SAVED: 'flow:accelerator:saved',
-  FLOW_DISPLAY_SAVED: 'flow:display:saved',
+  NOTIFICATION_SHOW_RUN: 'notification:show:run',
   DISPLAY_SET_RUN: 'display:set:run',
+  FLOW_DISPLAY_SAVED: 'flow:display:saved',
+  INPUT_RUN_SUCCESS: 'input:run:success',
+  INPUT_RUN_ERROR: 'input:run:error',
+  FLOW_INPUT_SAVED: 'flow:input:saved',
 };
 
 module.exports = {

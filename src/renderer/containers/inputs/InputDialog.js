@@ -1,27 +1,22 @@
 import React, { useEffect } from 'react';
-import styled from 'styled-components';
 import { v4 as uuid } from 'uuid';
 
 import { useForm } from 'react-hook-form';
 import { useId } from 'react-aria';
 
 import { history } from '../../memoryHistory';
-import {
-  createDisplay,
-  editDisplay,
-  removeDisplay,
-} from '../../store/displayStore';
+import { createInput, editInput, removeInput } from '../../store/inputStore';
 
 import { DialogBase } from '../../components/dialog/DialogBase';
-import { DialogActions } from '../../components/dialog/DialogActions';
 import { DialogContent } from '../../components/dialog/DialogContent';
+import { DialogActions } from '../../components/dialog/DialogActions';
 import { DialogForm } from '../../components/dialog/DialogForm';
 import { IconButton } from '../../components/common/IconButton';
 import { CancelIcon, RemoveIcon } from '../../components/common/IconMask';
 import { TextField } from '../../components/TextField';
 import { Button } from '../../components/common/Button';
 
-export function DisplayDialog(props) {
+export function InputDialog(props) {
   const formId = useId();
   const searchParams = new URLSearchParams(props.location.search);
   const editId = searchParams.get('id');
@@ -38,7 +33,7 @@ export function DisplayDialog(props) {
             <IconButton
               iconComponent={RemoveIcon}
               onPress={() => {
-                removeDisplay({ id: editId });
+                removeInput({ id: editId });
                 handleClose();
               }}
             />
@@ -50,7 +45,7 @@ export function DisplayDialog(props) {
         <DisplayForm
           formId={formId}
           editId={editId}
-          displayList={props.displayList}
+          inputList={props.inputList}
           onSubmit={handleClose}
         />
       </DialogContent>
@@ -63,23 +58,23 @@ function DisplayForm(props) {
 
   const onSubmit = (data) => {
     if (props.editId === 'create') {
-      createDisplay({ id: uuid(), ...data });
+      createInput({ id: uuid(), ...data });
       props.onSubmit(data);
       return;
     }
 
-    editDisplay({ id: props.editId, ...data });
+    editInput({ id: props.editId, ...data });
     props.onSubmit(data);
   };
 
   useEffect(() => {
     if (props.editId !== 'create') {
-      const display = props.displayList.find((display) => {
-        return display.id === props.editId;
+      const input = props.inputList.find((input) => {
+        return input.id === props.editId;
       });
-      reset(display);
+      reset(input);
     }
-  }, [props.editId, props.displayList]);
+  }, [props.editId, props.inputList]);
 
   return (
     <DialogForm id={props.formId} key={props.editId}>

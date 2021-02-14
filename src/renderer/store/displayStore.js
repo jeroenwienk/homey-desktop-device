@@ -30,11 +30,11 @@ export function editDisplay(display) {
   });
 }
 
-export function removeDisplay(button) {
-  ipcRenderer.send(REND.DISPLAY_REMOVE, button);
+export function removeDisplay(display) {
+  ipcRenderer.send(REND.DISPLAY_REMOVE, display);
   displayStore.setState((prevState) => {
     const nextDisplays = prevState.list.filter(
-      (prevDisplay) => prevDisplay.id !== button.id
+      (prevDisplay) => prevDisplay.id !== display.id
     );
 
     return {

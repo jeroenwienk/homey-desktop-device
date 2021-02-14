@@ -16,12 +16,12 @@ class TrayManager extends EventEmitter {
 
     const contextMenu = this.buildMenu();
 
+    tray.setToolTip('Desktop Device');
+    tray.setContextMenu(contextMenu);
+
     tray.on('click', (event) => {
       windowManager.mainWindow.show();
     });
-
-    tray.setToolTip('Desktop Device');
-    tray.setContextMenu(contextMenu);
 
     tray.on('right-click', (event) => {
       this.rebuildMenu();
@@ -36,68 +36,55 @@ class TrayManager extends EventEmitter {
 
   buildMenu = () => {
     const overlayWindow = windowManager.overlayWindow;
-    const mainWindow = windowManager.mainWindow;
 
     return Menu.buildFromTemplate([
       { type: 'separator' },
       {
-        label: mainWindow.isVisible() ? 'Hide' : 'Show',
+        label: 'Show Overlay',
         click: () => {
-          if (mainWindow.isVisible()) {
-            mainWindow.hide();
-          } else {
-            mainWindow.show();
-          }
+          overlayWindow.show();
           this.rebuildMenu();
-        }
+        },
       },
       {
-        label: overlayWindow.isVisible() ? 'Hide overlay' : 'Show Overlay',
+        label: 'Hide Overlay',
         click: () => {
-          if (overlayWindow.isVisible()) {
-            overlayWindow.hide();
-          } else {
-            overlayWindow.show();
-          }
+          overlayWindow.hide();
           this.rebuildMenu();
-        }
+        },
       },
       { type: 'separator' },
       {
         label: overlayWindow.isAlwaysOnTop()
-               ? 'Overlay disable always on top'
-               : 'Overlay enable always on top',
+          ? 'Overlay disable always on top'
+          : 'Overlay enable always on top',
         click: () => {
           overlayWindow.setAlwaysOnTop(!overlayWindow.isAlwaysOnTop());
           this.rebuildMenu();
-        }
+        },
       },
       {
         label: 'Disable overlay mouse',
         click() {
           overlayWindow.setIgnoreMouseEvents(true);
-        }
+        },
       },
       {
         label: 'Enable overlay mouse',
         click() {
           overlayWindow.setIgnoreMouseEvents(false);
-        }
+        },
       },
       {
         label: 'Quit',
         click() {
           windowManager.closeAll();
-        }
-      }
+        },
+      },
     ]);
   };
-
-  getTray() {
-    return this.tray;
-  }
 }
 
 module.exports = {
-  trayManager: new TrayManager()
+  trayManager: new TrayManager(),
 };

@@ -6,14 +6,7 @@ import { mergeRefs } from '../../lib/mergeRefs';
 import { vars } from '../../theme/GlobalStyles';
 
 import { ButtonBase } from './ButtonBase';
-import {
-  IconMask,
-  AddIcon,
-  SaveIcon,
-  CancelIcon,
-  RemoveIcon,
-  ClearIcon,
-} from './IconMask';
+import { IconMask } from './IconMask';
 
 export const IconButton = forwardRef((props, forwardedRef) => {
   const buttonRef = useRef();
@@ -44,23 +37,3 @@ export const IconButton = forwardRef((props, forwardedRef) => {
     </ButtonBase>
   );
 });
-
-export const Add = forwardRef((props, forwardedRef) => (
-  <IconButton {...props} ref={forwardedRef} iconComponent={AddIcon} />
-));
-
-export const Save = forwardRef((props, forwardedRef) => (
-  <IconButton {...props} ref={forwardedRef} iconComponent={SaveIcon} />
-));
-
-export const Cancel = forwardRef((props, forwardedRef) => (
-  <IconButton {...props} ref={forwardedRef} iconComponent={CancelIcon} />
-));
-
-export const Remove = forwardRef((props, forwardedRef) => (
-  <IconButton {...props} ref={forwardedRef} iconComponent={RemoveIcon} />
-));
-
-export const Clear = forwardRef((props, forwardedRef) => (
-  <IconButton {...props} ref={forwardedRef} iconComponent={ClearIcon} />
-));

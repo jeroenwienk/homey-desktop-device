@@ -21,7 +21,6 @@ class WindowManager extends EventEmitter {
 
   createMainWindow() {
     const imagepath = path.resolve(__dirname, '../../assets/home.png');
-
     const storeWindowState = store.get('mainWindow.windowState');
 
     let windowState = {
@@ -39,81 +38,83 @@ class WindowManager extends EventEmitter {
 
     store.set('mainWindow.windowState', windowState);
 
-    const mainWindow = new BrowserWindow({
+    this.mainWindow = new BrowserWindow({
       x: windowState.bounds.x,
       y: windowState.bounds.y,
       width: windowState.bounds.width,
       height: windowState.bounds.height,
       show: windowState.isHidden === false,
       icon: imagepath,
-      backgroundColor: '#181818',
+      backgroundColor: '#161b22',
       webPreferences: {
         nodeIntegration: true,
         contextIsolation: false,
       },
     });
 
-    if (windowState.isMaximized) {
-      mainWindow.maximize();
+    if (windowState.isMaximized && windowState.isHidden === false) {
+      this.mainWindow.maximize();
     }
 
-    this.mainWindow = mainWindow;
-
     const saveBounds = debounce(() => {
-      if (mainWindow.isMaximized()) {
+      if (this.mainWindow.isMaximized()) {
         store.set('mainWindow.windowState.isMaximized', true);
         return;
       }
 
-      store.set('mainWindow.windowState.bounds', mainWindow.getBounds());
+      store.set('mainWindow.windowState.bounds', this.mainWindow.getBounds());
       store.set('mainWindow.windowState.isMaximized', false);
     }, 200);
 
-    mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
+    this.mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
     if (process.env.NODE_ENV !== 'production') {
-      mainWindow.webContents.openDevTools();
+      this.mainWindow.webContents.openDevTools();
     }
 
-    mainWindow.on('minimize', (event) => {
+    this.mainWindow.on('maximize', (event) => {
+      console.log('mainWindow:maximize');
+    });
+
+    this.mainWindow.on('minimize', (event) => {
       console.log('mainWindow:minimize');
     });
 
-    mainWindow.on('restore', (event) => {
+    this.mainWindow.on('restore', (event) => {
       console.log('mainWindow:restore');
-      mainWindow.show();
+      this.mainWindow.show();
     });
 
-    mainWindow.on('close', (event) => {
+    this.mainWindow.on('close', (event) => {
       console.log('mainWindow:close');
 
       if (this.isQuitting === false) {
         event.preventDefault();
-        mainWindow.hide();
+        this.mainWindow.hide();
       }
     });
 
-    mainWindow.on('show', (event) => {
+    this.mainWindow.on('show', (event) => {
       console.log('mainWindow:show');
       store.set('mainWindow.windowState.isHidden', false);
     });
 
-    mainWindow.on('hide', (event) => {
+    this.mainWindow.on('hide', (event) => {
       console.log('mainWindow:hide');
       store.set('mainWindow.windowState.isHidden', true);
     });
 
-    mainWindow.on('move', (event) => {
+    this.mainWindow.on('move', (event) => {
       console.log('move');
       saveBounds();
     });
 
-    mainWindow.on('resize', (event) => {
+    this.mainWindow.on('resize', (event) => {
       console.log('resize');
       saveBounds();
     });
 
-    mainWindow.webContents.on('dom-ready', (event) => {
+    this.mainWindow.webContents.on('dom-ready', (event) => {
       this.emit('main-window-dom-ready', event);
     });
   }

@@ -23,35 +23,35 @@ export function History() {
   const historyList = useHistoryList();
 
   return (
-    <sc.list>
+    <sc.List>
       {historyList.length === 0 ? (
-        <sc.entry>
+        <sc.Entry>
           <div />
           <div>
-            <sc.argument>History empty</sc.argument>
+            <sc.Argument>History empty</sc.Argument>
           </div>
-        </sc.entry>
+        </sc.Entry>
       ) : (
         historyList.map((historyEntry, index) => {
           const IconComponent = getIconComponent(historyEntry.name);
 
           return (
-            <sc.entry key={index}>
+            <sc.Entry key={index}>
               <div>
                 <IconComponent
-                  size={24}
+                  size={vars.icon_size_small}
                   color={vars.color_primary_text_accent}
                 />
               </div>
               <div>
-                <sc.argument>{historyEntry.argument}</sc.argument>
-                <sc.time>{dateFormatter.format(historyEntry.date)}</sc.time>
+                <sc.Argument>{historyEntry.argument}</sc.Argument>
+                <sc.Time>{dateFormatter.format(historyEntry.date)}</sc.Time>
               </div>
-            </sc.entry>
+            </sc.Entry>
           );
         })
       )}
-    </sc.list>
+    </sc.List>
   );
 }
 
@@ -66,30 +66,33 @@ function getIconComponent(name) {
   }
 }
 
-const sc = {
-  list: styled.ul`
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  `,
-  entry: styled.li`
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 16px;
-    padding: 16px 32px;
-    background-color: ${vars.color_background_panel};
-    box-shadow: ${vars.box_shadow_default};
-    word-break: break-all;
-    overflow: hidden;
-    border-radius: 3px;
-  `,
-  argument: styled.div`
-    color: ${vars.color_primary_text};
-  `,
-  time: styled.div`
-    color: ${vars.color_primary_text_accent};
-    font-weight: 500;
-    margin-top: 8px;
-  `,
-};
+const sc = {};
+
+sc.List = styled.ul`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`;
+
+sc.Entry = styled.li`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 32px;
+  background-color: ${vars.color_background_panel};
+  box-shadow: ${vars.box_shadow_default};
+  word-break: break-all;
+  overflow: hidden;
+  border-radius: 3px;
+`;
+
+sc.Argument = styled.div`
+  color: ${vars.color_primary_text};
+`;
+
+sc.Time = styled.div`
+  color: ${vars.color_primary_text_accent};
+  font-weight: 500;
+  margin-top: 8px;
+`;

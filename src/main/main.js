@@ -34,13 +34,7 @@ initIpcMainHandlers();
 
 // console.log(app.getVersion());
 //
-// fetch(
-//   'https://api.github.com/repos/jeroenwienk/homey-desktop-device/releases/latest'
-// )
-//   .then((res) => res.json())
-//   .then((json) => {
-//     console.log(json);
-//   });
+
 
 app.on('ready', async () => {
   console.log('app:ready');

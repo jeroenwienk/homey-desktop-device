@@ -77,7 +77,7 @@ module.exports = {
             },
             {
               html: './src/renderer/index.html',
-              js: './src/renderer/overlay.js',
+              js: './src/overlay/overlay.js',
               name: 'overlay_window',
             },
           ],

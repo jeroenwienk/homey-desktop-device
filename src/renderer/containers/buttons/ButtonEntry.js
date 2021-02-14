@@ -6,27 +6,40 @@ import { useButton, useFocusRing, mergeProps } from 'react-aria';
 import { vars } from '../../theme/GlobalStyles';
 import { mergeRefs } from '../../lib/mergeRefs';
 
+import { IconButton } from '../../components/common/IconButton';
+import { SettingsIcon } from '../../components/common/IconMask';
+
 export const ButtonEntry = forwardRef(function (props, forwardedRef) {
   const buttonRef = useRef();
   const button = useButton({ ...props, id: props.button.id }, buttonRef);
   const focusRing = useFocusRing();
 
+  function handleSettingsPress(event) {
+    props.onContextMenu();
+  }
+
   return (
-    <ButtonBase
+    <sc.ButtonBase
       {...mergeProps(focusRing.focusProps, button.buttonProps)}
       ref={mergeRefs([buttonRef, forwardedRef])}
       isFocusVisible={focusRing.isFocusVisible}
       onContextMenu={props.onContextMenu}
     >
-      <div className="top" />
-      <div className="name" title={props.button.name}>
-        {props.button.name}
-      </div>
-    </ButtonBase>
+      <sc.Top>
+        <IconButton
+          onPress={handleSettingsPress}
+          size={vars.icon_size_small}
+          iconComponent={SettingsIcon}
+        />
+      </sc.Top>
+      <sc.Name title={props.button.name}>{props.button.name}</sc.Name>
+    </sc.ButtonBase>
   );
 });
 
-const ButtonBase = styled.button`
+const sc = {};
+
+sc.ButtonBase = styled.div`
   display: flex;
   position: relative;
   flex-direction: column;
@@ -36,12 +49,9 @@ const ButtonBase = styled.button`
   cursor: pointer;
   border-radius: 10px;
   background-color: ${vars.color_background_button};
-  color: ${vars.color_primary_text_accent};
-  box-shadow: ${vars.box_shadow_default};
-
-  &:active {
-    transform: scale(0.95);
-  }
+  color: ${vars.color_primary_text};
+  border: ${vars.border_button};
+  min-width: 0;
 
   &:after {
     content: '';
@@ -55,20 +65,18 @@ const ButtonBase = styled.button`
     background-color: ${vars.color_focus_accent};
     border-radius: 10px;
   }
+`;
 
-  .name {
-    flex: 0 1 auto;
-    text-align: left;
-    font-size: 14px;
-    font-weight: 500;
-    line-height: 18px;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
+sc.Top = styled.div`
+  flex: 1 1 auto;
+  align-self: flex-end;
+`;
 
-  .top {
-    flex: 1 1 auto;
-  }
+sc.Name = styled.div`
+  flex: 0 1 auto;
+  text-align: left;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 18px;
+  overflow: hidden;
 `;

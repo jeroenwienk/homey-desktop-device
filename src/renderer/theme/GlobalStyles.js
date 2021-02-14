@@ -36,22 +36,21 @@ const colorVars = {
 const colors = new Proxy(colorVars, varHandler);
 
 const colorFunctionalVars = {
-  color_primary_text: colors.color_white,
-  color_primary_text_accent: colors.color_grey,
-
-  color_primary_text_dark: colors.color_nero,
-  color_primary_text_dark_accent: colors.color_grey_dark,
+  color_primary_text: '#c9d1d9',
+  color_primary_text_accent: '#8b949e',
 
   color_icon_dark: colors.color_nero,
   color_icon_light: colors.color_white,
 
-  color_background_app: 'rgba(24, 24, 24, 1)',
-  color_background_panel: 'rgba(32, 32, 32, 1)',
+  color_background_app: '#06090f',
+  color_background_header: '#161b22',
+  color_background_panel: '#0d1117',
   color_background_light: colors.color_white,
   color_background_overlay: 'rgb(0, 0, 0, 0.5)',
-  color_background_dialog: 'rgba(32, 32, 32, 1)',
-  color_background_input: 'rgba(24, 24, 24, 1)',
-  color_background_button: 'rgba(255, 255, 255, 0.1)',
+  color_background_dialog: '#161b22',
+  color_background_input: '#06090f',
+  //color_background_button: 'rgba(255, 255, 255, 0.1)',
+  color_background_button: '#21262d',
 
   color_hover: 'rgba(255, 255, 255, 0.1)',
   color_active: 'rgba(255, 255, 255, 0.2)',
@@ -66,11 +65,21 @@ const colorsFunctional = new Proxy(colorFunctionalVars, varHandler);
 const borderVars = {
   border_error: `2px solid ${colors.color_red}`,
   border_focus: `2px solid ${colors.color_yellow}`,
+  border_button: `1px solid #30363d`,
+  border_default: `1px solid #30363d`,
+  border_input: `1px solid #21262d`,
 };
 
 const zIndexVars = {
   z_index_overlay: 2,
   z_index_header: 1,
+};
+
+const iconSizeVars = {
+  icon_size_tiny: '16px',
+  icon_size_small: '24px',
+  icon_size_default: '32px',
+  icon_size_large: '48px',
 };
 
 const boxShadowVars = {
@@ -84,6 +93,7 @@ const target = {
   ...colorFunctionalVars,
   ...borderVars,
   ...zIndexVars,
+  ...iconSizeVars,
   ...boxShadowVars,
 };
 
@@ -112,6 +122,7 @@ export const GlobalStyles = createGlobalStyle`
     height: 100vh;
     width: 100vw;
     background-color: ${vars.color_background_app};
+    color: ${vars.color_primary_text}
   }
 
   button, input, ul {

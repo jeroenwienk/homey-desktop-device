@@ -15,7 +15,8 @@ import {
 
 import { vars } from '../../theme/GlobalStyles';
 
-import { Add } from './IconButton';
+import { IconButton } from './IconButton';
+import { AddIcon } from './IconMask';
 
 MenuButton.Item = Item;
 
@@ -29,10 +30,11 @@ export function MenuButton(props) {
   );
 
   return (
-    <sc.menuButtonContainer>
-      <Add
+    <sc.MenuButtonContainer>
+      <IconButton
         {...menuTrigger.menuTriggerProps}
         ref={menuTriggerRef}
+        iconComponent={AddIcon}
         aria-label={props.label}
       />
       {menuTriggerState.isOpen && (
@@ -45,7 +47,7 @@ export function MenuButton(props) {
           {props.children}
         </MenuPopup>
       )}
-    </sc.menuButtonContainer>
+    </sc.MenuButtonContainer>
   );
 }
 
@@ -82,9 +84,9 @@ function MenuPopup(props) {
 
   return (
     <FocusScope restoreFocus contain>
-      <sc.menuPopupOverlay {...overlay.overlayProps} ref={overlayRef}>
+      <sc.MenuPopupOverlay {...overlay.overlayProps} ref={overlayRef}>
         <DismissButton onDismiss={props.onClose} />
-        <sc.menuList
+        <sc.MenuList
           {...mergeProps(menu.menuProps, props.menuTrigger.menuProps)}
           ref={menuRef}
         >
@@ -97,9 +99,9 @@ function MenuPopup(props) {
               onClose={props.onClose}
             />
           ))}
-        </sc.menuList>
+        </sc.MenuList>
         <DismissButton onDismiss={props.onClose} />
-      </sc.menuPopupOverlay>
+      </sc.MenuPopupOverlay>
     </FocusScope>
   );
 }
@@ -123,47 +125,50 @@ function MenuItem({ item, treeState, onAction, onClose }) {
   const focus = useFocus({ onFocusChange: setFocused });
 
   return (
-    <sc.menuListItem
+    <sc.MenuListItem
       {...mergeProps(menuItem.menuItemProps, focus.focusProps)}
       ref={menuItemRef}
       isFocused={isFocused}
     >
       {item.rendered}
-    </sc.menuListItem>
+    </sc.MenuListItem>
   );
 }
 
-const sc = {
-  menuButtonContainer: styled.div`
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-  `,
-  menuPopupOverlay: styled.div`
-    position: absolute;
-    left: 24px;
-    top: 48px;
-    background-color: ${vars.color_background_panel};
-    border-radius: 3px;
-    box-shadow: ${vars.box_shadow_default};
-  `,
-  menuList: styled.ul`
-    min-width: 256px;
-  `,
-  menuListItem: styled.li`
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 48px;
-    outline: 0;
-    font-weight: 500;
-    cursor: pointer;
-    color: ${(props) =>
-      props.isFocused ? vars.color_focus : vars.color_primary_text};
+const sc = {};
 
-    &:hover {
-      background-color: ${vars.color_hover};
-    }
-  `,
-};
+sc.MenuButtonContainer = styled.div`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+`;
+
+sc.MenuPopupOverlay = styled.div`
+  position: absolute;
+  left: 24px;
+  top: 24px;
+  background-color: ${vars.color_background_panel};
+  border-radius: 3px;
+  box-shadow: ${vars.box_shadow_default};
+`;
+
+sc.MenuList = styled.ul`
+  min-width: 256px;
+`;
+
+sc.MenuListItem = styled.li`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+  outline: 0;
+  font-weight: 500;
+  cursor: pointer;
+  color: ${(props) =>
+    props.isFocused ? vars.color_focus : vars.color_primary_text};
+
+  &:hover {
+    background-color: ${vars.color_hover};
+  }
+`;

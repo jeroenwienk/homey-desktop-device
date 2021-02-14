@@ -19,7 +19,7 @@ class ServerSocket {
 
     this.httpsServer = https.createServer({
       key: pems.private,
-      cert: pems.cert
+      cert: pems.cert,
     });
 
     this.options = {
@@ -28,7 +28,7 @@ class ServerSocket {
       pingTimeout: 5000,
       pingInterval: 25000,
       upgradeTimeout: 10000,
-      maxHttpBufferSize: 10e7
+      maxHttpBufferSize: 10e7,
     };
 
     this.io = new Server(this.httpsServer, this.options);
@@ -96,6 +96,7 @@ class ServerSocket {
     socket.on(IO_ON.BROWSER_OPEN_RUN, (...args) => {
       this.handleBrowserOpen(...args);
     });
+
     socket.on(IO_ON.PATH_OPEN_RUN, (...args) => {
       this.handlePathOpen(...args);
     });
@@ -150,7 +151,7 @@ class ServerSocket {
       const historyEntry = await db.insertHistoryEntry({
         name: 'browser:open',
         argument: data.url,
-        date: new Date()
+        date: new Date(),
       });
 
       windowManager.sendToMainWindow(MAIN.HISTORY_PUSH, historyEntry);
@@ -167,7 +168,7 @@ class ServerSocket {
       const historyEntry = await db.insertHistoryEntry({
         name: 'path:open',
         argument: data.path,
-        date: new Date()
+        date: new Date(),
       });
 
       windowManager.sendToMainWindow(MAIN.HISTORY_PUSH, historyEntry);
@@ -184,7 +185,7 @@ class ServerSocket {
       const notification = new Notification({
         title: data.title != null ? data.title : 'Homey Desktop',
         body: data.body,
-        silent: data.silent === 'true'
+        silent: data.silent === 'true',
       });
       notification.show();
       callback();
@@ -200,7 +201,7 @@ class ServerSocket {
           data.command,
           {
             timeout: data.timeout == null ? 0 : data.timeout,
-            cwd: data.cwd == null ? '/' : data.cwd
+            cwd: data.cwd == null ? '/' : data.cwd,
           },
           (error, stdout, stderr) => {
             if (error) {
@@ -242,6 +243,7 @@ class ServerSocket {
       const buttons = await db.getButtons();
       const accelerators = await db.getAccelerators();
       const displays = await db.getDisplays();
+      const inputs = await db.getInputs();
 
       socket.emit(IO_EMIT.BUTTONS_SYNC, { buttons }, ({ broken }) => {
         windowManager.sendToMainWindow(MAIN.BUTTONS_BROKEN, broken);
@@ -253,6 +255,10 @@ class ServerSocket {
 
       socket.emit(IO_EMIT.DISPLAYS_SYNC, { displays }, ({ broken }) => {
         windowManager.sendToMainWindow(MAIN.DISPLAYS_BROKEN, broken);
+      });
+
+      socket.emit(IO_EMIT.INPUTS_SYNC, { inputs }, ({ broken }) => {
+        windowManager.sendToMainWindow(MAIN.INPUTS_BROKEN, broken);
       });
     } catch (error) {
       console.error(error);
@@ -279,7 +285,7 @@ class ServerSocket {
         socketId: socket.id,
         cloudId: socket.handshake.query.cloudId,
         name: socket.handshake.query.name,
-        connected: socket.connected
+        connected: socket.connected,
       };
     });
   }

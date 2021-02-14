@@ -9,6 +9,7 @@ import cancel from '../../../assets/actions/cancel.svg';
 import remove from '../../../assets/actions/remove.svg';
 import clear from '../../../assets/actions/clear.svg';
 import drag from '../../../assets/actions/drag.svg';
+import settings from '../../../assets/actions/settings.svg';
 
 import nolink from '../../../assets/status/nolink.svg';
 import warning from '../../../assets/status/warning.svg';
@@ -23,8 +24,8 @@ export const IconMask = styled.div`
   mask-size: contain;
   mask-position: center;
   mask-repeat: no-repeat;
-  width: ${(props) => props.size ?? 48}px;
-  height: ${(props) => props.size ?? 48}px;
+  width: ${(props) => props.size ?? vars.icon_size_default};
+  height: ${(props) => props.size ?? vars.icon_size_default};
   background-color: ${(props) => props.color ?? vars.color_icon_light};
 `;
 
@@ -70,4 +71,8 @@ export const WarningIcon = forwardRef((props, forwardedRef) => (
 
 export const DragIcon = forwardRef((props, forwardedRef) => (
   <IconMask {...props} ref={forwardedRef} mask={drag} />
+));
+
+export const SettingsIcon = forwardRef((props, forwardedRef) => (
+  <IconMask {...props} ref={forwardedRef} mask={settings} />
 ));

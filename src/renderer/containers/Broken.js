@@ -14,27 +14,27 @@ export function Broken() {
   const brokenDisplays = displayStore((state) => state.broken);
 
   return (
-    <sc.container>
+    <sc.Container>
       {brokenButtons.map((brokenButton) => {
         if (!brokenButton.button) {
           return (
-            <sc.brokenEntry key={brokenButton.flow.id}>
+            <sc.BrokenEntry key={brokenButton.flow.id}>
               <ErrorIcon color={vars.color_red} />
               <div>
                 <div>
                   <strong>Flow: </strong>
                   {brokenButton.flow.name}
                 </div>
-                <sc.message>
+                <sc.Message>
                   The Flow is broken because the button no longer exists.
-                </sc.message>
+                </sc.Message>
               </div>
-            </sc.brokenEntry>
+            </sc.BrokenEntry>
           );
         }
 
         return (
-          <sc.brokenEntry key={brokenButton.flow.id}>
+          <sc.BrokenEntry key={brokenButton.flow.id}>
             <WarningIcon color={vars.color_yellow} />
             <div>
               <div>
@@ -42,35 +42,35 @@ export function Broken() {
                 {brokenButton.flow.name}
               </div>
               <div>{parseBrokenButton(brokenButton)}</div>
-              <sc.message>
+              <sc.Message>
                 The Flow isn't broken but it's arguments no longer match. Update
                 and save the Flow.
-              </sc.message>
+              </sc.Message>
             </div>
-          </sc.brokenEntry>
+          </sc.BrokenEntry>
         );
       })}
 
       {brokenAccelerators.map((brokenAccelerator) => {
         if (!brokenAccelerator.accelerator) {
           return (
-            <sc.brokenEntry key={brokenAccelerator.flow.id}>
+            <sc.BrokenEntry key={brokenAccelerator.flow.id}>
               <ErrorIcon color={vars.color_red} />
               <div>
                 <div>
                   <strong>Flow: </strong>
                   {brokenAccelerator.flow.name}
                 </div>
-                <sc.message>
+                <sc.Message>
                   The Flow is broken because the shortcut no longer exists.
-                </sc.message>
+                </sc.Message>
               </div>
-            </sc.brokenEntry>
+            </sc.BrokenEntry>
           );
         }
 
         return (
-          <sc.brokenEntry key={brokenAccelerator.flow.id}>
+          <sc.BrokenEntry key={brokenAccelerator.flow.id}>
             <WarningIcon color={vars.color_yellow} />
             <div>
               <div>
@@ -78,36 +78,36 @@ export function Broken() {
                 {brokenAccelerator.flow.name}
               </div>
               <div>{parseBrokenAccelerator(brokenAccelerator)}</div>
-              <sc.message>
+              <sc.Message>
                 The Flow isn't broken but it's arguments no longer match. Update
                 and save the Flow.
-              </sc.message>
+              </sc.Message>
             </div>
-          </sc.brokenEntry>
+          </sc.BrokenEntry>
         );
       })}
 
       {brokenDisplays.map((brokenDisplay) => {
         if (!brokenDisplay.display) {
           return (
-            <sc.brokenEntry key={brokenDisplay.flow.id}>
+            <sc.BrokenEntry key={brokenDisplay.flow.id}>
               <ErrorIcon color={vars.color_red} />
               <div>
                 <div>
                   <strong>Flow: </strong>
                   {brokenDisplay.flow.name}
                 </div>
-                <sc.message>
+                <sc.Message>
                   The Flow is broken because the display no longer exists.{' '}
                   <strong>{brokenDisplay.action.args.display.name}</strong>
-                </sc.message>
+                </sc.Message>
               </div>
-            </sc.brokenEntry>
+            </sc.BrokenEntry>
           );
         }
 
         return (
-          <sc.brokenEntry key={brokenDisplay.flow.id}>
+          <sc.BrokenEntry key={brokenDisplay.flow.id}>
             <WarningIcon color={vars.color_yellow} />
             <div>
               <div>
@@ -115,15 +115,15 @@ export function Broken() {
                 {brokenDisplay.flow.name}
               </div>
               <div>{parseBrokenDisplay(brokenDisplay)}</div>
-              <sc.message>
+              <sc.Message>
                 The Flow isn't broken but it's arguments no longer match. Update
                 and save the Flow.
-              </sc.message>
+              </sc.Message>
             </div>
-          </sc.brokenEntry>
+          </sc.BrokenEntry>
         );
       })}
-    </sc.container>
+    </sc.Container>
   );
 }
 
@@ -153,8 +153,8 @@ function parseBrokenButton(brokenButton) {
     return (
       <div key={index}>
         <strong>{entry.name}:</strong> expected{' '}
-        <sc.argument>{entry.expected}</sc.argument> actual{' '}
-        <sc.argument>{entry.actual}</sc.argument>
+        <sc.Argument>{entry.expected}</sc.Argument>
+        actual <sc.Argument>{entry.actual}</sc.Argument>
       </div>
     );
   });
@@ -178,8 +178,8 @@ function parseBrokenAccelerator(brokenAccelerator) {
     return (
       <div key={index}>
         <strong>{entry.name}:</strong> expected{' '}
-        <sc.argument>{entry.expected}</sc.argument> actual{' '}
-        <sc.argument>{entry.actual}</sc.argument>
+        <sc.Argument>{entry.expected}</sc.Argument>
+        actual <sc.Argument>{entry.actual}</sc.Argument>
       </div>
     );
   });
@@ -212,36 +212,39 @@ function parseBrokenDisplay(brokenDisplay) {
     return (
       <div key={index}>
         <strong>{entry.name}:</strong> expected{' '}
-        <sc.argument>{entry.expected}</sc.argument> actual{' '}
-        <sc.argument>{entry.actual}</sc.argument>
+        <sc.Argument>{entry.expected}</sc.Argument>
+        actual <sc.Argument>{entry.actual}</sc.Argument>
       </div>
     );
   });
 }
 
-const sc = {
-  container: styled.div`
-    display: flex;
-    flex-direction: column;
-    flex-wrap: wrap;
-    gap: 16px;
-  `,
-  brokenEntry: styled.div`
-    display: flex;
-    align-items: center;
-    padding: 16px;
-    gap: 16px;
-    background-color: ${vars.color_background_panel};
-    color: ${vars.color_primary_text};
-    box-shadow: ${vars.box_shadow_default};
-    border-radius: 3px;
-    line-height: 22px;
-  `,
-  message: styled.div`
-    color: ${vars.color_primary_text_accent};
-  `,
-  argument: styled.div`
-    display: inline-block;
-    color: ${vars.color_primary_text_accent};
-  `,
-};
+const sc = {};
+
+sc.Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  gap: 16px;
+`;
+
+sc.BrokenEntry = styled.div`
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  gap: 16px;
+  background-color: ${vars.color_background_panel};
+  color: ${vars.color_primary_text};
+  box-shadow: ${vars.box_shadow_default};
+  border-radius: 3px;
+  line-height: 22px;
+`;
+
+sc.Message = styled.div`
+  color: ${vars.color_primary_text_accent};
+`;
+
+sc.Argument = styled.div`
+  display: inline-block;
+  color: ${vars.color_primary_text_accent};
+`;

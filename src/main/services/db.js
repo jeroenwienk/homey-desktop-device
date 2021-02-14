@@ -5,22 +5,27 @@ class DataBase {
   constructor() {
     this.historyCollection = new DataStore({
       filename: `${app.getPath('userData')}/history`,
-      autoload: true
+      autoload: true,
     });
 
     this.buttonCollection = new DataStore({
       filename: `${app.getPath('userData')}/buttons`,
-      autoload: true
+      autoload: true,
     });
 
     this.acceleratorCollection = new DataStore({
       filename: `${app.getPath('userData')}/accelerators`,
-      autoload: true
+      autoload: true,
     });
 
     this.displayCollection = new DataStore({
       filename: `${app.getPath('userData')}/displays`,
-      autoload: true
+      autoload: true,
+    });
+
+    this.inputCollection = new DataStore({
+      filename: `${app.getPath('userData')}/inputs`,
+      autoload: true,
     });
   }
 
@@ -153,8 +158,44 @@ class DataBase {
       });
     });
   }
+
+  async getInputs() {
+    return new Promise((resolve, reject) => {
+      this.inputCollection.find({}).exec((error, docs) => {
+        if (error) return reject(error);
+        resolve(docs);
+      });
+    });
+  }
+
+  async insertInput(args) {
+    return new Promise((resolve, reject) => {
+      this.inputCollection.insert(args, (error, entry) => {
+        if (error) return reject(error);
+        resolve(entry);
+      });
+    });
+  }
+
+  async updateInput(id, args) {
+    return new Promise((resolve, reject) => {
+      this.inputCollection.update({ id }, { $set: args }, (error) => {
+        if (error) return reject(error);
+        resolve();
+      });
+    });
+  }
+
+  async removeInput(id) {
+    return new Promise((resolve, reject) => {
+      this.inputCollection.remove({ id }, {}, (error) => {
+        if (error) return reject(error);
+        resolve();
+      });
+    });
+  }
 }
 
 module.exports = {
-  db: new DataBase()
+  db: new DataBase(),
 };

@@ -6,43 +6,46 @@ import { Route } from 'react-router';
 import { history } from '../../memoryHistory';
 import { REND } from '../../../shared/events';
 
-import { useButtonList } from '../../store/buttonStore';
+import { useInputList } from '../../store/inputStore';
 
-import { ButtonDialog } from './ButtonDialog';
-import { ButtonEntry } from './ButtonEntry';
+import { InputDialog } from './InputDialog';
+import { InputEntry } from './InputEntry';
 import { Heading } from '../../components/common/Heading';
 
-export function Buttons() {
-  const buttonList = useButtonList();
+export function Inputs() {
+  const inputList = useInputList();
 
   return (
     <sc.Container>
       <Route
         exact
-        path="/button"
+        path="/input"
         render={(routeProps) => {
-          return <ButtonDialog {...routeProps} buttonList={buttonList} />;
+          return <InputDialog {...routeProps} inputList={inputList} />;
         }}
       />
 
       <sc.Section>
-        <Heading>Buttons</Heading>
+        <Heading>Inputs</Heading>
         <sc.Grid>
-          {buttonList.map((buttonEntry) => {
-            function handlePress() {
-              ipcRenderer.send(REND.BUTTON_RUN, { id: buttonEntry.id });
+          {inputList.map((inputEntry) => {
+            function handleSubmit(event) {
+              ipcRenderer.send(REND.INPUT_RUN, {
+                id: event.target.id,
+                content: event.target.value,
+              });
             }
 
             function handleContextMenu() {
-              history.push(`/button?id=${buttonEntry.id}`);
+              history.push(`/input?id=${inputEntry.id}`);
             }
 
             return (
-              <ButtonEntry
-                key={buttonEntry.id}
-                id={buttonEntry.id}
-                button={buttonEntry}
-                onPress={handlePress}
+              <InputEntry
+                key={inputEntry.id}
+                id={inputEntry.id}
+                input={inputEntry}
+                onSubmit={handleSubmit}
                 onContextMenu={handleContextMenu}
               />
             );
@@ -72,22 +75,22 @@ sc.Grid = styled.div`
   margin: 16px 0 0;
 
   @media only screen and (min-width: 720px) {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(1, 1fr);
   }
 
   @media only screen and (min-width: 1000px) {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
   }
 
   @media only screen and (min-width: 1280px) {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(2, 1fr);
   }
 
   @media only screen and (min-width: 1560px) {
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(3, 1fr);
   }
 
   @media only screen and (min-width: 1840px) {
-    grid-template-columns: repeat(8, 1fr);
+    grid-template-columns: repeat(4, 1fr);
   }
 `;

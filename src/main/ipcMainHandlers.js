@@ -1,4 +1,4 @@
-const { ipcMain, globalShortcut } = require('electron');
+const { app, ipcMain, globalShortcut } = require('electron');
 const { db } = require('./services/db');
 const { serverSocket } = require('./services/serverSocket');
 const { exec } = require('child_process');
@@ -10,10 +10,12 @@ const { REND, OVERLAY, MAIN, IO_EMIT, IO_ON } = require('../shared/events');
 function initIpcMainHandlers() {
   ipcMain.on(REND.INIT, handleRendererInit);
   ipcMain.on(OVERLAY.INIT, handleOverlayInit);
+
   ipcMain.on(REND.BUTTON_CREATE, handleButtonCreate);
   ipcMain.on(REND.BUTTON_UPDATE, handleButtonUpdate);
   ipcMain.on(REND.BUTTON_REMOVE, handleButtonRemove);
   ipcMain.on(REND.BUTTON_RUN, handleButtonRun);
+
   ipcMain.on(REND.ACCELERATOR_CREATE, handleAcceleratorCreate);
   ipcMain.on(REND.ACCELERATOR_UPDATE, handleAcceleratorUpdate);
   ipcMain.on(REND.ACCELERATOR_REMOVE, handleAcceleratorRemove);
@@ -23,7 +25,16 @@ function initIpcMainHandlers() {
   ipcMain.on(REND.DISPLAY_UPDATE, handleDisplayUpdate);
   ipcMain.on(REND.DISPLAY_REMOVE, handleDisplayRemove);
 
+  ipcMain.on(REND.INPUT_CREATE, handleInputCreate);
+  ipcMain.on(REND.INPUT_UPDATE, handleInputUpdate);
+  ipcMain.on(REND.INPUT_REMOVE, handleInputRemove);
+  ipcMain.on(REND.INPUT_RUN, handleInputRun);
+
   ipcMain.handle(REND.TEST, handleExecRunTest);
+
+  ipcMain.handle('version', async (event, args) => {
+    return { version: app.getVersion() };
+  });
 }
 
 async function handleExecRunTest(event, args) {
@@ -45,6 +56,8 @@ async function handleRendererInit(event, args) {
   const history = await db.getHistory();
   const buttons = await db.getButtons();
   const accelerators = await db.getAccelerators();
+  const displays = await db.getDisplays();
+  const inputs = await db.getInputs();
   const connections = serverSocket.getConnections();
 
   registerAccelerators(accelerators);
@@ -52,6 +65,8 @@ async function handleRendererInit(event, args) {
   event.reply(MAIN.HISTORY_INIT, history);
   event.reply(MAIN.BUTTONS_INIT, buttons);
   event.reply(MAIN.ACCELERATORS_INIT, accelerators);
+  event.reply(MAIN.DISPLAYS_INIT, displays);
+  event.reply(MAIN.INPUTS_INIT, inputs);
   event.reply(MAIN.SOCKETS_INIT, connections);
 
   serverSocket.getConnected().forEach((socket) => {
@@ -61,7 +76,6 @@ async function handleRendererInit(event, args) {
 
 async function handleOverlayInit(event, args) {
   const displays = await db.getDisplays();
-
   event.reply(MAIN.DISPLAYS_INIT, displays);
 }
 
@@ -220,6 +234,53 @@ async function emitDisplaySync(event) {
       },
       ({ broken }) => {
         event.reply(MAIN.DISPLAYS_BROKEN, broken);
+      }
+    );
+  });
+}
+
+async function handleInputCreate(event, args) {
+  try {
+    await db.insertInput(args);
+    await emitInputSync(event);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+async function handleInputUpdate(event, args) {
+  try {
+    await db.updateInput(args.id, args);
+    await emitInputSync(event);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+async function handleInputRemove(event, args) {
+  try {
+    await db.removeInput(args.id);
+    await emitInputSync(event);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+function handleInputRun(event, args) {
+  serverSocket.io.emit(IO_EMIT.INPUT_RUN, args);
+}
+
+async function emitInputSync(event) {
+  const inputs = await db.getInputs();
+
+  serverSocket.getConnected().forEach((socket) => {
+    socket.emit(
+      IO_EMIT.INPUTS_SYNC,
+      {
+        inputs,
+      },
+      ({ broken }) => {
+        event.reply(MAIN.INPUTS_BROKEN, broken);
       }
     );
   });

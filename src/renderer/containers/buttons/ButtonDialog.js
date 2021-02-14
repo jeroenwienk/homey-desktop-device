@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import styled from 'styled-components';
 import { v4 as uuid } from 'uuid';
 
 import { useForm } from 'react-hook-form';
@@ -12,10 +11,12 @@ import {
   removeButton,
 } from '../../store/buttonStore';
 
-import { vars } from '../../theme/GlobalStyles';
-
-import { DialogBase } from '../../components/common/DialogBase';
-import { Cancel, Remove } from '../../components/common/IconButton';
+import { DialogBase } from '../../components/dialog/DialogBase';
+import { DialogContent } from '../../components/dialog/DialogContent';
+import { DialogActions } from '../../components/dialog/DialogActions';
+import { DialogForm } from '../../components/dialog/DialogForm';
+import { IconButton } from '../../components/common/IconButton';
+import { CancelIcon, RemoveIcon } from '../../components/common/IconMask';
 import { TextField } from '../../components/TextField';
 import { Button } from '../../components/common/Button';
 
@@ -30,10 +31,11 @@ export function ButtonDialog(props) {
 
   return (
     <DialogBase onClose={handleClose} isOpen>
-      <sc.dialogContent>
-        <sc.actions>
+      <DialogContent>
+        <DialogActions>
           {editId !== 'create' && (
-            <Remove
+            <IconButton
+              iconComponent={RemoveIcon}
               onPress={() => {
                 removeButton({ id: editId });
                 handleClose();
@@ -41,8 +43,8 @@ export function ButtonDialog(props) {
             />
           )}
 
-          <Cancel onPress={handleClose} />
-        </sc.actions>
+          <IconButton iconComponent={CancelIcon} onPress={handleClose} />
+        </DialogActions>
 
         <ButtonForm
           formId={formId}
@@ -50,7 +52,7 @@ export function ButtonDialog(props) {
           buttonList={props.buttonList}
           onSubmit={handleClose}
         />
-      </sc.dialogContent>
+      </DialogContent>
     </DialogBase>
   );
 }
@@ -79,7 +81,7 @@ function ButtonForm(props) {
   }, [props.editId, props.buttonList]);
 
   return (
-    <sc.editForm id={props.formId} key={props.editId}>
+    <DialogForm id={props.formId} key={props.editId}>
       <TextField
         autoFocus
         label="Name"
@@ -99,29 +101,6 @@ function ButtonForm(props) {
       />
 
       <Button onPress={handleSubmit(onSubmit)}>Save</Button>
-    </sc.editForm>
+    </DialogForm>
   );
 }
-
-const sc = {
-  dialogContent: styled.div`
-    display: flex;
-    flex-direction: column;
-    padding: 16px;
-    gap: 16px;
-    background-color: ${vars.color_background_dialog};
-    border-radius: 3px;
-    box-shadow: ${vars.box_shadow_dialog};
-  `,
-  actions: styled.div`
-    display: flex;
-    justify-content: flex-end;
-    gap: 16px;
-  `,
-  editForm: styled.form`
-    display: flex;
-    flex-direction: column;
-    min-width: 512px;
-    gap: 16px;
-  `,
-};
