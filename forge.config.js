@@ -28,7 +28,7 @@ module.exports = {
         icon: path.resolve('src/assets/home.png'),
         bin: 'desktop-device',
         name: 'desktop-device',
-        productName: 'desktop-device',
+        productName: 'Desktop Device',
       },
     },
     {
@@ -37,7 +37,7 @@ module.exports = {
         icon: path.resolve('src/assets/home.png'),
         bin: 'desktop-device',
         name: 'desktop-device',
-        productName: 'desktop-device',
+        productName: 'Desktop Device',
       },
     },
     {
