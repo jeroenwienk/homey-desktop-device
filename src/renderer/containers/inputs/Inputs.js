@@ -32,7 +32,8 @@ export function Inputs() {
             function handleSubmit(event) {
               ipcRenderer.send(REND.INPUT_RUN, {
                 id: event.target.id,
-                content: event.target.value,
+                type: inputEntry.type,
+                content: parseFloat(event.target.value),
               });
             }
 

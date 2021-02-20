@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { v4 as uuid } from 'uuid';
 
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { useId } from 'react-aria';
 
 import { history } from '../../memoryHistory';
@@ -14,6 +14,7 @@ import { DialogForm } from '../../components/dialog/DialogForm';
 import { IconButton } from '../../components/common/IconButton';
 import { CancelIcon, RemoveIcon } from '../../components/common/IconMask';
 import { TextField } from '../../components/TextField';
+import { RadioGroup, Radio } from '../../components/Radio';
 import { Button } from '../../components/common/Button';
 
 export function InputDialog(props) {
@@ -42,7 +43,7 @@ export function InputDialog(props) {
           <IconButton iconComponent={CancelIcon} onPress={handleClose} />
         </DialogActions>
 
-        <DisplayForm
+        <InputForm
           formId={formId}
           editId={editId}
           inputList={props.inputList}
@@ -53,8 +54,8 @@ export function InputDialog(props) {
   );
 }
 
-function DisplayForm(props) {
-  const { register, handleSubmit, errors, reset } = useForm();
+function InputForm(props) {
+  const { register, control, handleSubmit, errors, reset } = useForm();
 
   const onSubmit = (data) => {
     if (props.editId === 'create') {
@@ -94,6 +95,26 @@ function DisplayForm(props) {
         defaultValue=""
         register={register}
         error={errors.description}
+      />
+
+      <Controller
+        name="type"
+        control={control}
+        defaultValue="text"
+        render={({ onChange, value, name, onBlur }) => {
+          return (
+            <RadioGroup
+              label="Type"
+              name={name}
+              value={value}
+              onChange={onChange}
+              onBlur={onBlur}
+            >
+              <Radio value="text">Text</Radio>
+              <Radio value="number">Number</Radio>
+            </RadioGroup>
+          );
+        }}
       />
 
       <Button onPress={handleSubmit(onSubmit)}>Save</Button>

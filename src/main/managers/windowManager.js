@@ -105,12 +105,10 @@ class WindowManager extends EventEmitter {
     });
 
     this.mainWindow.on('move', (event) => {
-      console.log('move');
       saveBounds();
     });
 
     this.mainWindow.on('resize', (event) => {
-      console.log('resize');
       saveBounds();
     });
 

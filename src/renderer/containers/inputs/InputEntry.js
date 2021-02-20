@@ -14,12 +14,13 @@ export const InputEntry = forwardRef(function (props, forwardedRef) {
     {
       id: props.input.id,
       name: props.input.id,
-      type: 'text',
+      type: props.input.type,
       defaultValue: props.defaultValue,
       label: props.input.name,
       onKeyUp(event) {
         if (event.key === 'Enter') {
           props.onSubmit(event);
+          textFieldRef.current.value = '';
         }
       },
     },
@@ -43,7 +44,7 @@ export const InputEntry = forwardRef(function (props, forwardedRef) {
           iconComponent={SettingsIcon}
         />
       </sc.Label>
-      <sc.Input {...textField.inputProps} />
+      <sc.Input {...textField.inputProps} ref={textFieldRef} />
     </sc.Container>
   );
 });
