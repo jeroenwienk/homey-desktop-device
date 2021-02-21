@@ -11,7 +11,10 @@ import { SettingsIcon } from '../../components/common/IconMask';
 
 export const AcceleratorEntry = forwardRef(function (props, forwardedRef) {
   const buttonRef = useRef();
-  const button = useButton({ ...props, id: props.accelerator.id }, buttonRef);
+  const button = useButton(
+    { ...props, elementType: 'div', id: props.accelerator.id },
+    buttonRef
+  );
   const focusRing = useFocusRing();
 
   function handleSettingsPress(event) {

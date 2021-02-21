@@ -8,6 +8,8 @@ import {
   useMenuItem,
   useFocus,
   useOverlay,
+  useOverlayPosition,
+  OverlayContainer,
   DismissButton,
   FocusScope,
   mergeProps,
@@ -21,7 +23,7 @@ import { AddIcon } from './IconMask';
 MenuButton.Item = Item;
 
 export function MenuButton(props) {
-  const menuTriggerRef = React.useRef();
+  const menuTriggerRef = useRef();
   const menuTriggerState = useMenuTriggerState({});
   const menuTrigger = useMenuTrigger(
     { type: 'menu' },
@@ -40,6 +42,7 @@ export function MenuButton(props) {
       {menuTriggerState.isOpen && (
         <MenuPopup
           label={props.label}
+          menuTriggerRef={menuTriggerRef}
           menuTrigger={menuTrigger}
           onClose={menuTriggerState.close}
           onAction={props.onAction}
@@ -62,8 +65,6 @@ function MenuPopup(props) {
 
   const menu = useMenu(
     {
-      // children: props.children,
-      // onAction: props.onAction,
       autoFocus: true,
       shouldFocusWrap: true,
       'aria-label': props.label,
@@ -75,34 +76,53 @@ function MenuPopup(props) {
   const overlay = useOverlay(
     {
       onClose: props.onClose,
-      shouldCloseOnBlur: false,
+      shouldCloseOnBlur: true,
+      shouldCloseOnInteractOutside() {
+        return true;
+      },
       isOpen: true,
       isDismissable: true,
     },
     overlayRef
   );
 
+  // Get popover positioning props relative to the trigger
+  const overlayPosition = useOverlayPosition({
+    targetRef: props.menuTriggerRef,
+    overlayRef: overlayRef,
+    placement: 'bottom',
+    offset: 10,
+    isOpen: true,
+    onClose: props.onClose,
+  });
+
   return (
-    <FocusScope restoreFocus contain>
-      <sc.MenuPopupOverlay {...overlay.overlayProps} ref={overlayRef}>
-        <DismissButton onDismiss={props.onClose} />
-        <sc.MenuList
-          {...mergeProps(menu.menuProps, props.menuTrigger.menuProps)}
-          ref={menuRef}
+    <OverlayContainer>
+      <FocusScope restoreFocus contain>
+        <sc.MenuPopupOverlay
+          {...overlay.overlayProps}
+          {...overlayPosition.overlayProps}
+          ref={overlayRef}
         >
-          {[...treeState.collection].map((item) => (
-            <MenuItem
-              key={item.key}
-              item={item}
-              treeState={treeState}
-              onAction={props.onAction}
-              onClose={props.onClose}
-            />
-          ))}
-        </sc.MenuList>
-        <DismissButton onDismiss={props.onClose} />
-      </sc.MenuPopupOverlay>
-    </FocusScope>
+          <DismissButton onDismiss={props.onClose} />
+          <sc.MenuList
+            {...mergeProps(menu.menuProps, props.menuTrigger.menuProps)}
+            ref={menuRef}
+          >
+            {[...treeState.collection].map((item) => (
+              <MenuItem
+                key={item.key}
+                item={item}
+                treeState={treeState}
+                onAction={props.onAction}
+                onClose={props.onClose}
+              />
+            ))}
+          </sc.MenuList>
+          <DismissButton onDismiss={props.onClose} />
+        </sc.MenuPopupOverlay>
+      </FocusScope>
+    </OverlayContainer>
   );
 }
 
@@ -145,9 +165,6 @@ sc.MenuButtonContainer = styled.div`
 `;
 
 sc.MenuPopupOverlay = styled.div`
-  position: absolute;
-  left: 24px;
-  top: 24px;
   background-color: ${vars.color_background_panel};
   border-radius: 3px;
   box-shadow: ${vars.box_shadow_default};

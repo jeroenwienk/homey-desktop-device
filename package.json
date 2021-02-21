@@ -53,7 +53,7 @@
     "react": "^17.0.1",
     "react-aria": "^3.4.0",
     "react-dom": "^17.0.1",
-    "react-hook-form": "^6.15.2",
+    "react-hook-form": "^6.15.3",
     "react-router": "^5.2.0",
     "react-stately": "^3.3.0",
     "selfsigned": "^1.10.8",

@@ -30,10 +30,23 @@ export function Inputs() {
         <sc.Grid>
           {inputList.map((inputEntry) => {
             function handleSubmit(event) {
+              let content = null;
+
+              switch (inputEntry.type) {
+                case 'number':
+                  content = parseFloat(event.target.value);
+                  break;
+                case 'text':
+                  content = event.target.value;
+                  break;
+                default:
+                  console.error(`Invalid input type: ${inputEntry.type}`);
+              }
+
               ipcRenderer.send(REND.INPUT_RUN, {
                 id: event.target.id,
                 type: inputEntry.type,
-                content: parseFloat(event.target.value),
+                content: content,
               });
             }
 
