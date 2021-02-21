@@ -19,6 +19,7 @@ import { IconButton } from '../../components/common/IconButton';
 import { CancelIcon, RemoveIcon } from '../../components/common/IconMask';
 import { AcceleratorField } from '../../components/AcceleratorField';
 import { Button } from '../../components/common/Button';
+import { TextField } from "../../components/TextField";
 
 export function AcceleratorDialog(props) {
   const formId = useId();
@@ -89,6 +90,14 @@ function AcceleratorForm(props) {
         defaultValue=""
         register={register}
         error={errors.accelerator}
+      />
+
+      <TextField
+        label="Description"
+        name="description"
+        defaultValue=""
+        register={register}
+        error={errors.description}
       />
 
       <Button onPress={handleSubmit(onSubmit)}>Save</Button>

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { ipcRenderer, shell } from 'electron';
 import semver from 'semver';
-import { useLink } from '@react-aria/link';
 
 import { REND } from '../shared/events';
 
@@ -54,10 +53,10 @@ export function App() {
             history.push(`/${key}?id=create`);
           }}
         >
+          <MenuButton.Item key="input">Input</MenuButton.Item>
           <MenuButton.Item key="button">Button</MenuButton.Item>
           <MenuButton.Item key="accelerator">Shortcut</MenuButton.Item>
           <MenuButton.Item key="display">Display</MenuButton.Item>
-          <MenuButton.Item key="input">Input</MenuButton.Item>
         </MenuButton>
 
         {isLatestVersion === false && (
