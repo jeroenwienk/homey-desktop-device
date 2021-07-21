@@ -83,6 +83,7 @@ module.exports = {
             },
           ],
         },
+        devContentSecurityPolicy: "default-src 'self' 'unsafe-inline' data:; script-src 'self' 'unsafe-eval' 'unsafe-inline' data:; connect-src *",
         port: 9000,
         loggerPort: 9001,
       },

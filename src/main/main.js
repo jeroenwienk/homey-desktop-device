@@ -12,7 +12,6 @@ if (squirrelStartup) {
 // }
 
 const path = require('path');
-const fetch = require('node-fetch').default;
 
 const { mdns } = require('./services/mdns');
 const { serverSocket } = require('./services/serverSocket');
@@ -31,10 +30,6 @@ makeSingleInstance();
 setApplicationMenu();
 
 initIpcMainHandlers();
-
-// console.log(app.getVersion());
-//
-
 
 app.on('ready', async () => {
   console.log('app:ready');

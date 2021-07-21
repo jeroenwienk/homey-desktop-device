@@ -1,7 +1,7 @@
 const path = require('path');
-const nodeExternals = require('webpack-node-externals');
-const Plugin = require('./Plugin');
-const CopyPlugin = require('copy-webpack-plugin');
+// const nodeExternals = require('webpack-node-externals');
+// const Plugin = require('./Plugin');
+// const CopyPlugin = require('copy-webpack-plugin');
 
 const rules = require('./webpack.rules');
 
