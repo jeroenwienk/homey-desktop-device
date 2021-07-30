@@ -8,8 +8,15 @@ if (squirrelStartup) {
 }
 
 // if (true) {
-//   require('inspector').open(9229, '0.0.0.0', true);
+//   require('inspector').open(9229, '0.0.0.0', false);
 // }
+
+const { makeSingleInstance } = require('./makeSingleInstance');
+const allowContinue = makeSingleInstance();
+
+if (allowContinue === false) {
+  app.exit(0);
+}
 
 const path = require('path');
 
@@ -19,14 +26,12 @@ const { serverSocket } = require('./services/serverSocket');
 const { windowManager } = require('./managers/windowManager');
 const { trayManager } = require('./managers/trayManager');
 
-const { makeSingleInstance } = require('./makeSingleInstance');
 const { setLoginItemSettings } = require('./setLoginItemSettings');
 const { setApplicationMenu } = require('./setApplicationMenu');
 
 const { initIpcMainHandlers } = require('./ipcMainHandlers');
 
 setLoginItemSettings();
-makeSingleInstance();
 setApplicationMenu();
 
 initIpcMainHandlers();

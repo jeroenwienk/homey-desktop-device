@@ -5,16 +5,22 @@ const { windowManager } = require('./managers/windowManager');
 function makeSingleInstance() {
   if (process.mas) return;
 
-  app.requestSingleInstanceLock();
+  const gotTheLock = app.requestSingleInstanceLock();
+
+  if (!gotTheLock) {
+    app.quit();
+    return false;
+  }
 
   app.on('second-instance', () => {
     console.log('app:second-instance');
     if (windowManager.mainWindow) {
-      if (windowManager.mainWindow.isMinimized())
-        windowManager.mainWindow.restore();
+      windowManager.mainWindow.show();
       windowManager.mainWindow.focus();
     }
   });
+
+  return true;
 }
 
 module.exports = {
