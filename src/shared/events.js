@@ -27,6 +27,7 @@ const MAIN = {
   BUTTONS_BROKEN: 'buttons:broken',
   ACCELERATORS_INIT: 'accelerators:init',
   ACCELERATORS_BROKEN: 'accelerators:broken',
+  ACCELERATOR_TEST: 'accelerator:test',
   HISTORY_INIT: 'history:init',
   HISTORY_PUSH: 'history:push',
   DISPLAYS_INIT: 'displays:init',

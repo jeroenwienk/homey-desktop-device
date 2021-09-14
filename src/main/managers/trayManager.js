@@ -1,17 +1,21 @@
 const path = require('path');
 const EventEmitter = require('events');
-const { Tray, Menu, app } = require('electron');
+const { Tray, Menu } = require('electron');
 
+const { IO_EMIT } = require('../../shared/events');
+
+const { serverSocket } = require('../services/serverSocket');
 const { windowManager } = require('./windowManager');
 
 class TrayManager extends EventEmitter {
   constructor() {
     super();
     this.tray = null;
+    this.buttons = null;
   }
 
   createTray() {
-    const imagepath = path.resolve(__dirname, '../../assets/home.png');
+    const imagepath = path.resolve(__dirname, '../../assets/homey-white.png');
     const tray = new Tray(imagepath);
 
     const contextMenu = this.buildMenu();
@@ -48,6 +52,17 @@ class TrayManager extends EventEmitter {
     }
 
     return Menu.buildFromTemplate([
+      { type: 'separator' },
+      ...(this.buttons || []).map((button) => {
+        return {
+          label: button.name,
+          click: () => {
+            serverSocket.io.emit(IO_EMIT.BUTTON_RUN, {
+              id: button.id,
+            });
+          },
+        };
+      }),
       { type: 'separator' },
       ...items,
       {
@@ -96,6 +111,11 @@ class TrayManager extends EventEmitter {
       },
     ]);
   };
+
+  addButtons(buttons) {
+    this.buttons = buttons;
+    this.rebuildMenu();
+  }
 }
 
 module.exports = {

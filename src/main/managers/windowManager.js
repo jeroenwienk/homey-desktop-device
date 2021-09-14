@@ -20,7 +20,7 @@ class WindowManager extends EventEmitter {
   }
 
   createMainWindow() {
-    const imagepath = path.resolve(__dirname, '../../assets/home.png');
+    const imagepath = path.resolve(__dirname, '../../assets/homey-white.png');
     const storeWindowState = store.get('mainWindow.windowState');
 
     let windowState = {
@@ -127,7 +127,7 @@ class WindowManager extends EventEmitter {
   }
 
   createOverlayWindow() {
-    const imagepath = path.resolve(__dirname, '../../assets/home.png');
+    const imagepath = path.resolve(__dirname, '../../assets/homey-white.png');
     const storeWindowState = store.get('overlayWindow.windowState');
 
     let windowState = {

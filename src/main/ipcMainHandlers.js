@@ -6,6 +6,7 @@ const { exec } = require('child_process');
 const { windowManager } = require('./managers/windowManager');
 
 const { REND, OVERLAY, MAIN, IO_EMIT, IO_ON } = require('../shared/events');
+const { trayManager } = require('./managers/trayManager');
 
 function initIpcMainHandlers() {
   ipcMain.on(REND.INIT, handleRendererInit);
@@ -123,6 +124,11 @@ async function emitButtonsSync(event) {
       }
     );
   });
+
+  const trayButtons = buttons.filter((button) => {
+    return button.tray === true;
+  });
+  trayManager.addButtons(trayButtons)
 }
 
 async function handleAcceleratorCreate(event, args) {
@@ -182,6 +188,9 @@ function registerAccelerators(accelerators) {
       const ret = globalShortcut.register(
         accelerator.keys.replaceAll(' ', '+'),
         () => {
+          windowManager.sendToMainWindow(MAIN.ACCELERATOR_TEST, {
+            id: accelerator.id,
+          });
           serverSocket.io.emit(IO_EMIT.ACCELERATOR_RUN, { id: accelerator.id });
         }
       );

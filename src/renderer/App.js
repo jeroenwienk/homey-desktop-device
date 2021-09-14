@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import styled from 'styled-components';
 import { ipcRenderer, shell } from 'electron';
 import semver from 'semver';
@@ -45,8 +45,8 @@ export function App() {
   }, []);
 
   return (
-    <sc.Grid>
-      <sc.Header>
+    <App.Grid>
+      <App.Header>
         <MenuButton
           label="Create"
           onAction={(key) => {
@@ -71,24 +71,22 @@ export function App() {
           </ExternalLink>
         )}
         <Connections />
-      </sc.Header>
-      <sc.Main>
+      </App.Header>
+      <App.Main>
         <Inputs />
         <Buttons />
         <Accelerators />
         <Displays />
         <Broken />
-      </sc.Main>
-      <sc.Sidebar>
+      </App.Main>
+      <App.Sidebar>
         <History />
-      </sc.Sidebar>
-    </sc.Grid>
+      </App.Sidebar>
+    </App.Grid>
   );
 }
 
-const sc = {};
-
-sc.Grid = styled.div`
+App.Grid = styled.div`
   display: grid;
   grid-template-columns: auto auto auto 400px;
   grid-template-rows: 64px repeat(3, 1fr);
@@ -102,7 +100,7 @@ sc.Grid = styled.div`
   overflow: hidden;
 `;
 
-sc.Header = styled.header`
+App.Header = styled.header`
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -114,7 +112,7 @@ sc.Header = styled.header`
   box-shadow: ${vars.box_shadow_header};
 `;
 
-sc.Main = styled.main`
+App.Main = styled.main`
   grid-area: main;
   display: flex;
   flex-direction: column;
@@ -124,7 +122,7 @@ sc.Main = styled.main`
   overflow-y: auto;
 `;
 
-sc.Sidebar = styled.aside`
+App.Sidebar = styled.aside`
   grid-area: sidebar;
   min-height: 0;
   padding: 16px;

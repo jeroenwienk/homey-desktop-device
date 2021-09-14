@@ -18,7 +18,7 @@ import { DialogContent } from '../../components/dialog/DialogContent';
 import { DialogForm } from '../../components/dialog/DialogForm';
 import { IconButton } from '../../components/common/IconButton';
 import { CancelIcon, RemoveIcon } from '../../components/common/IconMask';
-import { TextField } from '../../components/TextField';
+import { TextField } from '../../components/form/TextField';
 import { Button } from '../../components/common/Button';
 
 export function DisplayDialog(props) {

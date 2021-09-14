@@ -13,8 +13,8 @@ import { DialogActions } from '../../components/dialog/DialogActions';
 import { DialogForm } from '../../components/dialog/DialogForm';
 import { IconButton } from '../../components/common/IconButton';
 import { CancelIcon, RemoveIcon } from '../../components/common/IconMask';
-import { TextField } from '../../components/TextField';
-import { RadioGroup, Radio } from '../../components/Radio';
+import { TextField } from '../../components/form/TextField';
+import { RadioGroup, Radio } from '../../components/form/Radio';
 import { Button } from '../../components/common/Button';
 
 export function InputDialog(props) {

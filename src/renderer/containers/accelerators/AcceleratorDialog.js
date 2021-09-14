@@ -17,9 +17,9 @@ import { DialogActions } from '../../components/dialog/DialogActions';
 import { DialogForm } from '../../components/dialog/DialogForm';
 import { IconButton } from '../../components/common/IconButton';
 import { CancelIcon, RemoveIcon } from '../../components/common/IconMask';
-import { AcceleratorField } from '../../components/AcceleratorField';
+import { AcceleratorField } from '../../components/form/AcceleratorField';
 import { Button } from '../../components/common/Button';
-import { TextField } from "../../components/TextField";
+import { TextField } from "../../components/form/TextField";
 
 export function AcceleratorDialog(props) {
   const formId = useId();

@@ -1,4 +1,4 @@
-import React, { forwardRef, useRef } from 'react';
+import React, { forwardRef, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 
 import { useButton, useFocusRing, mergeProps } from 'react-aria';
@@ -8,6 +8,9 @@ import { mergeRefs } from '../../lib/mergeRefs';
 
 import { IconButton } from '../../components/common/IconButton';
 import { SettingsIcon } from '../../components/common/IconMask';
+
+import { ipcRenderer } from 'electron';
+import { MAIN } from '../../../shared/events';
 
 export const AcceleratorEntry = forwardRef(function (props, forwardedRef) {
   const buttonRef = useRef();
@@ -20,6 +23,22 @@ export const AcceleratorEntry = forwardRef(function (props, forwardedRef) {
   function handleSettingsPress(event) {
     props.onContextMenu();
   }
+
+  useEffect(() => {
+    ipcRenderer.on(MAIN.ACCELERATOR_TEST, (event, data) => {
+      if (data.id === props.accelerator.id) {
+        buttonRef.current.animate(
+          [{ transform: 'scale(1)' }, { transform: 'scale(1.05)' }],
+          {
+            direction: 'normal',
+            duration: 100,
+            easing: 'ease-in-out',
+            iterations: 1,
+          }
+        );
+      }
+    });
+  }, []);
 
   return (
     <sc.ButtonBase

@@ -5,7 +5,7 @@ require('dotenv').config();
 module.exports = {
   packagerConfig: {
     asar: true,
-    icon: './src/assets/home.png',
+    icon: './src/assets/homey-white.png',
     name: 'Desktop Device',
     // no idea why but maker-squirrel does not like desktop-device
     executableName: process.platform === 'win32' ? undefined : 'desktop-device',
@@ -14,9 +14,9 @@ module.exports = {
     {
       name: '@electron-forge/maker-squirrel',
       config: {
-        name: 'DesktopDevice',
         iconUrl: path.resolve('src/assets/home.ico'),
         setupIcon: path.resolve('src/assets/home.ico'),
+        name: 'DesktopDevice',
       },
     },
     // {
@@ -26,7 +26,7 @@ module.exports = {
     {
       name: '@electron-forge/maker-deb',
       config: {
-        icon: path.resolve('src/assets/home.png'),
+        icon: path.resolve('src/assets/homey-white.png'),
         bin: 'desktop-device',
         name: 'desktop-device',
         productName: 'Desktop Device',
@@ -35,7 +35,7 @@ module.exports = {
     {
       name: '@electron-forge/maker-rpm',
       config: {
-        icon: path.resolve('src/assets/home.png'),
+        icon: path.resolve('src/assets/homey-white.png'),
         bin: 'desktop-device',
         name: 'desktop-device',
         productName: 'Desktop Device',
@@ -44,9 +44,9 @@ module.exports = {
     {
       name: '@electron-forge/maker-dmg',
       config: {
+        icon: path.resolve('src/assets/homey-white.icns'),
         name: 'Desktop Device',
         overwrite: true,
-        icon: path.resolve('src/assets/home.icns'),
       },
     },
   ],

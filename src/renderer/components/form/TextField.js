@@ -3,8 +3,8 @@ import styled from 'styled-components';
 
 import { useTextField } from 'react-aria';
 
-import { mergeRefs } from '../lib/mergeRefs';
-import { vars } from '../theme/GlobalStyles';
+import { mergeRefs } from '../../lib/mergeRefs';
+import { vars } from '../../theme/GlobalStyles';
 
 export function TextField(props) {
   const register = props.register?.({

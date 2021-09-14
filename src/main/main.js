@@ -22,6 +22,7 @@ const path = require('path');
 
 const { mdns } = require('./services/mdns');
 const { serverSocket } = require('./services/serverSocket');
+const { db } = require('./services/db');
 
 const { windowManager } = require('./managers/windowManager');
 const { trayManager } = require('./managers/trayManager');
@@ -42,6 +43,13 @@ app.on('ready', async () => {
   windowManager.createMainWindow();
   windowManager.createOverlayWindow();
   trayManager.createTray();
+
+  const buttons = await db.getButtons();
+  const trayButtons = buttons.filter((button) => {
+    return button.tray === true;
+  });
+
+  trayManager.addButtons(trayButtons);
 
   await mdns.init();
   await mdns.advertise();
@@ -79,5 +87,5 @@ app.on('activate', (event) => {
 });
 
 if (process.platform === 'darwin') {
-  app.dock.setIcon(path.resolve(__dirname, '../assets/home.png'));
+  app.dock.setIcon(path.resolve(__dirname, '../assets/homey-white-2048.png'));
 }

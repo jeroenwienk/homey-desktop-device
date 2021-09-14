@@ -17,7 +17,8 @@ import { DialogActions } from '../../components/dialog/DialogActions';
 import { DialogForm } from '../../components/dialog/DialogForm';
 import { IconButton } from '../../components/common/IconButton';
 import { CancelIcon, RemoveIcon } from '../../components/common/IconMask';
-import { TextField } from '../../components/TextField';
+import { TextField } from '../../components/form/TextField';
+import { Checkbox } from '../../components/form/Checkbox';
 import { Button } from '../../components/common/Button';
 
 export function ButtonDialog(props) {
@@ -98,6 +99,13 @@ function ButtonForm(props) {
         defaultValue=""
         register={register}
         error={errors.description}
+      />
+      <Checkbox
+        label="Tray"
+        name="tray"
+        defaultValue={false}
+        register={register}
+        error={errors.tray}
       />
 
       <Button onPress={handleSubmit(onSubmit)}>Save</Button>

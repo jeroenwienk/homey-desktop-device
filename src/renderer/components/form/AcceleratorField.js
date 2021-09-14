@@ -3,11 +3,11 @@ import styled from 'styled-components';
 
 import { useLabel, useKeyboard } from 'react-aria';
 
-import { mergeRefs } from '../lib/mergeRefs';
-import { vars } from '../theme/GlobalStyles';
+import { mergeRefs } from '../../lib/mergeRefs';
+import { vars } from '../../theme/GlobalStyles';
 
-import { IconButton } from './common/IconButton';
-import { ClearIcon } from './common/IconMask';
+import { IconButton } from '../common/IconButton';
+import { ClearIcon } from '../common/IconMask';
 
 const order = ['Control', 'Command', 'Super', 'Alt', 'AltGr', 'Shift'];
 
