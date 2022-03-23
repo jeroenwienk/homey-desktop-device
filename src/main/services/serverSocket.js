@@ -101,6 +101,10 @@ class ServerSocket {
       this.handlePathOpen(...args);
     });
 
+    socket.on(IO_ON.WINDOW_OPEN_RUN, (...args) => {
+      this.handleWindowOpenRun(...args);
+    });
+
     socket.on(IO_ON.NOTIFICATION_SHOW_RUN, (...args) => {
       this.handleNotificationShow(...args);
     });
@@ -173,6 +177,39 @@ class ServerSocket {
 
       windowManager.sendToMainWindow(MAIN.HISTORY_PUSH, historyEntry);
       await shell.openPath(data.path);
+      callback();
+    } catch (error) {
+      console.error(error);
+      callback(error);
+    }
+  }
+
+  async handleWindowOpenRun(data, callback) {
+    try {
+      const historyEntry = await db.insertHistoryEntry({
+        name: 'window:open',
+        argument: data.window.id,
+        date: new Date(),
+      });
+
+      console.log(data);
+
+      switch (data.window.id) {
+        case 'main':
+          windowManager.mainWindow.show();
+          break;
+        case 'overlay':
+          windowManager.overlayWindow.show();
+          break;
+        case 'webapp':
+          windowManager.webAppWindow.show();
+          break;
+        default:
+          break;
+      }
+
+      windowManager.sendToMainWindow(MAIN.HISTORY_PUSH, historyEntry);
+      // await shell.openPath(data.path);
       callback();
     } catch (error) {
       console.error(error);
@@ -292,5 +329,5 @@ class ServerSocket {
 }
 
 module.exports = {
-  serverSocket: new ServerSocket()
+  serverSocket: new ServerSocket(),
 };

@@ -62,7 +62,7 @@ function getIconComponent(name) {
     case 'path:open':
       return PathIcon;
     default:
-      return React.Fragment;
+      return PathIcon;
   }
 }
 

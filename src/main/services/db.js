@@ -30,6 +30,8 @@ class DataBase {
   }
 
   async getHistory({ limit = Infinity } = {}) {
+    // this.historyCollection.remove({}, { multi: true });
+
     return new Promise((resolve, reject) => {
       this.historyCollection
         .find({})
