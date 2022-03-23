@@ -236,8 +236,8 @@ class WindowManager extends EventEmitter {
   }
 
   createWebAppWindow() {
-    const imagepath = path.resolve(__dirname, '../../assets/homey-white.png');
-    const icopath = path.resolve(__dirname, '../../assets/homey-white.ico');
+    const imagepath = path.resolve(__dirname, '../../assets/homey-colored.png');
+    const icopath = path.resolve(__dirname, '../../assets/homey-colored.ico');
 
     const storeWindowState = store.get('webAppWindow.windowState');
 
