@@ -235,10 +235,120 @@ class WindowManager extends EventEmitter {
     }
   }
 
+  createWebAppWindow() {
+    const imagepath = path.resolve(__dirname, '../../assets/homey-white.png');
+    const icopath = path.resolve(__dirname, '../../assets/homey-white.ico');
+
+    const storeWindowState = store.get('webAppWindow.windowState');
+
+    let windowState = {
+      bounds: { x: null, y: null, width: 800, height: 600 },
+      isMaximized: true,
+      isHidden: false,
+    };
+
+    if (storeWindowState != null) {
+      windowState = {
+        ...windowState,
+        ...storeWindowState,
+      };
+    }
+
+    store.set('webAppWindow.windowState', windowState);
+
+    this.webAppWindow = new BrowserWindow({
+      x: windowState.bounds.x,
+      y: windowState.bounds.y,
+      width: windowState.bounds.width,
+      height: windowState.bounds.height,
+      show: windowState.isHidden === false,
+      icon: process.platform !== 'win32' ? imagepath : icopath,
+      backgroundColor: '#161b22',
+      webPreferences: {
+        nodeIntegration: true,
+        contextIsolation: false,
+      },
+    });
+
+    if (windowState.isMaximized && windowState.isHidden === false) {
+      this.webAppWindow.maximize();
+    }
+
+    const saveBounds = debounce(() => {
+      if (this.webAppWindow.isMaximized()) {
+        store.set('webAppWindow.windowState.isMaximized', true);
+        return;
+      }
+
+      store.set('webAppWindow.windowState.bounds', this.webAppWindow.getBounds());
+      store.set('webAppWindow.windowState.isMaximized', false);
+    }, 200);
+
+    this.webAppWindow.loadURL('https://my.homey.app/');
+
+    if (process.env.NODE_ENV !== 'production') {
+      this.webAppWindow.webContents.openDevTools();
+    }
+
+    this.webAppWindow.on('maximize', (event) => {
+      console.log('webAppWindow:maximize');
+    });
+
+    this.webAppWindow.on('minimize', (event) => {
+      console.log('webAppWindow:minimize');
+    });
+
+    this.webAppWindow.on('restore', (event) => {
+      console.log('webAppWindow:restore');
+      this.webAppWindow.show();
+    });
+
+    this.webAppWindow.on('close', (event) => {
+      console.log('webAppWindow:close');
+
+      if (this.isQuitting === false) {
+        event.preventDefault();
+        this.webAppWindow.hide();
+      }
+    });
+
+    this.webAppWindow.on('show', (event) => {
+      console.log('webAppWindow:show');
+      store.set('webAppWindow.windowState.isHidden', false);
+    });
+
+    this.webAppWindow.on('hide', (event) => {
+      console.log('webAppWindow:hide');
+      store.set('webAppWindow.windowState.isHidden', true);
+    });
+
+    this.webAppWindow.on('move', (event) => {
+      saveBounds();
+    });
+
+    this.webAppWindow.on('resize', (event) => {
+      saveBounds();
+    });
+
+    this.webAppWindow.webContents.on('dom-ready', (event) => {
+      this.emit('web-app-window-dom-ready', event);
+    });
+  }
+
+  sendToWebAppWindow(...args) {
+    if (
+      this.webAppWindow.isDestroyed() === false &&
+      this.webAppWindow.webContents
+    ) {
+      this.webAppWindow.webContents.send(...args);
+    }
+  }
+
   closeAll() {
     this.isQuitting = true;
 
     this.mainWindow.close();
+    this.webAppWindow.close();
     this.overlayWindow.close();
   }
 }

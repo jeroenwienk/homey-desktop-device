@@ -41,8 +41,10 @@ app.on('ready', async () => {
   console.log('app:ready');
 
   windowManager.createMainWindow();
+  windowManager.createWebAppWindow();
   windowManager.createOverlayWindow();
   trayManager.createTray();
+  trayManager.createWebAppTray();
 
   const buttons = await db.getButtons();
   const trayButtons = buttons.filter((button) => {
