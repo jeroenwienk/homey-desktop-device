@@ -14,8 +14,17 @@ module.exports = {
     {
       name: '@electron-forge/maker-squirrel',
       config: {
-        iconUrl: path.resolve('src/assets/home.ico'),
-        setupIcon: path.resolve('src/assets/home.ico'),
+        /**
+         * A URL to an ICO file to use as the application icon
+         * (displayed in Control Panel > Programs and Features).
+         * Defaults to the Atom icon.
+         */
+        iconUrl: path.resolve('src/assets/homey-white.ico'),
+        setupIcon: path.resolve('src/assets/homey-white.ico'),
+        /**
+         * Windows Application Model ID (appId).
+         * Defaults to the name field in your app's package.json file.
+         */
         name: 'DesktopDevice',
       },
     },
@@ -83,7 +92,8 @@ module.exports = {
             },
           ],
         },
-        devContentSecurityPolicy: "default-src 'self' 'unsafe-inline' data:; script-src 'self' 'unsafe-eval' 'unsafe-inline' data:; connect-src *",
+        devContentSecurityPolicy:
+          "default-src 'self' 'unsafe-inline' data:; script-src 'self' 'unsafe-eval' 'unsafe-inline' data:; connect-src *",
         port: 9000,
         loggerPort: 9001,
       },

@@ -16,7 +16,9 @@ class TrayManager extends EventEmitter {
 
   createTray() {
     const imagepath = path.resolve(__dirname, '../../assets/homey-white.png');
-    const tray = new Tray(imagepath);
+    const icopath = path.resolve(__dirname, '../../assets/homey-white.ico');
+
+    const tray = new Tray(process.platform !== 'win32' ? imagepath : icopath);
 
     const contextMenu = this.buildMenu();
 

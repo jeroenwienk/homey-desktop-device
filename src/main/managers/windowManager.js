@@ -21,6 +21,8 @@ class WindowManager extends EventEmitter {
 
   createMainWindow() {
     const imagepath = path.resolve(__dirname, '../../assets/homey-white.png');
+    const icopath = path.resolve(__dirname, '../../assets/homey-white.ico');
+
     const storeWindowState = store.get('mainWindow.windowState');
 
     let windowState = {
@@ -44,7 +46,7 @@ class WindowManager extends EventEmitter {
       width: windowState.bounds.width,
       height: windowState.bounds.height,
       show: windowState.isHidden === false,
-      icon: imagepath,
+      icon: process.platform !== 'win32' ? imagepath : icopath,
       backgroundColor: '#161b22',
       webPreferences: {
         nodeIntegration: true,
@@ -128,6 +130,7 @@ class WindowManager extends EventEmitter {
 
   createOverlayWindow() {
     const imagepath = path.resolve(__dirname, '../../assets/homey-white.png');
+    const icopath = path.resolve(__dirname, '../../assets/homey-white.ico');
     const storeWindowState = store.get('overlayWindow.windowState');
 
     let windowState = {
@@ -151,7 +154,7 @@ class WindowManager extends EventEmitter {
       width: windowState.bounds.width,
       height: windowState.bounds.height,
       show: windowState.isHidden === false,
-      icon: imagepath,
+      icon: process.platform !== 'win32' ? imagepath : icopath,
       //backgroundColor: '#181818',
       webPreferences: {
         nodeIntegration: true,
