@@ -24,17 +24,13 @@ const OVERLAY = {
 
 const MAIN = {
   BUTTONS_INIT: 'buttons:init',
-  BUTTONS_BROKEN: 'buttons:broken',
   ACCELERATORS_INIT: 'accelerators:init',
-  ACCELERATORS_BROKEN: 'accelerators:broken',
   ACCELERATOR_TEST: 'accelerator:test',
   HISTORY_INIT: 'history:init',
   HISTORY_PUSH: 'history:push',
   DISPLAYS_INIT: 'displays:init',
-  DISPLAYS_BROKEN: 'displays:broken',
   DISPLAY_SET: 'display:set',
   INPUTS_INIT: 'inputs:init',
-  INPUTS_BROKEN: 'inputs:broken',
 
   SOCKETS_INIT: 'sockets:init',
 
@@ -56,20 +52,17 @@ const IO_EMIT = {
 const IO_ON = {
   BROWSER_OPEN_RUN: 'browser:open:run',
   PATH_OPEN_RUN: 'path:open:run',
-  WINDOW_OPEN_RUN: 'window:open:run',
+  WINDOW_ACTION_RUN: 'window:action:run',
+  WINDOW_MOVE_RUN: 'window:move:run',
   COMMAND_RUN: 'command:run',
-  BUTTON_RUN_SUCCESS: 'button:run:success',
-  BUTTON_RUN_ERROR: 'button:run:error',
-  FLOW_BUTTON_SAVED: 'flow:button:saved',
-  ACCELERATOR_RUN_SUCCESS: 'accelerator:run:success',
-  ACCELERATOR_RUN_ERROR: 'accelerator:run:error',
-  FLOW_ACCELERATOR_SAVED: 'flow:accelerator:saved',
+  WEB_APP_EXECUTE_CODE_RUN: 'web:app:execute:code:run',
+  SCREENS_FETCH: 'screens:fetch',
   NOTIFICATION_SHOW_RUN: 'notification:show:run',
   DISPLAY_SET_RUN: 'display:set:run',
   FLOW_DISPLAY_SAVED: 'flow:display:saved',
-  INPUT_RUN_SUCCESS: 'input:run:success',
-  INPUT_RUN_ERROR: 'input:run:error',
   FLOW_INPUT_SAVED: 'flow:input:saved',
+  FLOW_BUTTON_SAVED: 'flow:button:saved',
+  FLOW_ACCELERATOR_SAVED: 'flow:accelerator:saved',
 };
 
 module.exports = {

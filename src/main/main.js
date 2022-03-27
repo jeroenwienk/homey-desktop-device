@@ -43,6 +43,7 @@ app.on('ready', async () => {
   windowManager.createMainWindow();
   windowManager.createWebAppWindow();
   windowManager.createOverlayWindow();
+
   trayManager.createTray();
   trayManager.createWebAppTray();
 
@@ -89,5 +90,5 @@ app.on('activate', (event) => {
 });
 
 if (process.platform === 'darwin') {
-  app.dock.setIcon(path.resolve(__dirname, '../assets/homey-white-2048.png'));
+  app.dock.setIcon(path.resolve(__dirname, '../assets/homey-white.icns'));
 }

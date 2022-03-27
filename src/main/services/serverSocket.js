@@ -1,4 +1,4 @@
-const { shell, Notification, dialog } = require('electron');
+const { shell, screen, Notification } = require('electron');
 const { exec } = require('child_process');
 
 const https = require('https');
@@ -36,11 +36,7 @@ class ServerSocket {
     this.io.on('connect', this.handleConnect.bind(this));
 
     this.io.use((socket, next) => {
-      let handshake = socket.handshake;
-      // ...
-
-      console.log(handshake);
-
+      // let handshake = socket.handshake;
       // console.log(handshake);
       //
       // const res = dialog.showMessageBoxSync({
@@ -101,8 +97,12 @@ class ServerSocket {
       this.handlePathOpen(...args);
     });
 
-    socket.on(IO_ON.WINDOW_OPEN_RUN, (...args) => {
-      this.handleWindowOpenRun(...args);
+    socket.on(IO_ON.WINDOW_ACTION_RUN, (...args) => {
+      this.handleWindowActionRun(...args);
+    });
+
+    socket.on(IO_ON.WINDOW_MOVE_RUN, (...args) => {
+      this.handleWindowMoveRun(...args);
     });
 
     socket.on(IO_ON.NOTIFICATION_SHOW_RUN, (...args) => {
@@ -117,22 +117,12 @@ class ServerSocket {
       this.handleDisplaySet(...args);
     });
 
-    socket.on(IO_ON.BUTTON_RUN_SUCCESS, (args) => {
-      console.log(IO_ON.BUTTON_RUN_SUCCESS, args);
+    socket.on(IO_ON.WEB_APP_EXECUTE_CODE_RUN, (...args) => {
+      this.handleWebAppExecuteCodeRun(...args);
     });
 
-    // TODO: implement in app
-    socket.on(IO_ON.BUTTON_RUN_ERROR, (args) => {
-      console.log(IO_ON.BUTTON_RUN_ERROR, args);
-    });
-
-    socket.on(IO_ON.ACCELERATOR_RUN_SUCCESS, (args) => {
-      console.log(IO_ON.ACCELERATOR_RUN_SUCCESS, args);
-    });
-
-    // TODO: implement in app
-    socket.on(IO_ON.ACCELERATOR_RUN_ERROR, (args) => {
-      console.log(IO_ON.ACCELERATOR_RUN_ERROR, args);
+    socket.on(IO_ON.SCREENS_FETCH, (...args) => {
+      this.handleScreensFetch(...args);
     });
 
     socket.on(IO_ON.FLOW_BUTTON_SAVED, (...args) => {
@@ -144,6 +134,10 @@ class ServerSocket {
     });
 
     socket.on(IO_ON.FLOW_DISPLAY_SAVED, (...args) => {
+      this.sync(socket);
+    });
+
+    socket.on(IO_ON.FLOW_INPUT_SAVED, (...args) => {
       this.sync(socket);
     });
 
@@ -163,7 +157,7 @@ class ServerSocket {
       callback();
     } catch (error) {
       console.error(error);
-      callback(error);
+      callback(error?.message);
     }
   }
 
@@ -180,40 +174,120 @@ class ServerSocket {
       callback();
     } catch (error) {
       console.error(error);
-      callback(error);
+      callback(error?.message);
     }
   }
 
-  async handleWindowOpenRun(data, callback) {
+  async handleWindowActionRun(data, callback) {
     try {
       const historyEntry = await db.insertHistoryEntry({
-        name: 'window:open',
-        argument: data.window.id,
+        name: 'window:action',
+        argument: `${data.window.name} - ${data.action.name}`,
         date: new Date(),
       });
 
-      console.log(data);
+      function doAction(window) {
+        switch (data.action.id) {
+          case 'open':
+            window.show();
+            break;
+          case 'close':
+            window.hide();
+            break;
+          case 'toggle':
+            if (window.isVisible()) {
+              window.hide();
+            } else {
+              window.show();
+            }
+            break;
+          case 'maximize':
+            window.maximize();
+            break;
+          case 'unmaximize':
+            window.unmaximize();
+            break;
+          case 'minimize':
+            window.minimize();
+            break;
+          case 'restore':
+            window.restore();
+            break;
+          case 'focus':
+            window.focus();
+            break;
+          case 'blur':
+            window.blur();
+            break;
+        }
+      }
 
       switch (data.window.id) {
         case 'main':
-          windowManager.mainWindow.show();
+          doAction(windowManager.mainWindow);
           break;
         case 'overlay':
-          windowManager.overlayWindow.show();
+          doAction(windowManager.overlayWindow);
           break;
-        case 'webapp':
-          windowManager.webAppWindow.show();
+        case 'web_app':
+          doAction(windowManager.webAppWindow);
           break;
         default:
           break;
       }
 
       windowManager.sendToMainWindow(MAIN.HISTORY_PUSH, historyEntry);
-      // await shell.openPath(data.path);
       callback();
     } catch (error) {
       console.error(error);
-      callback(error);
+      callback(error?.message);
+    }
+  }
+
+  async handleWindowMoveRun(data, callback) {
+    try {
+      // const historyEntry = await db.insertHistoryEntry({
+      //   name: 'window:move',
+      //   argument: `${data.window.name} - ${data.action.name}`,
+      //   date: new Date(),
+      // });
+
+      const screens = screen.getAllDisplays();
+      const screenId = String(data.screen.id);
+
+      const foundScreen = screens.find((screen) => {
+        return String(screen.id) === screenId;
+      });
+
+      if (foundScreen == null) {
+        throw new Error(`Can't find screen with id: ${screenId}`);
+      }
+
+      const bounds = {
+        x: foundScreen.workArea.x,
+        y: foundScreen.workArea.y,
+        width: foundScreen.workArea.width,
+        height: foundScreen.workArea.height
+      }
+
+      switch (data.window.id) {
+        case 'main':
+          windowManager.mainWindow.setBounds(bounds)
+          break;
+        case 'overlay':
+          windowManager.overlayWindow.setBounds(bounds)
+          break;
+        case 'web_app':
+          windowManager.webAppWindow.setBounds(bounds)
+          break;
+        default:
+          break;
+      }
+
+      callback();
+    } catch (error) {
+      console.error(error);
+      callback(error?.message);
     }
   }
 
@@ -227,7 +301,8 @@ class ServerSocket {
       notification.show();
       callback();
     } catch (error) {
-      callback(error);
+      console.error(error);
+      callback(error?.message);
     }
   }
 
@@ -271,7 +346,39 @@ class ServerSocket {
       windowManager.sendToOverlayWindow(MAIN.DISPLAY_SET, data);
       callback();
     } catch (error) {
-      callback(error);
+      console.error(error);
+      callback(error?.message);
+    }
+  }
+
+  async handleWebAppExecuteCodeRun(data, callback) {
+    try {
+      // const historyEntry = await db.insertHistoryEntry({
+      //   name: 'window:action',
+      //   argument: `${data.action.name} - ${data.window.name}`,
+      //   date: new Date(),
+      // });
+
+      // Might not be serializeable.
+      const result =
+        await windowManager.webAppWindow.webContents.executeJavaScript(
+          data.code,
+          true
+        );
+      callback(null, result);
+    } catch (error) {
+      console.error(error);
+      callback(error?.message);
+    }
+  }
+
+  async handleScreensFetch(data, callback) {
+    try {
+      const screens = screen.getAllDisplays();
+      callback(null, { screens });
+    } catch (error) {
+      console.error(error);
+      callback(error?.message);
     }
   }
 
@@ -282,21 +389,13 @@ class ServerSocket {
       const displays = await db.getDisplays();
       const inputs = await db.getInputs();
 
-      socket.emit(IO_EMIT.BUTTONS_SYNC, { buttons }, ({ broken }) => {
-        windowManager.sendToMainWindow(MAIN.BUTTONS_BROKEN, broken);
-      });
+      socket.emit(IO_EMIT.BUTTONS_SYNC, { buttons }, () => {});
 
-      socket.emit(IO_EMIT.ACCELERATORS_SYNC, { accelerators }, ({ broken }) => {
-        windowManager.sendToMainWindow(MAIN.ACCELERATORS_BROKEN, broken);
-      });
+      socket.emit(IO_EMIT.ACCELERATORS_SYNC, { accelerators }, () => {});
 
-      socket.emit(IO_EMIT.DISPLAYS_SYNC, { displays }, ({ broken }) => {
-        windowManager.sendToMainWindow(MAIN.DISPLAYS_BROKEN, broken);
-      });
+      socket.emit(IO_EMIT.DISPLAYS_SYNC, { displays }, () => {});
 
-      socket.emit(IO_EMIT.INPUTS_SYNC, { inputs }, ({ broken }) => {
-        windowManager.sendToMainWindow(MAIN.INPUTS_BROKEN, broken);
-      });
+      socket.emit(IO_EMIT.INPUTS_SYNC, { inputs }, () => {});
     } catch (error) {
       console.error(error);
     }

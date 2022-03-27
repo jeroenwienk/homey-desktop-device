@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { ipcRenderer, shell } from 'electron';
 import semver from 'semver';
@@ -15,7 +15,6 @@ import { Buttons } from './containers/buttons/Buttons';
 import { Accelerators } from './containers/accelerators/Accelerators';
 import { Displays } from './containers/displays/Displays';
 import { Inputs } from './containers/inputs/Inputs';
-import { Broken } from './containers/Broken';
 
 import { MenuButton } from './components/common/Menu';
 import { ExternalLink } from './components/common/ExternalLink';
@@ -77,7 +76,6 @@ export function App() {
         <Buttons />
         <Accelerators />
         <Displays />
-        <Broken />
       </App.Main>
       <App.Sidebar>
         <History />

@@ -5,7 +5,6 @@ import { REND, MAIN } from '../../shared/events';
 
 export const buttonStore = create((set) => ({
   list: [],
-  broken: [],
 }));
 
 export function createButton(button) {
@@ -49,18 +48,8 @@ export function initButtons(buttons) {
   });
 }
 
-export function initBroken(broken) {
-  buttonStore.setState({
-    broken: broken,
-  });
-}
-
 ipcRenderer.on(MAIN.BUTTONS_INIT, (event, data) => {
   initButtons(data);
-});
-
-ipcRenderer.on(MAIN.BUTTONS_BROKEN, (event, data) => {
-  initBroken(data);
 });
 
 const selectList = (state) => state.list;

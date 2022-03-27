@@ -5,7 +5,6 @@ import { REND, MAIN } from '../../shared/events';
 
 export const acceleratorStore = create((set) => ({
   list: [],
-  broken: [],
 }));
 
 export function createAccelerator(accelerator) {
@@ -49,18 +48,8 @@ export function initAccelerators(accelerators) {
   });
 }
 
-export function initBroken(broken) {
-  acceleratorStore.setState({
-    broken: broken,
-  });
-}
-
 ipcRenderer.on(MAIN.ACCELERATORS_INIT, (event, data) => {
   initAccelerators(data);
-});
-
-ipcRenderer.on(MAIN.ACCELERATORS_BROKEN, (event, data) => {
-  initBroken(data);
 });
 
 const selectList = (state) => state.list;

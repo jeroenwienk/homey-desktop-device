@@ -5,7 +5,6 @@ import { REND, MAIN } from '../../shared/events';
 
 export const displayStore = create((set) => ({
   list: [],
-  broken: [],
 }));
 
 export function createDisplay(display) {
@@ -49,18 +48,8 @@ export function initDisplays(displays) {
   });
 }
 
-export function initBroken(broken) {
-  displayStore.setState({
-    broken: broken,
-  });
-}
-
 ipcRenderer.on(MAIN.DISPLAYS_INIT, (event, data) => {
   initDisplays(data);
-});
-
-ipcRenderer.on(MAIN.DISPLAYS_BROKEN, (event, data) => {
-  initBroken(data);
 });
 
 const selectList = (state) => state.list;

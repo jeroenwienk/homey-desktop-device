@@ -1,6 +1,6 @@
 const path = require('path');
 const EventEmitter = require('events');
-const { BrowserWindow } = require('electron');
+const { BrowserWindow, shell } = require('electron');
 const Store = require('electron-store');
 
 const { debounce } = require('../../shared/debounce');
@@ -265,9 +265,35 @@ class WindowManager extends EventEmitter {
       icon: process.platform !== 'win32' ? imagepath : icopath,
       backgroundColor: '#161b22',
       webPreferences: {
-        nodeIntegration: true,
-        contextIsolation: false,
+        nodeIntegration: false,
+        contextIsolation: true,
       },
+    });
+
+    this.webAppWindow.webContents.on(
+      'will-navigate',
+      (event, navigationUrl) => {
+        const parsedUrl = new URL(navigationUrl);
+
+        if (parsedUrl.origin !== 'https://my.homey.app') {
+          event.preventDefault();
+          console.log(`Prevented origin change: ${parsedUrl}`);
+        }
+      }
+    );
+
+    this.webAppWindow.webContents.setWindowOpenHandler(({ url }) => {
+      console.log(`Window open handler: ${url}`);
+
+      // Should probably notify here and ask if open is desired.
+
+      if (url?.startsWith('https://') === true) {
+        setImmediate(() => {
+          shell.openExternal(url);
+        });
+      }
+
+      return { action: 'deny' };
     });
 
     if (windowState.isMaximized && windowState.isHidden === false) {
@@ -280,7 +306,10 @@ class WindowManager extends EventEmitter {
         return;
       }
 
-      store.set('webAppWindow.windowState.bounds', this.webAppWindow.getBounds());
+      store.set(
+        'webAppWindow.windowState.bounds',
+        this.webAppWindow.getBounds()
+      );
       store.set('webAppWindow.windowState.isMaximized', false);
     }, 200);
 
@@ -332,6 +361,10 @@ class WindowManager extends EventEmitter {
 
     this.webAppWindow.webContents.on('dom-ready', (event) => {
       this.emit('web-app-window-dom-ready', event);
+
+      // this.webAppWindow.webContents.executeJavaScript('window.router.history.push(`/devices`);', true).then(result => {
+      //   console.log(result);
+      // }).catch(console.error);
     });
   }
 

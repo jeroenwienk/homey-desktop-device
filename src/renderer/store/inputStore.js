@@ -5,7 +5,6 @@ import { REND, MAIN } from '../../shared/events';
 
 export const inputStore = create((set) => ({
   list: [],
-  broken: [],
 }));
 
 export function createInput(input) {
@@ -49,18 +48,8 @@ export function initInputs(inputs) {
   });
 }
 
-export function initBroken(broken) {
-  inputStore.setState({
-    broken: broken,
-  });
-}
-
 ipcRenderer.on(MAIN.INPUTS_INIT, (event, data) => {
   initInputs(data);
-});
-
-ipcRenderer.on(MAIN.INPUTS_BROKEN, (event, data) => {
-  initBroken(data);
 });
 
 const selectList = (state) => state.list;

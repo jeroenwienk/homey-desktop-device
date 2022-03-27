@@ -119,16 +119,15 @@ async function emitButtonsSync(event) {
       {
         buttons,
       },
-      ({ broken }) => {
-        event.reply(MAIN.BUTTONS_BROKEN, broken);
-      }
+      () => {}
     );
   });
 
   const trayButtons = buttons.filter((button) => {
     return button.tray === true;
   });
-  trayManager.addButtons(trayButtons)
+
+  trayManager.addButtons(trayButtons);
 }
 
 async function handleAcceleratorCreate(event, args) {
@@ -172,9 +171,7 @@ async function emitAcceleratorsSync(event) {
       {
         accelerators,
       },
-      ({ broken }) => {
-        event.reply(MAIN.ACCELERATORS_BROKEN, broken);
-      }
+      () => {}
     );
   });
 }
@@ -241,9 +238,7 @@ async function emitDisplaySync(event) {
       {
         displays,
       },
-      ({ broken }) => {
-        event.reply(MAIN.DISPLAYS_BROKEN, broken);
-      }
+      () => {}
     );
   });
 }
@@ -288,9 +283,7 @@ async function emitInputSync(event) {
       {
         inputs,
       },
-      ({ broken }) => {
-        event.reply(MAIN.INPUTS_BROKEN, broken);
-      }
+      () => {}
     );
   });
 }
