@@ -377,12 +377,16 @@ class WindowManager extends EventEmitter {
     }
   }
 
+  detroyWebAppWindow() {
+    this.webAppWindow.destroy();
+    this.webAppWindow = null;
+  }
+
   closeAll() {
     this.isQuitting = true;
-
-    this.mainWindow.close();
     this.webAppWindow.close();
     this.overlayWindow.close();
+    this.mainWindow.close();
   }
 }
 

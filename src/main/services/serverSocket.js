@@ -230,7 +230,11 @@ class ServerSocket {
           doAction(windowManager.overlayWindow);
           break;
         case 'web_app':
-          doAction(windowManager.webAppWindow);
+          if (windowManager.webAppWindow != null) {
+            doAction(windowManager.webAppWindow);
+          } else {
+            throw new Error(`Window ${data.window.name} is disabled.`);
+          }
           break;
         default:
           break;
@@ -267,18 +271,22 @@ class ServerSocket {
         x: foundScreen.workArea.x,
         y: foundScreen.workArea.y,
         width: foundScreen.workArea.width,
-        height: foundScreen.workArea.height
-      }
+        height: foundScreen.workArea.height,
+      };
 
       switch (data.window.id) {
         case 'main':
-          windowManager.mainWindow.setBounds(bounds)
+          windowManager.mainWindow.setBounds(bounds);
           break;
         case 'overlay':
-          windowManager.overlayWindow.setBounds(bounds)
+          windowManager.overlayWindow.setBounds(bounds);
           break;
         case 'web_app':
-          windowManager.webAppWindow.setBounds(bounds)
+          if (windowManager.webAppWindow != null) {
+            windowManager.webAppWindow.setBounds(bounds);
+          } else {
+            throw new Error(`Window ${data.window.name} is disabled.`);
+          }
           break;
         default:
           break;
@@ -358,6 +366,10 @@ class ServerSocket {
       //   argument: `${data.action.name} - ${data.window.name}`,
       //   date: new Date(),
       // });
+
+      if (windowManager.webAppWindow == null) {
+        throw new Error(`Window ${data.window.name} is disabled.`);
+      }
 
       // Might not be serializeable.
       const result =

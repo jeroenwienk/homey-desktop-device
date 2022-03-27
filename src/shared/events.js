@@ -15,6 +15,7 @@ const REND = {
   INPUT_UPDATE: 'input:update',
   INPUT_REMOVE: 'input:remove',
   INPUT_RUN: 'input:run',
+  SETTINGS_UPDATE: 'settings:update',
   TEST: 'test',
 };
 
@@ -31,6 +32,8 @@ const MAIN = {
   DISPLAYS_INIT: 'displays:init',
   DISPLAY_SET: 'display:set',
   INPUTS_INIT: 'inputs:init',
+  SETTINGS_INIT: 'settings:init',
+  SETTINGS_SET: 'settings:set',
 
   SOCKETS_INIT: 'sockets:init',
 

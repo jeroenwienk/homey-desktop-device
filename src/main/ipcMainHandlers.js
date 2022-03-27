@@ -31,6 +31,8 @@ function initIpcMainHandlers() {
   ipcMain.on(REND.INPUT_REMOVE, handleInputRemove);
   ipcMain.on(REND.INPUT_RUN, handleInputRun);
 
+  ipcMain.on(REND.SETTINGS_UPDATE, handleSettingsUpdate);
+
   ipcMain.handle(REND.TEST, handleExecRunTest);
 
   ipcMain.handle('version', async (event, args) => {
@@ -55,6 +57,7 @@ async function handleExecRunTest(event, args) {
 
 async function handleRendererInit(event, args) {
   const history = await db.getHistory();
+  const settings = await db.getSettings();
   const buttons = await db.getButtons();
   const accelerators = await db.getAccelerators();
   const displays = await db.getDisplays();
@@ -64,6 +67,7 @@ async function handleRendererInit(event, args) {
   registerAccelerators(accelerators);
 
   event.reply(MAIN.HISTORY_INIT, history);
+  event.reply(MAIN.SETTINGS_INIT, settings);
   event.reply(MAIN.BUTTONS_INIT, buttons);
   event.reply(MAIN.ACCELERATORS_INIT, accelerators);
   event.reply(MAIN.DISPLAYS_INIT, displays);
@@ -73,6 +77,26 @@ async function handleRendererInit(event, args) {
   serverSocket.getConnected().forEach((socket) => {
     serverSocket.sync(socket);
   });
+}
+
+async function handleSettingsUpdate(event, args) {
+  try {
+    const previousSettings = await db.getSettings();
+    await db.updateSettings(args);
+
+    if (previousSettings.webAppWindowEnabled !== args.webAppWindowEnabled) {
+      if (args.webAppWindowEnabled === true) {
+        windowManager.createWebAppWindow();
+        trayManager.createWebAppTray();
+      } else {
+        trayManager.detroyWebAppTray();
+        windowManager.detroyWebAppWindow();
+      }
+    }
+    // apply them
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 async function handleOverlayInit(event, args) {

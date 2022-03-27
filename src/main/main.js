@@ -37,15 +37,26 @@ setApplicationMenu();
 
 initIpcMainHandlers();
 
+console.log(app.getPath('userData'));
+
 app.on('ready', async () => {
   console.log('app:ready');
 
+  const settings = await db.getSettings();
+  console.log(settings);
+
+  if (settings.webAppWindowEnabled === true) {
+    windowManager.createWebAppWindow();
+  }
+
   windowManager.createMainWindow();
-  windowManager.createWebAppWindow();
   windowManager.createOverlayWindow();
 
   trayManager.createTray();
-  trayManager.createWebAppTray();
+
+  if (settings.webAppWindowEnabled === true) {
+    trayManager.createWebAppTray();
+  }
 
   const buttons = await db.getButtons();
   const trayButtons = buttons.filter((button) => {

@@ -8,6 +8,11 @@ class DataBase {
       autoload: true,
     });
 
+    this.basicCollection = new DataStore({
+      filename: `${app.getPath('userData')}/basic`,
+      autoload: true,
+    });
+
     this.buttonCollection = new DataStore({
       filename: `${app.getPath('userData')}/buttons`,
       autoload: true,
@@ -50,6 +55,45 @@ class DataBase {
         if (error) return reject(error);
         resolve(entry);
       });
+    });
+  }
+
+  async getSettings() {
+    return new Promise((resolve, reject) => {
+      this.basicCollection.find({ id: 'settings' }).exec((error, docs) => {
+        if (error) return reject(error);
+
+        if (docs[0] == null) {
+          this.createSettings().then(resolve).catch(reject);
+        } else {
+          resolve(docs[0]);
+        }
+      });
+    });
+  }
+
+  async createSettings() {
+    return new Promise((resolve, reject) => {
+      this.basicCollection.insert(
+        { id: 'settings', webAppWindowEnabled: true },
+        (error, entry) => {
+          if (error) return reject(error);
+          resolve(entry);
+        }
+      );
+    });
+  }
+
+  async updateSettings(args) {
+    return new Promise((resolve, reject) => {
+      this.basicCollection.update(
+        { id: 'settings' },
+        { $set: args },
+        (error) => {
+          if (error) return reject(error);
+          resolve();
+        }
+      );
     });
   }
 

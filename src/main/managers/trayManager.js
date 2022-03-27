@@ -154,6 +154,11 @@ class TrayManager extends EventEmitter {
       console.error(error);
     }
   }
+
+  detroyWebAppTray() {
+    this.webAppTray.destroy();
+    this.webAppTray = null;
+  }
 }
 
 module.exports = {

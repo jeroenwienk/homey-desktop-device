@@ -2,11 +2,14 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { ipcRenderer, shell } from 'electron';
 import semver from 'semver';
+import { Route } from 'react-router';
 
 import { REND } from '../shared/events';
 
 import { history } from './memoryHistory';
 import { vars } from './theme/GlobalStyles';
+
+import { SettingsDialog } from './SettingsDialog';
 
 import { Connections } from './containers/Connections';
 import { History } from './containers/History';
@@ -18,6 +21,9 @@ import { Inputs } from './containers/inputs/Inputs';
 
 import { MenuButton } from './components/common/Menu';
 import { ExternalLink } from './components/common/ExternalLink';
+import { IconButton } from './components/common/IconButton';
+
+import { SettingsIcon } from './components/common/IconMask';
 
 export function App() {
   const [isLatestVersion, setIsLatestVersion] = useState(true);
@@ -45,18 +51,36 @@ export function App() {
 
   return (
     <App.Grid>
+      <Route
+        exact
+        path="/settings"
+        render={(routeProps) => {
+          return <SettingsDialog {...routeProps} />;
+        }}
+      />
+
       <App.Header>
-        <MenuButton
-          label="Create"
-          onAction={(key) => {
-            history.push(`/${key}?id=create`);
-          }}
-        >
-          <MenuButton.Item key="input">Input</MenuButton.Item>
-          <MenuButton.Item key="button">Button</MenuButton.Item>
-          <MenuButton.Item key="accelerator">Shortcut</MenuButton.Item>
-          <MenuButton.Item key="display">Display</MenuButton.Item>
-        </MenuButton>
+        <div>
+          <MenuButton
+            label="Create"
+            onAction={(key) => {
+              history.push(`/${key}?id=create`);
+            }}
+          >
+            <MenuButton.Item key="input">Input</MenuButton.Item>
+            <MenuButton.Item key="button">Button</MenuButton.Item>
+            <MenuButton.Item key="accelerator">Shortcut</MenuButton.Item>
+            <MenuButton.Item key="display">Display</MenuButton.Item>
+          </MenuButton>
+
+          <IconButton
+            iconComponent={SettingsIcon}
+            aria-label="settings"
+            onPress={() => {
+              history.push(`/settings`);
+            }}
+          />
+        </div>
 
         {isLatestVersion === false && (
           <ExternalLink
