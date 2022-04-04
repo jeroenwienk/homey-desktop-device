@@ -1,10 +1,11 @@
+import { ipcRenderer } from 'electron';
+
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
-import { ipcRenderer } from 'electron';
 import create from 'zustand';
 import { useFilter } from 'react-aria';
 
-import { COMMANDER } from '../shared/events';
+import { COMMANDER, events } from '../shared/events';
 import { apiStore, commandStore } from './commander';
 
 import { DragIcon } from '../renderer/components/common/IconMask';
@@ -12,15 +13,25 @@ import { Item } from './Item';
 import { Section } from './Section';
 import { ComboBox } from './ComboBox';
 
-export const store = create((set, get, api) => {
+export const cacheStore = create((set, get, api) => {
   return {
     cache: new Map(),
-    path: [],
     buster: {},
   };
 });
 
+export const store = create((set, get, api) => {
+  return {
+    isSearchLocked: false,
+    command: null,
+    placeholder: '',
+    path: [],
+    sections: [],
+  };
+});
+
 export function CommanderApp() {
+  const comboBoxRef = useRef();
   const inputRef = useRef();
 
   useEffect(() => {
@@ -43,26 +54,25 @@ export function CommanderApp() {
   }
 
   const state = store();
+  const cacheState = cacheStore();
 
   const apiState = apiStore();
   const commandState = commandStore();
 
-  const [sections, setSections] = useState([]);
-  const [path, setPath] = useState([]);
-  const [placeholder, setPlaceholder] = useState('');
   const [inputValue, setInputValue] = useState('');
-  const [selectedKey, setSelectedKey] = useState('');
+  const [selectedKey, setSelectedKey] = useState(null);
 
-  const pathSections = useMemo(() => {
+  // convert to subscriber with timeout to batch
+  const sections = useMemo(() => {
     switch (true) {
       case state.path.length === 0:
         let result = [];
-        if (state.cache.get('apis') != null) {
-          result.push(state.cache.get('apis'));
+        if (cacheState.cache.get('apis') != null) {
+          result.push(cacheState.cache.get('apis'));
         }
 
-        if (state.cache.get('commands') != null) {
-          const sections = state.cache.get('commands').sections;
+        if (cacheState.cache.get('commands') != null) {
+          const sections = cacheState.cache.get('commands').sections;
 
           if (sections != null) {
             for (const section of sections) {
@@ -73,9 +83,9 @@ export function CommanderApp() {
 
         return result;
       default:
-        return [];
+        return state.sections;
     }
-  }, [state.path, state.buster]);
+  }, [state.path, cacheState.buster]);
 
   useEffect(() => {
     const sections = [];
@@ -88,9 +98,19 @@ export function CommanderApp() {
           key: index,
           type: 'command',
           textValue: entry.command,
+          hint: entry.hint,
           command: {
-            send() {
-              console.log('send');
+            ...entry,
+            run({ input }) {
+              ipcRenderer
+                .invoke(events.SEND_COMMAND, {
+                  data: {
+                    homeyId: homeyId,
+                    command: entry.command,
+                    input: input,
+                  },
+                })
+                .catch(console.error);
             },
           },
         });
@@ -103,11 +123,11 @@ export function CommanderApp() {
       });
     }
 
-    store.getState().cache.set('commands', {
+    cacheStore.getState().cache.set('commands', {
       sections,
     });
 
-    store.setState({
+    cacheStore.setState({
       buster: {},
     });
   }, [commandState]);
@@ -126,28 +146,24 @@ export function CommanderApp() {
         return a.textValue.localeCompare(b.textValue);
       });
 
-    if (apis.length > 0 && path.length === 0) {
-      store.getState().cache.set('apis', {
+    if (apis.length > 0) {
+      cacheStore.getState().cache.set('apis', {
         key: 'apis',
         title: 'Homey',
         children: apis,
       });
 
-      store.setState({
+      cacheStore.setState({
         buster: {},
       });
     }
   }, [apiState]);
 
-  useEffect(() => {
-    setSections((prevSections) => {
-      return pathSections;
-    });
-  }, [pathSections]);
-
   async function setNext({ key, value }) {
     let nextSections = [];
     let nextPlaceholder = '';
+    let nextIsSearchLocked = false;
+    let nextCommand = null;
 
     if (value.type === 'api') {
       const devices = await value.api.devices.getDevices();
@@ -261,65 +277,84 @@ export function CommanderApp() {
         ];
       }
     } else if (value.type === 'command') {
-      nextPlaceholder = 'Enter to send';
-
-      // register enter callback
+      nextPlaceholder = 'Enter to run';
+      nextIsSearchLocked = true;
+      nextCommand = {
+        key: 'run',
+        type: 'run',
+        textValue: 'Run',
+        hint: value.command.hint,
+        description: value.command.description,
+        action() {
+          value.command.run({
+            input: inputRef.current.value,
+          });
+        },
+      };
 
       nextSections = [
         {
           key: 'command',
           title: 'Command',
-          children: [
-            {
-              key: 'send',
-              type: 'send',
-              textValue: 'Send',
-              action() {
-                value.command.send();
-              },
-            },
-          ],
+          children: [nextCommand],
         },
       ];
     } else {
       nextSections = [];
     }
 
-    setPath((prev) => {
-      return [
-        ...prev,
+    const currentState = store.getState();
+
+    store.setState({
+      isSearchLocked: nextIsSearchLocked,
+      sections: nextSections,
+      placeholder: nextPlaceholder,
+      command: nextCommand,
+      path: [
+        ...currentState.path,
         {
           key,
           value,
-          sections,
+          sections: nextSections,
+          placeholder: nextPlaceholder,
+          command: nextCommand,
+          isSearchLocked: nextIsSearchLocked,
         },
-      ];
+      ],
     });
-
-    setPlaceholder(nextPlaceholder);
-    setSections(nextSections);
   }
 
-  function onKeyDown(event) {
+  function onKeyDown(event, comboBoxState) {
     switch (event.key) {
       case 'Enter':
-        console.log(event.target.value);
-
+        // Only if the input is the only thing that is focused. Else the normal action handler
+        // is used.
+        if (
+          state.command != null &&
+          comboBoxState.selectionManager.focusedKey == null
+        ) {
+          state.command.action();
+        }
         break;
       case 'Backspace':
         if (inputValue === '') {
           event.preventDefault();
 
-          const nextPath = [...path];
-          const prevPathItem = nextPath.pop();
+          const nextPath = [...state.path];
+          const currentPathItem = nextPath.pop();
 
-          if (prevPathItem == null) return;
+          if (currentPathItem == null) return;
 
-          setPath(nextPath);
-          setSelectedKey(prevPathItem.key);
-          // should probably just delete the whole word
-          // setInputValue(prevPathItem.value.textValue);
-          setSections(prevPathItem.sections);
+          store.setState({
+            path: nextPath,
+            sections: nextPath[nextPath.length - 1]?.sections ?? [],
+            placeholder: nextPath[nextPath.length - 1]?.placeholder ?? '',
+            isSearchLocked:
+              nextPath[nextPath.length - 1]?.isSearchLocked ?? false,
+          });
+
+          setSelectedKey(null);
+          setInputValue('');
         }
         break;
       default:
@@ -342,7 +377,9 @@ export function CommanderApp() {
       item.value.action();
       return;
     } else {
-      setSelectedKey(key);
+      // It doesnt really make sense for now to even have a selection.
+      // The current path can be considered the selection.
+      setSelectedKey(null);
       setInputValue('');
     }
 
@@ -371,8 +408,12 @@ export function CommanderApp() {
   instanceRef.current.contains = contains;
 
   const filteredSections = React.useMemo(() => {
+    if (state.isSearchLocked === true) {
+      return sections;
+    }
+
     return filterNodes(sections, inputValue, instanceRef.current.defaultFilter);
-  }, [sections, inputValue]);
+  }, [sections, inputValue, state.isSearchLocked]);
 
   return (
     <CommanderApp.Root>
@@ -384,10 +425,11 @@ export function CommanderApp() {
 
       <CommanderApp.ComboBoxWrapper>
         <ComboBox
+          ref={comboBoxRef}
           inputRef={inputRef}
           label="Command"
-          placeholder={placeholder}
-          path={path}
+          placeholder={state.placeholder}
+          path={state.path}
           items={filteredSections}
           inputValue={inputValue}
           selectedKey={selectedKey}

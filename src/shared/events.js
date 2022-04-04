@@ -92,6 +92,7 @@ const events = {
 
   ON_COMMAND_ARGUMENT_VALUES: 'onCommandArgumentValues',
   GET_COMMAND_ARGUMENT_VALUES: 'getCommandArgumentValues',
+  SEND_COMMAND: 'sendCommand',
 };
 
 module.exports = {

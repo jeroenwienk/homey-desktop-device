@@ -11,16 +11,7 @@ module.exports = {
   devtool: 'source-map',
   //externals: [nodeExternals()],
   module: {
-    rules: [
-      ...rules,
-      {
-        test: /\.(js|jsx)$/,
-        exclude: /node_modules/,
-        use: {
-          loader: 'babel-loader',
-        },
-      },
-    ],
+    rules: [...rules],
   },
   // plugins: [
   //   // new Plugin(),

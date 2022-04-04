@@ -78,6 +78,7 @@ module.exports = {
       {
         mainConfig: './webpack/webpack.main.config.js',
         renderer: {
+          // nodeIntegration: true,
           config: './webpack/webpack.renderer.config.js',
           entryPoints: [
             {

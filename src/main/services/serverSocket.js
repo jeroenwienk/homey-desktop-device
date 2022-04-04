@@ -431,6 +431,10 @@ class ServerSocket {
     });
   }
 
+  getHomeyId(socket) {
+    return socket.handshake.query.homeyId;
+  }
+
   async sync(socket) {
     try {
       const buttons = await db.getButtons();

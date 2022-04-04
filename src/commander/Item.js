@@ -6,6 +6,10 @@ import { useOptionContext } from './ListBox';
 export function Item(props) {
   const { ref, option, state, item } = useOptionContext();
 
+  console.log(item);
+
+  const description = item.value.description;
+
   return (
     <Item.Root
       {...option.optionProps}
@@ -18,9 +22,13 @@ export function Item(props) {
       data-is-pressed={option.isPressed}
       data-is-disabled={option.isDisabled}
     >
-      <Item.Inner>
+      <Item.Main>
         <Item.Name>{item.textValue}</Item.Name>
-      </Item.Inner>
+        <Item.Hint>{item.value.hint}</Item.Hint>
+      </Item.Main>
+      {description != null && (
+        <Item.Description>{description}</Item.Description>
+      )}
     </Item.Root>
   );
 }
@@ -32,18 +40,33 @@ Item.Name = styled.div`
   white-space: nowrap;
 `;
 
-Item.Inner = styled.div`
+Item.Hint = styled.div`
+  flex: 1 1 auto;
+  padding-right: 8px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: right;
+`;
+
+Item.Description = styled.div`
+  width: 100%;
+  padding: 16px 8px 8px;
+  color: black;
+`;
+
+Item.Main = styled.div`
   display: flex;
   flex: 1 1 auto;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: space-between;
   text-decoration: none;
 `;
 
 Item.Root = styled.li`
   position: relative;
   display: flex;
-  align-items: center;
+  align-items: stretch;
+  flex-direction: column;
   padding: 8px;
   outline: 0;
   cursor: pointer;

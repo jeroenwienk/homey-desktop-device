@@ -47,6 +47,20 @@ function initIpcMainHandlers() {
   ipcMain.handle('version', async (event, args) => {
     return { version: app.getVersion() };
   });
+
+  ipcMain.handle(events.SEND_COMMAND, async (event, args) => {
+    const connected = await serverSocket.getConnected();
+
+    // Should only be one.
+    for (const socket of connected) {
+      if (serverSocket.getHomeyId(socket) === args.data.homeyId) {
+        return serverSocket.send(socket, {
+          event: events.SEND_COMMAND,
+          args: args,
+        });
+      }
+    }
+  });
 }
 
 async function handleExecRunTest(event, args) {
@@ -256,7 +270,9 @@ async function emitAcceleratorsSync(event) {
 }
 
 function registerAccelerators(accelerators) {
-  globalShortcut.unregisterAll();
+  // this is a race with main.js register
+  // find another way to redo the registered accelerators
+  // globalShortcut.unregisterAll();
 
   // TODO: fails on arrows
   accelerators.forEach((accelerator) => {

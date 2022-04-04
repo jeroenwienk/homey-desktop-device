@@ -1,7 +1,7 @@
 // DO NOT MOVE
 const squirrelStartup = require('electron-squirrel-startup');
 
-const { app, globalShortcut, webContents } = require('electron');
+const { app, globalShortcut } = require('electron');
 
 if (squirrelStartup) {
   app.exit(0);
@@ -37,13 +37,13 @@ setApplicationMenu();
 
 initIpcMainHandlers();
 
-console.log(app.getPath('userData'));
+console.log({ userData: app.getPath('userData') });
 
 app.on('ready', async () => {
   console.log('app:ready');
 
   const settings = await db.getSettings();
-  console.log(settings);
+  console.log({ settings });
 
   if (settings.webAppWindowEnabled === true) {
     windowManager.createWebAppWindow();
@@ -68,7 +68,9 @@ app.on('ready', async () => {
 
   await mdns.init();
   await mdns.advertise();
+});
 
+app.whenReady().then(() => {
   // Register a 'CommandOrControl+X' shortcut listener.
   const accelerator = 'CommandOrControl+Alt+K';
 
@@ -99,7 +101,7 @@ app.on('ready', async () => {
   }
 
   // Check whether a shortcut is registered.
-  console.log(globalShortcut.isRegistered(accelerator));
+  console.log({ isRegistered: globalShortcut.isRegistered(accelerator) });
   // console.log(globalShortcut.isRegistered(accelerator2));
 });
 

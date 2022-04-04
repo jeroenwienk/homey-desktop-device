@@ -1,9 +1,10 @@
-const path = require('path');
 const EventEmitter = require('events');
 const { BrowserWindow, shell } = require('electron');
 const Store = require('electron-store');
 
 const { debounce } = require('../../shared/debounce');
+
+const images = require('../images');
 
 const store = new Store();
 
@@ -20,9 +21,6 @@ class WindowManager extends EventEmitter {
   }
 
   createMainWindow() {
-    const imagepath = path.resolve(__dirname, '../../assets/homey-white.png');
-    const icopath = path.resolve(__dirname, '../../assets/homey-white.ico');
-
     const storeWindowState = store.get('mainWindow.windowState');
 
     let windowState = {
@@ -46,7 +44,7 @@ class WindowManager extends EventEmitter {
       width: windowState.bounds.width,
       height: windowState.bounds.height,
       show: windowState.isHidden === false,
-      icon: process.platform !== 'win32' ? imagepath : icopath,
+      icon: images.white,
       backgroundColor: '#161b22',
       webPreferences: {
         nodeIntegration: true,
@@ -129,8 +127,6 @@ class WindowManager extends EventEmitter {
   }
 
   createOverlayWindow() {
-    const imagepath = path.resolve(__dirname, '../../assets/homey-white.png');
-    const icopath = path.resolve(__dirname, '../../assets/homey-white.ico');
     const storeWindowState = store.get('overlayWindow.windowState');
 
     let windowState = {
@@ -154,7 +150,7 @@ class WindowManager extends EventEmitter {
       width: windowState.bounds.width,
       height: windowState.bounds.height,
       show: windowState.isHidden === false,
-      icon: process.platform !== 'win32' ? imagepath : icopath,
+      icon: images.white,
       //backgroundColor: '#181818',
       webPreferences: {
         nodeIntegration: true,
@@ -236,9 +232,6 @@ class WindowManager extends EventEmitter {
   }
 
   createWebAppWindow() {
-    const imagepath = path.resolve(__dirname, '../../assets/homey-colored.png');
-    const icopath = path.resolve(__dirname, '../../assets/homey-colored.ico');
-
     const storeWindowState = store.get('webAppWindow.windowState');
 
     let windowState = {
@@ -262,7 +255,7 @@ class WindowManager extends EventEmitter {
       width: windowState.bounds.width,
       height: windowState.bounds.height,
       show: windowState.isHidden === false,
-      icon: process.platform !== 'win32' ? imagepath : icopath,
+      icon: images.colored,
       backgroundColor: '#161b22',
       webPreferences: {
         nodeIntegration: false,
@@ -378,8 +371,6 @@ class WindowManager extends EventEmitter {
   }
 
   createCommanderWindow() {
-    const imagepath = path.resolve(__dirname, '../../assets/homey-white.png');
-    const icopath = path.resolve(__dirname, '../../assets/homey-white.ico');
     const storeWindowState = store.get('commanderWindow.windowState');
 
     let windowState = {
@@ -405,7 +396,7 @@ class WindowManager extends EventEmitter {
       width: windowState.bounds.width,
       height: windowState.bounds.height,
       show: windowState.isHidden === false,
-      icon: process.platform !== 'win32' ? imagepath : icopath,
+      icon: images.white,
       backgroundColor: '#181818',
       webPreferences: {
         nodeIntegration: true,
