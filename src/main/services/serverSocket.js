@@ -8,7 +8,7 @@ const { Server } = require('socket.io');
 const { db } = require('./db');
 const { windowManager } = require('../managers/windowManager');
 
-const { MAIN, REND, IO_EMIT, IO_ON } = require('../../shared/events');
+const { MAIN, REND, IO_EMIT, IO_ON, events } = require('../../shared/events');
 
 class ServerSocket {
   constructor() {
@@ -74,11 +74,16 @@ class ServerSocket {
 
   handleConnect(socket) {
     console.log('connect:', socket.id);
-    windowManager.sendToMainWindow(MAIN.SOCKETS_INIT, this.getConnections());
+
+    this.getConnections().then((result) => {
+      windowManager.sendToMainWindow(MAIN.SOCKETS_INIT, result);
+    });
 
     socket.on('disconnect', (reason) => {
       console.log('disconnect:', reason);
-      windowManager.sendToMainWindow(MAIN.SOCKETS_INIT, this.getConnections());
+      this.getConnections().then((result) => {
+        windowManager.sendToMainWindow(MAIN.SOCKETS_INIT, result);
+      });
     });
 
     socket.on('disconnecting', (reason) => {
@@ -125,20 +130,30 @@ class ServerSocket {
       this.handleScreensFetch(...args);
     });
 
+    socket.on(events.ON_COMMAND_ARGUMENT_VALUES, (response, callback) => {
+      windowManager.send(
+        windowManager.commanderWindow,
+        events.ON_COMMAND_ARGUMENT_VALUES,
+        {
+          ...response.data,
+        }
+      );
+    });
+
     socket.on(IO_ON.FLOW_BUTTON_SAVED, (...args) => {
-      this.sync(socket);
+      // this.sync(socket);
     });
 
     socket.on(IO_ON.FLOW_ACCELERATOR_SAVED, (...args) => {
-      this.sync(socket);
+      // this.sync(socket);
     });
 
     socket.on(IO_ON.FLOW_DISPLAY_SAVED, (...args) => {
-      this.sync(socket);
+      // this.sync(socket);
     });
 
     socket.on(IO_ON.FLOW_INPUT_SAVED, (...args) => {
-      this.sync(socket);
+      // this.sync(socket);
     });
 
     this.sync(socket);
@@ -394,6 +409,28 @@ class ServerSocket {
     }
   }
 
+  async send(socket, { event, args }) {
+    return new Promise((resolve, reject) => {
+      socket.timeout(5000).emit(event, args, (timeout, error, response) => {
+        // is instanceof error
+        if (timeout != null) {
+          reject(timeout);
+          return;
+        }
+
+        if (error != null && !(error instanceof Error)) {
+          reject(new Error(String(error)));
+          return;
+        } else if (error != null) {
+          reject(error);
+          return;
+        }
+
+        resolve(response);
+      });
+    });
+  }
+
   async sync(socket) {
     try {
       const buttons = await db.getButtons();
@@ -401,13 +438,26 @@ class ServerSocket {
       const displays = await db.getDisplays();
       const inputs = await db.getInputs();
 
-      socket.emit(IO_EMIT.BUTTONS_SYNC, { buttons }, () => {});
+      socket.emit(IO_EMIT.BUTTONS_SYNC, { buttons });
+      socket.emit(IO_EMIT.ACCELERATORS_SYNC, { accelerators });
+      socket.emit(IO_EMIT.DISPLAYS_SYNC, { displays });
+      socket.emit(IO_EMIT.INPUTS_SYNC, { inputs });
 
-      socket.emit(IO_EMIT.ACCELERATORS_SYNC, { accelerators }, () => {});
+      try {
+        const response = await this.send(socket, {
+          event: events.GET_API_PROPS,
+          args: { data: null },
+        });
 
-      socket.emit(IO_EMIT.DISPLAYS_SYNC, { displays }, () => {});
-
-      socket.emit(IO_EMIT.INPUTS_SYNC, { inputs }, () => {});
+        windowManager.send(windowManager.commanderWindow, events.ON_API_PROPS, {
+          ...response.data,
+          address: socket.handshake.address,
+          cloudId: socket.handshake.query.cloudId,
+          name: socket.handshake.query.name,
+        });
+      } catch (error) {
+        console.log(error);
+      }
     } catch (error) {
       console.error(error);
     }
@@ -415,19 +465,26 @@ class ServerSocket {
 
   async close() {
     return new Promise((resolve) => {
+      const timeout = setTimeout(() => {
+        resolve();
+      }, 5000);
+
       this.io.close(() => {
         console.log('io:closed');
+        clearTimeout(timeout);
         resolve();
       });
     });
   }
 
-  getConnected() {
-    return [...this.io.sockets.sockets.values()];
+  async getConnected() {
+    return await this.io.fetchSockets();
   }
 
-  getConnections() {
-    return this.getConnected().map((socket) => {
+  async getConnections() {
+    const sockets = await this.io.fetchSockets();
+
+    return sockets.map((socket) => {
       return {
         id: socket.id,
         socketId: socket.id,

@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form';
 import { useId } from 'react-aria';
 
 import { history } from './memoryHistory';
-import { setSettings, useSettings } from "./store/settingStore";
+import { setSettings, useSettings } from './store/settingStore';
 
 import { DialogBase } from './components/dialog/DialogBase';
 import { DialogActions } from './components/dialog/DialogActions';
@@ -40,14 +40,11 @@ export function SettingsDialog(props) {
 
 function SettingsForm(props) {
   const { register, handleSubmit, errors, reset } = useForm();
-
   const settings = useSettings();
-
-  console.log(settings);
 
   useEffect(() => {
     reset(settings);
-  }, [settings])
+  }, [settings]);
 
   const onSubmit = (data) => {
     setSettings({ ...data });

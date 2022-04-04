@@ -90,6 +90,11 @@ module.exports = {
               js: './src/overlay/overlay.js',
               name: 'overlay_window',
             },
+            {
+              html: './src/renderer/index.html',
+              js: './src/commander/commander.js',
+              name: 'commander_window',
+            },
           ],
         },
         devContentSecurityPolicy:

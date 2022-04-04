@@ -377,6 +377,133 @@ class WindowManager extends EventEmitter {
     }
   }
 
+  createCommanderWindow() {
+    const imagepath = path.resolve(__dirname, '../../assets/homey-white.png');
+    const icopath = path.resolve(__dirname, '../../assets/homey-white.ico');
+    const storeWindowState = store.get('commanderWindow.windowState');
+
+    let windowState = {
+      bounds: { x: null, y: null, width: 800, height: 600 },
+      isMaximized: false,
+      isHidden: false,
+    };
+
+    if (storeWindowState != null) {
+      windowState = {
+        ...windowState,
+        ...storeWindowState,
+      };
+    }
+
+    store.set('commanderWindow.windowState', windowState);
+
+    let debug = true;
+
+    this.commanderWindow = new BrowserWindow({
+      x: windowState.bounds.x,
+      y: windowState.bounds.y,
+      width: windowState.bounds.width,
+      height: windowState.bounds.height,
+      show: windowState.isHidden === false,
+      icon: process.platform !== 'win32' ? imagepath : icopath,
+      backgroundColor: '#181818',
+      webPreferences: {
+        nodeIntegration: true,
+        contextIsolation: false,
+      },
+
+      // transparent boolean (optional)
+      // - Makes the window transparent. Default is false. On Windows, does not work unless the window is frameless.
+
+      ...(debug !== true
+        ? {
+            frame: false,
+            transparent: true,
+          }
+        : {
+            frame: true,
+            transparent: false,
+          }),
+
+      skipTaskbar: false, // set to true on release
+    });
+
+    // this.commanderWindow.setAlwaysOnTop(true, 'pop-up-menu')
+
+    // this.commanderWindow.center();
+    // this.commanderWindow.moveTop();
+
+    if (windowState.isMaximized && windowState.isHidden === false) {
+      this.commanderWindow.maximize();
+    }
+
+    const saveBounds = debounce(() => {
+      if (this.commanderWindow.isMaximized()) {
+        store.set('commanderWindow.windowState.isMaximized', true);
+        return;
+      }
+
+      store.set(
+        'commanderWindow.windowState.bounds',
+        this.commanderWindow.getBounds()
+      );
+      store.set('commanderWindow.windowState.isMaximized', false);
+    }, 200);
+
+    //commanderWindow.setSkipTaskbar(true);
+    this.commanderWindow.loadURL(COMMANDER_WINDOW_WEBPACK_ENTRY);
+    //
+    // if (process.env.NODE_ENV !== 'production') {
+    //   this.commanderWindow.webContents.openDevTools();
+    // }
+
+    this.commanderWindow.on('minimize', (event) => {
+      console.log('commanderWindow:minimize');
+    });
+
+    this.commanderWindow.on('restore', (event) => {
+      console.log('commanderWindow:restore');
+      this.commanderWindow.show();
+    });
+
+    this.commanderWindow.on('close', (event) => {
+      console.log('commanderWindow:close');
+
+      if (this.isQuitting === false) {
+        event.preventDefault();
+        this.commanderWindow.hide();
+      }
+    });
+
+    this.commanderWindow.on('show', (event) => {
+      console.log('commanderWindow:show');
+      store.set('commanderWindow.windowState.isHidden', false);
+    });
+
+    this.commanderWindow.on('hide', (event) => {
+      console.log('commanderWindow:hide');
+      store.set('commanderWindow.windowState.isHidden', true);
+    });
+
+    this.commanderWindow.on('move', (event) => {
+      saveBounds();
+    });
+
+    this.commanderWindow.on('resize', (event) => {
+      saveBounds();
+    });
+
+    this.commanderWindow.webContents.on('dom-ready', (event) => {
+      this.emit('commander-window-dom-ready', event);
+    });
+  }
+
+  send(window, event, ...rest) {
+    if (window.isDestroyed() === false && window.webContents != null) {
+      window.webContents.send(event, ...rest);
+    }
+  }
+
   detroyWebAppWindow() {
     this.webAppWindow.destroy();
     this.webAppWindow = null;
@@ -386,6 +513,7 @@ class WindowManager extends EventEmitter {
     this.isQuitting = true;
     this.webAppWindow.close();
     this.overlayWindow.close();
+    this.commanderWindow.close();
     this.mainWindow.close();
   }
 }

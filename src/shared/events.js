@@ -23,6 +23,10 @@ const OVERLAY = {
   INIT: 'overlay:init',
 };
 
+const COMMANDER = {
+  INIT: 'commander:init',
+};
+
 const MAIN = {
   BUTTONS_INIT: 'buttons:init',
   ACCELERATORS_INIT: 'accelerators:init',
@@ -35,9 +39,12 @@ const MAIN = {
   SETTINGS_INIT: 'settings:init',
   SETTINGS_SET: 'settings:set',
 
+  INIT: 'init',
+
   SOCKETS_INIT: 'sockets:init',
 
   VESION: 'version',
+  ON_API_PROPS: 'onApiProps',
 
   TEST: 'test',
 };
@@ -68,10 +75,32 @@ const IO_ON = {
   FLOW_ACCELERATOR_SAVED: 'flow:accelerator:saved',
 };
 
+const events = {
+  BUTTONS_SYNC: 'buttons:sync',
+
+  ACCELERATORS_SYNC: 'accelerators:sync',
+  ACCELERATOR_RUN: 'accelerator:run',
+
+  DISPLAYS_SYNC: 'displays:sync',
+
+  INPUTS_SYNC: 'inputs:sync',
+
+  GET_API_PROPS: 'getApiProps',
+  ON_API_PROPS: 'onApiProps',
+
+  SYNC: 'sync',
+
+  ON_COMMAND_ARGUMENT_VALUES: 'onCommandArgumentValues',
+  GET_COMMAND_ARGUMENT_VALUES: 'getCommandArgumentValues',
+};
+
 module.exports = {
   REND,
   OVERLAY,
+  COMMANDER,
   MAIN,
   IO_EMIT,
   IO_ON,
+
+  events,
 };

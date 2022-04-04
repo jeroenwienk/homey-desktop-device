@@ -5,12 +5,21 @@ const { exec } = require('child_process');
 
 const { windowManager } = require('./managers/windowManager');
 
-const { REND, OVERLAY, MAIN, IO_EMIT, IO_ON } = require('../shared/events');
+const {
+  REND,
+  OVERLAY,
+  COMMANDER,
+  MAIN,
+  IO_EMIT,
+  IO_ON,
+  events,
+} = require('../shared/events');
 const { trayManager } = require('./managers/trayManager');
 
 function initIpcMainHandlers() {
   ipcMain.on(REND.INIT, handleRendererInit);
   ipcMain.on(OVERLAY.INIT, handleOverlayInit);
+  ipcMain.on(COMMANDER.INIT, handleCommanderInit);
 
   ipcMain.on(REND.BUTTON_CREATE, handleButtonCreate);
   ipcMain.on(REND.BUTTON_UPDATE, handleButtonUpdate);
@@ -62,7 +71,7 @@ async function handleRendererInit(event, args) {
   const accelerators = await db.getAccelerators();
   const displays = await db.getDisplays();
   const inputs = await db.getInputs();
-  const connections = serverSocket.getConnections();
+  const connections = await serverSocket.getConnections();
 
   registerAccelerators(accelerators);
 
@@ -74,9 +83,11 @@ async function handleRendererInit(event, args) {
   event.reply(MAIN.INPUTS_INIT, inputs);
   event.reply(MAIN.SOCKETS_INIT, connections);
 
-  serverSocket.getConnected().forEach((socket) => {
+  const connected = await serverSocket.getConnected();
+
+  for (const socket of connected) {
     serverSocket.sync(socket);
-  });
+  }
 }
 
 async function handleSettingsUpdate(event, args) {
@@ -102,6 +113,67 @@ async function handleSettingsUpdate(event, args) {
 async function handleOverlayInit(event, args) {
   const displays = await db.getDisplays();
   event.reply(MAIN.DISPLAYS_INIT, displays);
+}
+
+async function handleCommanderInit(event, args) {
+  const connected = await serverSocket.getConnected();
+
+  for (const socket of connected) {
+    socket
+      .timeout(5000)
+      .emit(
+        events.GET_API_PROPS,
+        { data: null },
+        (timeout, error, response) => {
+          if (timeout != null) {
+            console.log(timeout);
+            return;
+          }
+
+          if (error != null) {
+            console.log(error);
+            return;
+          }
+
+          if (response.data == null) {
+            console.log('Missing response data', response);
+            return;
+          }
+
+          event.reply(events.ON_API_PROPS, {
+            ...response.data,
+            address: socket.handshake.address,
+            cloudId: socket.handshake.query.cloudId,
+            name: socket.handshake.query.name,
+          });
+        }
+      );
+
+    socket
+      .timeout(5000)
+      .emit(
+        events.GET_COMMAND_ARGUMENT_VALUES,
+        { data: null },
+        (timeout, error, response) => {
+          if (timeout != null) {
+            console.log(timeout);
+            return;
+          }
+
+          if (error != null) {
+            console.log(error);
+            return;
+          }
+
+          if (response.data == null) {
+            console.log('Missing response data', response);
+            return;
+          }
+
+          event.reply(events.ON_COMMAND_ARGUMENT_VALUES, response.data);
+        }
+      );
+  }
 }
 
 async function handleButtonCreate(event, args) {
@@ -137,15 +209,7 @@ function handleButtonRun(event, args) {
 
 async function emitButtonsSync(event) {
   const buttons = await db.getButtons();
-  serverSocket.getConnected().forEach((socket) => {
-    socket.emit(
-      IO_EMIT.BUTTONS_SYNC,
-      {
-        buttons,
-      },
-      () => {}
-    );
-  });
+  serverSocket.io.emit(IO_EMIT.BUTTON_RUN, { buttons });
 
   const trayButtons = buttons.filter((button) => {
     return button.tray === true;
@@ -182,22 +246,13 @@ async function handleAcceleratorRemove(event, args) {
 }
 
 function handleAcceleratorRun(event, args) {
-  serverSocket.io.emit(IO_EMIT.ACCELERATOR_RUN, args);
+  serverSocket.io.emit(events.ACCELERATOR_RUN, args);
 }
 
 async function emitAcceleratorsSync(event) {
   const accelerators = await db.getAccelerators();
   registerAccelerators(accelerators);
-
-  serverSocket.getConnected().forEach((socket) => {
-    socket.emit(
-      IO_EMIT.ACCELERATORS_SYNC,
-      {
-        accelerators,
-      },
-      () => {}
-    );
-  });
+  serverSocket.io.emit(events.ACCELERATORS_SYNC, { accelerators });
 }
 
 function registerAccelerators(accelerators) {
@@ -212,7 +267,8 @@ function registerAccelerators(accelerators) {
           windowManager.sendToMainWindow(MAIN.ACCELERATOR_TEST, {
             id: accelerator.id,
           });
-          serverSocket.io.emit(IO_EMIT.ACCELERATOR_RUN, { id: accelerator.id });
+
+          serverSocket.io.emit(events.ACCELERATOR_RUN, { id: accelerator.id });
         }
       );
 
@@ -255,16 +311,7 @@ async function handleDisplayRemove(event, args) {
 async function emitDisplaySync(event) {
   const displays = await db.getDisplays();
   windowManager.sendToOverlayWindow(MAIN.DISPLAYS_INIT, displays);
-
-  serverSocket.getConnected().forEach((socket) => {
-    socket.emit(
-      IO_EMIT.DISPLAYS_SYNC,
-      {
-        displays,
-      },
-      () => {}
-    );
-  });
+  serverSocket.io.emit(events.DISPLAYS_SYNC, { displays });
 }
 
 async function handleInputCreate(event, args) {
@@ -300,16 +347,7 @@ function handleInputRun(event, args) {
 
 async function emitInputSync(event) {
   const inputs = await db.getInputs();
-
-  serverSocket.getConnected().forEach((socket) => {
-    socket.emit(
-      IO_EMIT.INPUTS_SYNC,
-      {
-        inputs,
-      },
-      () => {}
-    );
-  });
+  serverSocket.io.emit(events.INPUTS_SYNC, { inputs });
 }
 
 module.exports = { initIpcMainHandlers };

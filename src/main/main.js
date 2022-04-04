@@ -1,7 +1,7 @@
 // DO NOT MOVE
 const squirrelStartup = require('electron-squirrel-startup');
 
-const { app, globalShortcut } = require('electron');
+const { app, globalShortcut, webContents } = require('electron');
 
 if (squirrelStartup) {
   app.exit(0);
@@ -51,6 +51,7 @@ app.on('ready', async () => {
 
   windowManager.createMainWindow();
   windowManager.createOverlayWindow();
+  windowManager.createCommanderWindow();
 
   trayManager.createTray();
 
@@ -67,6 +68,39 @@ app.on('ready', async () => {
 
   await mdns.init();
   await mdns.advertise();
+
+  // Register a 'CommandOrControl+X' shortcut listener.
+  const accelerator = 'CommandOrControl+Alt+K';
+
+  // const accelerator2 = 'Meta+K';
+
+  function handler() {
+    console.log(`${accelerator} is pressed`);
+
+    if (windowManager.commanderWindow.isVisible() === false) {
+      windowManager.commanderWindow.show();
+      windowManager.commanderWindow.maximize();
+      windowManager.commanderWindow.webContents.focus();
+
+      windowManager.send(windowManager.commanderWindow, 'focusComboBox', {
+        data: true,
+      });
+    } else {
+      windowManager.commanderWindow.hide();
+    }
+  }
+
+  const ret = globalShortcut.register(accelerator, handler);
+  // const ret2 = globalShortcut.register(accelerator2, handler);
+
+  if (ret === false) {
+    // || ret2 === false
+    console.log('registration failed');
+  }
+
+  // Check whether a shortcut is registered.
+  console.log(globalShortcut.isRegistered(accelerator));
+  // console.log(globalShortcut.isRegistered(accelerator2));
 });
 
 app.on('window-all-closed', (event) => {
