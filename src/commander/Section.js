@@ -30,8 +30,9 @@ Section.Root = styled.li`
 `;
 
 Section.Heading = styled.div`
-  padding: 8px;
-  font-size: 1.125rem;
+  color: #939496;
+  padding: 4px;
+  font-size: 0.875rem;
   font-weight: bold;
 `;
 

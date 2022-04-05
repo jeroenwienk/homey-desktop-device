@@ -12,6 +12,8 @@ import { DragIcon } from '../renderer/components/common/IconMask';
 import { Item } from './Item';
 import { Section } from './Section';
 import { ComboBox } from './ComboBox';
+import { makeCapabilitySection } from './sections/capabilities/capabilities';
+import { makeDeviceSection } from './sections/device';
 
 export const cacheStore = create((set, get, api) => {
   return {
@@ -40,7 +42,6 @@ export function CommanderApp() {
 
   useEffect(() => {
     ipcRenderer.on('focusComboBox', (event, message) => {
-      console.log(event, message);
       inputRef.current.focus();
     });
   }, []);
@@ -94,24 +95,27 @@ export function CommanderApp() {
       const commandSectionItems = [];
 
       for (const [index, entry] of commandsList.entries()) {
+        function run({ input }) {
+          ipcRenderer
+            .invoke(events.SEND_COMMAND, {
+              data: {
+                homeyId: homeyId,
+                command: entry.command,
+                input: input,
+              },
+            })
+            .catch(console.error);
+        }
+
         commandSectionItems.push({
-          key: index,
+          key: `commands-${homeyId}-${index}`,
           type: 'command',
           textValue: entry.command,
           hint: entry.hint,
+          inputAction: run,
           command: {
             ...entry,
-            run({ input }) {
-              ipcRenderer
-                .invoke(events.SEND_COMMAND, {
-                  data: {
-                    homeyId: homeyId,
-                    command: entry.command,
-                    input: input,
-                  },
-                })
-                .catch(console.error);
-            },
+            run,
           },
         });
       }
@@ -134,12 +138,12 @@ export function CommanderApp() {
 
   useEffect(() => {
     const apis = Object.entries(apiState)
-      .map(([cloudId, { name, api }]) => {
+      .map(([homeyId, { name, api }]) => {
         return {
-          key: cloudId,
-          type: 'api',
+          key: homeyId,
+          type: 'homey',
           textValue: name,
-          api,
+          homey: api,
         };
       })
       .sort((a, b) => {
@@ -165,9 +169,9 @@ export function CommanderApp() {
     let nextIsSearchLocked = false;
     let nextCommand = null;
 
-    if (value.type === 'api') {
-      const devices = await value.api.devices.getDevices();
-      const zones = await value.api.zones.getZones();
+    if (value.type === 'homey') {
+      const devices = await value.homey.devices.getDevices();
+      const zones = await value.homey.zones.getZones();
 
       nextSections = [
         {
@@ -193,89 +197,9 @@ export function CommanderApp() {
         },
       ];
     } else if (value.type === 'device') {
-      nextSections = [
-        {
-          key: 'device',
-          title: 'Device',
-          children: Object.entries(value.device.capabilitiesObj)
-            .map(([capabilityId, capability]) => {
-              return {
-                key: capabilityId,
-                type: 'capability',
-                textValue: capability.title,
-                filter: `${capability.id} ${capability.type}`,
-                device: value.device,
-                capability,
-              };
-            })
-            .sort((a, b) => {
-              return a.textValue.localeCompare(b.textValue);
-            }),
-        },
-      ];
+      nextSections = makeDeviceSection({ value });
     } else if (value.type === 'capability') {
-      if (
-        value.capability.type === 'boolean' &&
-        value.capability.setable &&
-        value.capability.getable
-      ) {
-        nextSections = [
-          {
-            key: 'capability',
-            title: 'Capability',
-            children: [
-              {
-                key: 'toggle',
-                type: 'action',
-                textValue: 'Toggle',
-                action() {
-                  value.device.homey.devices
-                    .getDevice({ id: value.device.id })
-                    .then((device) => {
-                      value.device
-                        .setCapabilityValue({
-                          capabilityId: value.capability.id,
-                          value:
-                            device.capabilitiesObj[value.capability.id]
-                              .value !== true,
-                        })
-                        .catch(console.log);
-                    })
-                    .catch((error) => {
-                      console.log(error);
-                    });
-                },
-              },
-              {
-                key: 'true',
-                type: 'action',
-                textValue: 'On',
-                action() {
-                  value.device
-                    .setCapabilityValue({
-                      capabilityId: value.capability.id,
-                      value: true,
-                    })
-                    .catch(console.log);
-                },
-              },
-              {
-                key: 'false',
-                type: 'action',
-                textValue: 'Off',
-                action() {
-                  value.device
-                    .setCapabilityValue({
-                      capabilityId: value.capability.id,
-                      value: false,
-                    })
-                    .catch(console.log);
-                },
-              },
-            ],
-          },
-        ];
-      }
+      nextSections = makeCapabilitySection({ value });
     } else if (value.type === 'command') {
       nextPlaceholder = 'Enter to run';
       nextIsSearchLocked = true;
@@ -285,9 +209,9 @@ export function CommanderApp() {
         textValue: 'Run',
         hint: value.command.hint,
         description: value.command.description,
-        action() {
+        action({ input }) {
           value.command.run({
-            input: inputRef.current.value,
+            input: input,
           });
         },
       };
@@ -333,7 +257,7 @@ export function CommanderApp() {
           state.command != null &&
           comboBoxState.selectionManager.focusedKey == null
         ) {
-          state.command.action();
+          state.command.action({ input: event.currentTarget.value });
         }
         break;
       case 'Backspace':
@@ -363,18 +287,35 @@ export function CommanderApp() {
   }
 
   function onInputChange(value) {
-    console.log('onInputChange', value);
+    // console.log('onInputChange', value);
     setInputValue(value);
   }
 
   function onSelectionChange(key, comboBoxState) {
-    console.log('onSelectionChange', key, comboBoxState);
+    // console.log('onSelectionChange', key, comboBoxState);
     const item = comboBoxState.collection.getItem(key) ?? null;
+    const markIndex = inputRef.current.value.indexOf('!');
 
     if (item == null) return;
 
-    if (item.value.action) {
-      item.value.action();
+    let inputActionInput = null;
+
+    if (markIndex !== -1) {
+      inputActionInput = inputRef.current.value.substring(
+        markIndex + 1,
+        inputRef.current.value.length
+      );
+    }
+
+    if (item.value.inputAction != null && inputActionInput != null) {
+      item.value.inputAction({ input: inputActionInput });
+      return;
+    }
+
+    if (item.value.action != null) {
+
+      // this does not work with input because you are also filtering
+      item.value.action({ input: inputRef.current.value });
       return;
     } else {
       // It doesnt really make sense for now to even have a selection.
@@ -412,7 +353,14 @@ export function CommanderApp() {
       return sections;
     }
 
-    return filterNodes(sections, inputValue, instanceRef.current.defaultFilter);
+    let filterPart = inputValue;
+
+    const markIndex = inputValue.indexOf('!');
+    if (markIndex !== -1) {
+      filterPart = inputValue.substring(0, markIndex);
+    }
+
+    return filterNodes(sections, filterPart, instanceRef.current.defaultFilter);
   }, [sections, inputValue, state.isSearchLocked]);
 
   return (
@@ -428,6 +376,7 @@ export function CommanderApp() {
           ref={comboBoxRef}
           inputRef={inputRef}
           label="Command"
+          allowsCustomValue={true}
           placeholder={state.placeholder}
           path={state.path}
           items={filteredSections}

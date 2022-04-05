@@ -74,7 +74,7 @@ ipcRenderer.on(MAIN.ON_API_PROPS, (event, data) => {
 
 const CommanderStyles = createGlobalStyle`
   body {
-    color: black;
+    color: #181818;
     background-color: transparent;
   }
 `;

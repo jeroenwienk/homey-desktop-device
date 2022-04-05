@@ -90,7 +90,7 @@ export function useComboBoxState(props) {
   useEffect(() => {
     // Clear focused key when input value changes and display filtered collection again.
     if (inputValue !== lastValue.current) {
-      selectionManager.setFocusedKey(null);
+      //selectionManager.setFocusedKey(null);
       setShowAllItems(false);
 
       // Set selectedKey to null when the user clears the input.

@@ -6,8 +6,6 @@ import { useOptionContext } from './ListBox';
 export function Item(props) {
   const { ref, option, state, item } = useOptionContext();
 
-  console.log(item);
-
   const description = item.value.description;
 
   return (
@@ -67,7 +65,7 @@ Item.Root = styled.li`
   display: flex;
   align-items: stretch;
   flex-direction: column;
-  padding: 8px;
+  padding: 4px;
   outline: 0;
   cursor: pointer;
 
@@ -80,11 +78,11 @@ Item.Root = styled.li`
   }
 
   &[data-is-focused='true'] {
-    color: cyan;
-    background-color: rgba(0, 0, 0, 0.1);
+    color: rgba(0, 130, 250, 1.00);
+    background-color: #E6F3FF;
   }
 
   &[data-is-pressed='true'] {
-    color: greenyellow;
+    color: #0075E0;
   }
 `;

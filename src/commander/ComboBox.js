@@ -39,6 +39,7 @@ export const ComboBox = forwardRef((props, forwardedRef) => {
   const comboBox = useComboBox(
     {
       ...sharedProps,
+      allowsCustomValue: true,
       inputRef,
       buttonRef,
       listBoxRef,
