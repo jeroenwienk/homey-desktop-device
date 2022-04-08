@@ -8,27 +8,27 @@ console.log({
 });
 console.log('\n');
 
-const publicPath =
-  process.env.NODE_ENV === 'production'
-    ? 'resources/app.asar/.webpack/main/'
-    : '.webpack/main/';
+// const publicPath =
+//   process.env.NODE_ENV === 'production'
+//     ? 'resources/app.asar/.webpack/main/'
+//     : '.webpack/main/';
 
 module.exports = {
   entry: path.resolve('src/main/main.js'),
   target: 'electron-main',
   devtool: 'source-map',
   output: {
-    publicPath: publicPath,
+    // publicPath: '/',
     // This is probably sensitive to files with the same name.
-    assetModuleFilename: '[name][ext]',
+    // assetModuleFilename: '[name][ext]',
   },
   module: {
     rules: [
       ...rules,
-      {
-        test: /\.(png|jpe?g|gif|svg|ico|icns)$/i,
-        type: 'asset/resource',
-      },
+      // {
+      //   test: /\.(png|jpe?g|gif|svg|ico|icns)$/i,
+      //   type: 'asset/resource',
+      // },
     ],
   },
 };

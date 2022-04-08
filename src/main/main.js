@@ -36,6 +36,8 @@ setApplicationMenu();
 initIpcMainHandlers();
 
 console.log({ cwd: process.cwd() });
+console.log({ __dirname });
+console.log({ __filename });
 console.log({ userData: app.getPath('userData') });
 
 app.on('ready', async () => {
