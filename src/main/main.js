@@ -8,7 +8,7 @@ if (squirrelStartup) {
 }
 
 // if (true) {
-//   require('inspector').open(9229, '0.0.0.0', false);
+//   require('inspector').open(9229, '0.0.0.0', true);
 // }
 
 const { makeSingleInstance } = require('./makeSingleInstance');
@@ -17,8 +17,6 @@ const allowContinue = makeSingleInstance();
 if (allowContinue === false) {
   app.exit(0);
 }
-
-const path = require('path');
 
 const { mdns } = require('./services/mdns');
 const { serverSocket } = require('./services/serverSocket');
@@ -37,6 +35,7 @@ setApplicationMenu();
 
 initIpcMainHandlers();
 
+console.log({ cwd: process.cwd() });
 console.log({ userData: app.getPath('userData') });
 
 app.on('ready', async () => {
@@ -79,7 +78,10 @@ app.whenReady().then(() => {
   function handler() {
     console.log(`${accelerator} is pressed`);
 
-    if (windowManager.commanderWindow.isVisible() === false || windowManager.commanderWindow.isFocused() === false) {
+    if (
+      windowManager.commanderWindow.isVisible() === false ||
+      windowManager.commanderWindow.isFocused() === false
+    ) {
       windowManager.commanderWindow.show();
       windowManager.commanderWindow.maximize();
       windowManager.commanderWindow.webContents.focus();
@@ -137,5 +139,5 @@ app.on('activate', (event) => {
 });
 
 if (process.platform === 'darwin') {
-  app.dock.setIcon(path.resolve(__dirname, '../assets/homey-white.icns'));
+  app.dock.setIcon(require('../assets/homey-white.icns'));
 }

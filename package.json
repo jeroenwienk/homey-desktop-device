@@ -8,7 +8,7 @@
     "start": "electron-forge start",
     "start:debug": "cross-env DEBUG=engine,socket.io* electron-forge start",
     "package": "electron-forge package",
-    "make": "electron-forge make",
+    "make": "cross-env NODE_ENV=production electron-forge make",
     "publish": "electron-forge publish",
     "lint": "echo \"No linting configured\""
   },
@@ -20,6 +20,7 @@
   "license": "MIT",
   "dependencies": {
     "@homebridge/ciao": "^1.1.2",
+    "electron-log": "^4.4.6",
     "electron-squirrel-startup": "^1.0.0",
     "electron-store": "^8.0.0",
     "history": "^4.10.1",
