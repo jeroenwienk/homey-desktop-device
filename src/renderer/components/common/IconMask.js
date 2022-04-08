@@ -10,6 +10,7 @@ import remove from '../../../assets/actions/remove.svg';
 import clear from '../../../assets/actions/clear.svg';
 import drag from '../../../assets/actions/drag.svg';
 import settings from '../../../assets/actions/settings.svg';
+import search from '../../../assets/actions/search.svg';
 
 import nolink from '../../../assets/status/nolink.svg';
 import warning from '../../../assets/status/warning.svg';
@@ -75,4 +76,8 @@ export const DragIcon = forwardRef((props, forwardedRef) => (
 
 export const SettingsIcon = forwardRef((props, forwardedRef) => (
   <IconMask {...props} ref={forwardedRef} mask={settings} />
+));
+
+export const SearchIcon = forwardRef((props, forwardedRef) => (
+  <IconMask {...props} ref={forwardedRef} mask={search} />
 ));

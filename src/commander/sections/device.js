@@ -20,27 +20,31 @@ function makeDescription(capability) {
   }
 }
 
-export function makeDeviceSection({ value }) {
-  return [
-    {
-      key: 'device',
-      title: 'Device',
-      children: Object.entries(value.device.capabilitiesObj)
-        .map(([capabilityId, capability]) => {
-          return {
-            key: capabilityId,
-            type: 'capability',
-            textValue: capability.title,
-            filter: `${capability.id} ${capability.type}`,
-            hint: makeHint(capability),
-            description: makeDescription(capability),
-            device: value.device,
-            capability,
-          };
-        })
-        .sort((a, b) => {
-          return a.textValue.localeCompare(b.textValue);
-        }),
-    },
-  ];
+export function makeDeviceSections({ value }) {
+  const baseKey = `${value.key}-device`;
+
+  return {
+    sections: [
+      {
+        key: baseKey,
+        title: 'Capabilities',
+        children: Object.entries(value.device.capabilitiesObj)
+          .map(([capabilityId, capability]) => {
+            return {
+              key: `${value.key}-device-${capabilityId}`,
+              type: 'capability',
+              textValue: capability.title,
+              filter: `${capability.id} ${capability.type}`,
+              hint: makeHint(capability),
+              description: makeDescription(capability),
+              device: value.device,
+              capability,
+            };
+          })
+          .sort((a, b) => {
+            return a.textValue.localeCompare(b.textValue);
+          }),
+      },
+    ],
+  };
 }

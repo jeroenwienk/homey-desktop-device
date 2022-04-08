@@ -1,13 +1,20 @@
 import React, { forwardRef, useRef } from 'react';
 import styled from 'styled-components';
 
-import { useComboBox } from 'react-aria';
+import { useComboBox } from './useComboBox';
 import { useComboBoxState } from './useComboBoxState';
 
-import { ListBox as ListBoxBase } from './ListBox';
-
-import { renderCollectionItem, renderCollectionSection } from './ListBox';
+import {
+  renderCollectionItem,
+  renderCollectionSection,
+} from '../renderer/components/common/ListBox';
 import { mergeRefs } from '../renderer/lib/mergeRefs';
+
+import { vars } from '../renderer/theme/GlobalStyles';
+
+import { ListBox as ListBoxBase } from '../renderer/components/common/ListBox';
+import { Spinner } from '../renderer/components/common/Spinner';
+import { SearchIcon } from '../renderer/components/common/IconMask';
 
 export const ComboBox = forwardRef((props, forwardedRef) => {
   const buttonRef = useRef();
@@ -39,33 +46,43 @@ export const ComboBox = forwardRef((props, forwardedRef) => {
   const comboBox = useComboBox(
     {
       ...sharedProps,
-      allowsCustomValue: true,
       inputRef,
       buttonRef,
       listBoxRef,
       popoverRef: listBoxRef,
-      stateRef: props.stateRef,
     },
     comboBoxState
   );
 
   return (
     <ComboBox.Root ref={forwardedRef}>
-      <ComboBox.Label {...comboBox.labelProps}>{props.label}</ComboBox.Label>
+      {/*<ComboBox.Label {...comboBox.labelProps}>{props.label}</ComboBox.Label>*/}
       <ComboBox.InputContainer ref={overlayTargetRef}>
-        {props.path.map((entry) => {
-          return (
-            <ComboBox.PathChunk key={entry.key} title={entry.value.textValue}>
-              {`${entry.value.textValue} /`}
-            </ComboBox.PathChunk>
-          );
-        })}
+        <ComboBox.IconWrapper>
+          {props.isLoading ? (
+            <Spinner size="20px" />
+          ) : (
+            <SearchIcon size={vars.icon_size_small} color="#d1d2d5" />
+          )}
+        </ComboBox.IconWrapper>
+
+        <ComboBox.PathChunkContainer>
+          {props.path.map((entry) => {
+            return (
+              <ComboBox.PathChunk key={entry.key} title={entry.value.textValue}>
+                {`${entry.value.textValue} /`}
+              </ComboBox.PathChunk>
+            );
+          })}
+        </ComboBox.PathChunkContainer>
 
         <ComboBox.Input
           {...comboBox.inputProps}
           ref={mergeRefs([inputRef, props.inputRef])}
         />
       </ComboBox.InputContainer>
+
+      <ComboBox.Hint>Type ? for help and tips</ComboBox.Hint>
 
       <ComboBox.ListBox
         {...comboBox.listBoxProps}
@@ -82,43 +99,73 @@ ComboBox.Root = styled.div`
   display: inline-flex;
   flex-direction: column;
   align-items: stretch;
+  width: 100%;
+  background-color: #f6f7fb;
+  border-radius: 4px;
+  padding: 8px;
+  border: 2px solid #dddee2;
 `;
 
-ComboBox.Label = styled.label`
-  color: white;
+// ComboBox.Label = styled.label``;
+
+ComboBox.IconWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  width: 32px;
+`;
+
+ComboBox.PathChunkContainer = styled.div`
+  display: flex;
 `;
 
 ComboBox.PathChunk = styled.div`
-  max-width: 120px;
-  padding-right: 8px;
-  color: white;
-
+  max-width: 160px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 
-  &:first-child {
+  &:not(:first-of-type) {
     padding-left: 8px;
   }
-`;
 
-ComboBox.Input = styled.input`
-  padding: 8px 16px;
-  flex: 1 1 auto;
+  &:last-of-type {
+    padding-right: 8px;
+  }
 `;
 
 ComboBox.InputContainer = styled.div`
   display: flex;
   align-items: center;
+  background-color: white;
+  border: 1px solid #dddee2;
+  border-radius: 4px;
+`;
 
-  background-color: gray;
-  width: 100%;
+ComboBox.Input = styled.input`
+  padding: 8px 8px 8px 0;
+  flex: 1 1 auto;
+  border: 1px solid transparent;
+
+  //&:focus {
+  //  border: 1px solid red;
+  //}
+`;
+
+ComboBox.Hint = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  height: 24px;
+  color: #939496;
+  font-size: 0.75rem;
 `;
 
 ComboBox.ListBox = styled(ListBoxBase)`
-  width: 600px;
-  height: 400px;
+  height: 560px;
   overflow-y: auto;
-  margin-top: 8px;
   background-color: white;
+  border: 1px solid #dddee2;
+  border-radius: 4px;
 `;

@@ -1,15 +1,23 @@
+import { store } from '../../CommanderApp';
+
 export function makeEnumCapabilitySection({ value }) {
+  const baseKey = `${value.key}-capability`;
+
   function action({ input }) {
+    store.getState().incrementLoadingCount();
     value.device
       .setCapabilityValue({
         capabilityId: value.capability.id,
         value: input,
       })
-      .catch(console.log);
+      .catch(console.log)
+      .finally(() => {
+        store.getState().decrementLoadingCount();
+      });
   }
 
-  const toggle = {
-    key: 'set',
+  const set = {
+    key: `${baseKey}-set`,
     type: 'action',
     textValue: 'Set',
     description: JSON.stringify(value.capability.values, null, 2),
@@ -17,39 +25,11 @@ export function makeEnumCapabilitySection({ value }) {
     inputAction: action,
   };
 
-  // const on = {
-  //   key: 'true',
-  //   type: 'action',
-  //   textValue: 'On',
-  //   action() {
-  //     value.device
-  //       .setCapabilityValue({
-  //         capabilityId: value.capability.id,
-  //         value: true,
-  //       })
-  //       .catch(console.log);
-  //   },
-  // };
-  //
-  // const off = {
-  //   key: 'false',
-  //   type: 'action',
-  //   textValue: 'Off',
-  //   action() {
-  //     value.device
-  //       .setCapabilityValue({
-  //         capabilityId: value.capability.id,
-  //         value: false,
-  //       })
-  //       .catch(console.log);
-  //   },
-  // };
-
   return [
     {
-      key: 'capability',
+      key: baseKey,
       title: 'Capability',
-      children: [toggle],
+      children: [set],
     },
   ];
 }

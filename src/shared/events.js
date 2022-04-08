@@ -22,11 +22,6 @@ const REND = {
 const OVERLAY = {
   INIT: 'overlay:init',
 };
-
-const COMMANDER = {
-  INIT: 'commander:init',
-};
-
 const MAIN = {
   BUTTONS_INIT: 'buttons:init',
   ACCELERATORS_INIT: 'accelerators:init',
@@ -93,12 +88,13 @@ const events = {
   ON_COMMAND_ARGUMENT_VALUES: 'onCommandArgumentValues',
   GET_COMMAND_ARGUMENT_VALUES: 'getCommandArgumentValues',
   SEND_COMMAND: 'sendCommand',
+
+  ON_COMMANDER_WINDOW_MESSAGE: 'onCommanderWindowMessage',
 };
 
 module.exports = {
   REND,
   OVERLAY,
-  COMMANDER,
   MAIN,
   IO_EMIT,
   IO_ON,

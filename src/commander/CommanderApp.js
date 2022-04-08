@@ -3,41 +3,68 @@ import { ipcRenderer } from 'electron';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 import create from 'zustand';
+import { subscribeWithSelector } from 'zustand/middleware';
 import { useFilter } from 'react-aria';
 
-import { COMMANDER, events } from '../shared/events';
-import { apiStore, commandStore } from './commander';
+import { ipc } from './ipc';
+
+import { useSectionBuilder } from './sections/useSectionBuilder';
+import { useHomeys } from './subscribers/homeys';
+import { useCommands } from './subscribers/commands';
+import { useCacheSubscriber } from './subscribers/useCacheSubscriber';
+import { useFetchDevices } from './fetchers/useFetchDevices';
+
+import { filterNodes } from './filterNodes';
+import { makeCapabilitySections } from './sections/capabilities/capabilities';
+import { makeDeviceSections } from './sections/device';
 
 import { DragIcon } from '../renderer/components/common/IconMask';
-import { Item } from './Item';
-import { Section } from './Section';
+import { Item } from '../renderer/components/common/Item';
+import { Section } from '../renderer/components/common/Section';
 import { ComboBox } from './ComboBox';
-import { makeCapabilitySection } from './sections/capabilities/capabilities';
-import { makeDeviceSection } from './sections/device';
 
-export const cacheStore = create((set, get, api) => {
-  return {
-    cache: new Map(),
-    buster: {},
-  };
-});
+export const cacheStore = create(
+  subscribeWithSelector((set, get, api) => {
+    return {
+      __pending: {},
+      __timeout: null,
+    };
+  })
+);
 
-export const store = create((set, get, api) => {
-  return {
-    isSearchLocked: false,
-    command: null,
-    placeholder: '',
-    path: [],
-    sections: [],
-  };
-});
+export const store = create(
+  subscribeWithSelector((set, get, api) => {
+    return {
+      isSearchLocked: false,
+      command: null,
+      placeholder: 'Search...',
+      path: [],
+      sections: [],
+      loadingCount: 0,
+      incrementLoadingCount() {
+        if (get().loadingCount > 0) {
+          get().loadingCount = get().loadingCount + 1;
+        } else {
+          set({ loadingCount: get().loadingCount + 1 });
+        }
+      },
+      decrementLoadingCount() {
+        if (get().loadingCount > 1) {
+          get().loadingCount = get().loadingCount - 1;
+        } else {
+          set({ loadingCount: get().loadingCount - 1 });
+        }
+      },
+    };
+  })
+);
 
 export function CommanderApp() {
   const comboBoxRef = useRef();
   const inputRef = useRef();
 
   useEffect(() => {
-    ipcRenderer.send(COMMANDER.INIT, {});
+    ipc.send({ message: 'init' }).catch(console.log);
   }, []);
 
   useEffect(() => {
@@ -55,194 +82,102 @@ export function CommanderApp() {
   }
 
   const state = store();
-  const cacheState = cacheStore();
-
-  const apiState = apiStore();
-  const commandState = commandStore();
+  const isLoading = state.loadingCount > 0;
 
   const [inputValue, setInputValue] = useState('');
   const [selectedKey, setSelectedKey] = useState(null);
+  const [executionState, setExecutionState] = useState({ type: null });
 
-  // convert to subscriber with timeout to batch
-  const sections = useMemo(() => {
-    switch (true) {
-      case state.path.length === 0:
-        let result = [];
-        if (cacheState.cache.get('apis') != null) {
-          result.push(cacheState.cache.get('apis'));
-        }
+  const [forcedUpdate, forceUpdate] = useState({});
+  const cacheRef = useRef({});
+  console.log(cacheRef.current);
 
-        if (cacheState.cache.get('commands') != null) {
-          const sections = cacheState.cache.get('commands').sections;
+  const sections = useSectionBuilder({ cacheRef, state, forcedUpdate });
 
-          if (sections != null) {
-            for (const section of sections) {
-              result.push(section);
-            }
-          }
-        }
+  useHomeys({ cacheStore });
+  useCommands({ cacheStore, setExecutionState });
 
-        return result;
-      default:
-        return state.sections;
-    }
-  }, [state.path, cacheState.buster]);
+  useCacheSubscriber({ key: 'homeys', cacheRef, forceUpdate });
+  useCacheSubscriber({ key: 'commands', cacheRef, forceUpdate });
+  useCacheSubscriber({ key: 'devices', cacheRef, forceUpdate });
 
-  useEffect(() => {
-    const sections = [];
-
-    for (const [homeyId, commandsList] of Object.entries(commandState)) {
-      const commandSectionItems = [];
-
-      for (const [index, entry] of commandsList.entries()) {
-        function run({ input }) {
-          ipcRenderer
-            .invoke(events.SEND_COMMAND, {
-              data: {
-                homeyId: homeyId,
-                command: entry.command,
-                input: input,
-              },
-            })
-            .catch(console.error);
-        }
-
-        commandSectionItems.push({
-          key: `commands-${homeyId}-${index}`,
-          type: 'command',
-          textValue: entry.command,
-          hint: entry.hint,
-          inputAction: run,
-          command: {
-            ...entry,
-            run,
-          },
-        });
-      }
-
-      sections.push({
-        key: `commands-${homeyId}`,
-        title: `Commands ${homeyId}`,
-        children: commandSectionItems,
-      });
-    }
-
-    cacheStore.getState().cache.set('commands', {
-      sections,
-    });
-
-    cacheStore.setState({
-      buster: {},
-    });
-  }, [commandState]);
-
-  useEffect(() => {
-    const apis = Object.entries(apiState)
-      .map(([homeyId, { name, api }]) => {
-        return {
-          key: homeyId,
-          type: 'homey',
-          textValue: name,
-          homey: api,
-        };
-      })
-      .sort((a, b) => {
-        return a.textValue.localeCompare(b.textValue);
-      });
-
-    if (apis.length > 0) {
-      cacheStore.getState().cache.set('apis', {
-        key: 'apis',
-        title: 'Homey',
-        children: apis,
-      });
-
-      cacheStore.setState({
-        buster: {},
-      });
-    }
-  }, [apiState]);
+  useFetchDevices({ inputValue });
 
   async function setNext({ key, value }) {
-    let nextSections = [];
-    let nextPlaceholder = '';
-    let nextIsSearchLocked = false;
-    let nextCommand = null;
+    let next = {
+      type: null,
+      sections: [],
+      placeholder: '',
+      isSearchLocked: false,
+      command: null,
+    };
 
-    if (value.type === 'homey') {
-      const devices = await value.homey.devices.getDevices();
-      const zones = await value.homey.zones.getZones();
+    switch (value.type) {
+      case 'homey':
+        next = {
+          ...next,
+          type: 'homey',
+        };
+        break;
+      case 'device':
+        next = {
+          ...next,
+          type: 'device',
+          ...makeDeviceSections({ value }),
+        };
+        break;
+      case 'capability':
+        next = {
+          ...next,
+          type: 'capability',
+          ...makeCapabilitySections({ value }),
+        };
+        break;
+      case 'command':
+        const baseKey = `${value.key}-command`;
 
-      nextSections = [
-        {
-          key: 'devices',
-          title: 'Devices',
-          children: Object.entries(devices)
-            .map(([id, device]) => {
-              const zone = zones[device.zone];
+        let nextCommand = {
+          key: `${baseKey}-run`,
+          type: 'run',
+          textValue: 'Run',
+          hint: value.command.hint,
+          description: value.command.description,
+          action({ input }) {
+            value.command.run({
+              input: input,
+            });
+          },
+        };
 
-              return {
-                key: id,
-                type: 'device',
-                textValue:
-                  zone != null
-                    ? `${zone.name} - ${device.name}`
-                    : `${device.name}`,
-                device,
-              };
-            })
-            .sort((a, b) => {
-              return a.textValue.localeCompare(b.textValue);
-            }),
-        },
-      ];
-    } else if (value.type === 'device') {
-      nextSections = makeDeviceSection({ value });
-    } else if (value.type === 'capability') {
-      nextSections = makeCapabilitySection({ value });
-    } else if (value.type === 'command') {
-      nextPlaceholder = 'Enter to run';
-      nextIsSearchLocked = true;
-      nextCommand = {
-        key: 'run',
-        type: 'run',
-        textValue: 'Run',
-        hint: value.command.hint,
-        description: value.command.description,
-        action({ input }) {
-          value.command.run({
-            input: input,
-          });
-        },
-      };
-
-      nextSections = [
-        {
-          key: 'command',
-          title: 'Command',
-          children: [nextCommand],
-        },
-      ];
-    } else {
-      nextSections = [];
+        next = {
+          ...next,
+          type: 'command',
+          placeholder: 'Enter to run',
+          isSearchLocked: true,
+          command: nextCommand,
+          sections: [
+            {
+              key: baseKey,
+              title: 'Command',
+              children: [nextCommand],
+            },
+          ],
+        };
+        break;
+      default:
+        break;
     }
 
     const currentState = store.getState();
 
     store.setState({
-      isSearchLocked: nextIsSearchLocked,
-      sections: nextSections,
-      placeholder: nextPlaceholder,
-      command: nextCommand,
+      ...next,
       path: [
         ...currentState.path,
         {
           key,
           value,
-          sections: nextSections,
-          placeholder: nextPlaceholder,
-          command: nextCommand,
-          isSearchLocked: nextIsSearchLocked,
+          ...next,
         },
       ],
     });
@@ -250,6 +185,19 @@ export function CommanderApp() {
 
   function onKeyDown(event, comboBoxState) {
     switch (event.key) {
+      case '!':
+        if (comboBoxState.selectionManager.focusedKey == null) {
+          const firstKey = comboBoxState.collection.getFirstKey();
+          const firstItem = comboBoxState.collection.getItem(firstKey);
+
+          if (firstItem.type === 'section') {
+            comboBoxState.selectionManager.setFocusedKey(firstItem.nextKey);
+          } else {
+            comboBoxState.selectionManager.setFocusedKey(firstItem.key);
+          }
+        }
+
+        break;
       case 'Enter':
         // Only if the input is the only thing that is focused. Else the normal action handler
         // is used.
@@ -280,6 +228,10 @@ export function CommanderApp() {
           setSelectedKey(null);
           setInputValue('');
         }
+        break;
+      case 'Escape':
+        event.preventDefault();
+        ipc.send({ message: 'close' }).catch(console.log);
         break;
       default:
         break;
@@ -313,7 +265,6 @@ export function CommanderApp() {
     }
 
     if (item.value.action != null) {
-
       // this does not work with input because you are also filtering
       item.value.action({ input: inputRef.current.value });
       return;
@@ -332,35 +283,74 @@ export function CommanderApp() {
 
   const { contains } = useFilter({ sensitivity: 'base' });
   const instanceRef = useRef({
-    defaultFilter(string, substring, node) {
-      if (string === '__pending__') return true;
+    defaultFilter(textValue, inputValue, typeFilter, node) {
+      const split = inputValue.split(' ');
+      const isSameType = typeFilter != null ? node?.type === typeFilter : true;
 
-      const split = substring.split(' ');
+      // console.log(inputValue);
+      // console.log(typeFilter);
 
       return split.every((chunk) => {
         return (
-          instanceRef.current.contains(string, chunk) ||
-          (node.filter != null &&
-            instanceRef.current.contains(node.filter, chunk))
+          isSameType &&
+          (instanceRef.current.contains(textValue, chunk) ||
+            (node?.filter != null &&
+              instanceRef.current.contains(node.filter, chunk)))
         );
       });
     },
   });
   instanceRef.current.contains = contains;
 
-  const filteredSections = React.useMemo(() => {
+  const filteredSections = useMemo(() => {
     if (state.isSearchLocked === true) {
       return sections;
     }
 
     let filterPart = inputValue;
+    let typeFilter = null;
 
-    const markIndex = inputValue.indexOf('!');
-    if (markIndex !== -1) {
-      filterPart = inputValue.substring(0, markIndex);
+    const atIndex = inputValue.indexOf('@');
+
+    if (atIndex === 0) {
+      const found = filterPart.match(/^(?<category>@\w*)/);
+
+      if (found != null) {
+        const category = found.groups.category;
+        filterPart = filterPart.substring(category.length);
+        typeFilter = category.substring(1);
+
+        switch (true) {
+          case typeFilter.startsWith('d'):
+            typeFilter = 'device';
+            break;
+          case typeFilter.startsWith('h'):
+            typeFilter = 'homey';
+            break;
+          case typeFilter.startsWith('c'):
+            typeFilter = 'command';
+            break;
+          case typeFilter.startsWith('s'):
+            typeFilter = 'system';
+            break;
+          default:
+            break;
+        }
+      }
     }
 
-    return filterNodes(sections, filterPart, instanceRef.current.defaultFilter);
+    const markIndex = filterPart.indexOf('!');
+
+    if (markIndex !== -1) {
+      filterPart = filterPart.substring(0, markIndex);
+    }
+
+    return filterNodes(
+      sections,
+      filterPart,
+      typeFilter,
+      instanceRef.current.defaultFilter
+    );
   }, [sections, inputValue, state.isSearchLocked]);
 
   return (
@@ -371,71 +361,57 @@ export function CommanderApp() {
         </CommanderApp.DragHandleWrapper>
       </CommanderApp.Header>
 
-      <CommanderApp.ComboBoxWrapper>
-        <ComboBox
-          ref={comboBoxRef}
-          inputRef={inputRef}
-          label="Command"
-          allowsCustomValue={true}
-          placeholder={state.placeholder}
-          path={state.path}
-          items={filteredSections}
-          inputValue={inputValue}
-          selectedKey={selectedKey}
-          onKeyDown={onKeyDown}
-          onInputChange={onInputChange}
-          renderItem={renderItem}
-          renderSection={renderSection}
-          onSelectionChange={onSelectionChange}
-        />
-      </CommanderApp.ComboBoxWrapper>
+      <CommanderApp.Content>
+        <CommanderApp.ComboBoxWrapper>
+          <ComboBox
+            ref={comboBoxRef}
+            inputRef={inputRef}
+            label="Command"
+            placeholder={state.placeholder}
+            path={state.path}
+            items={filteredSections}
+            inputValue={inputValue}
+            selectedKey={selectedKey}
+            executionState={executionState}
+            isLoading={isLoading}
+            renderItem={renderItem}
+            renderSection={renderSection}
+            onKeyDown={onKeyDown}
+            onInputChange={onInputChange}
+            onSelectionChange={onSelectionChange}
+          />
+        </CommanderApp.ComboBoxWrapper>
+      </CommanderApp.Content>
     </CommanderApp.Root>
   );
 }
 
-function filterNodes(nodes, inputValue, filter) {
-  const filteredNode = [];
-  for (let node of nodes) {
-    if (node.children != null) {
-      const filtered = filterNodes(node.children, inputValue, filter);
-      if ([...filtered].length > 0) {
-        filteredNode.push({ ...node, children: filtered });
-      }
-    } else if (filter(node.textValue, inputValue, node)) {
-      filteredNode.push({ ...node });
-    }
-  }
-  return filteredNode;
-}
-
 CommanderApp.Header = styled.div`
+  flex: 0 0 80px;
   display: flex;
   justify-content: space-between;
-
-  flex: 0 0 80px;
 `;
 
-CommanderApp.ComboBoxWrapper = styled.div`
+CommanderApp.Content = styled.div`
   flex: 1 1 auto;
   display: flex;
   justify-content: center;
 `;
 
+CommanderApp.ComboBoxWrapper = styled.div`
+  width: 720px;
+`;
+
 CommanderApp.Root = styled.div`
+  display: flex;
+  flex-direction: column;
   width: 100vw;
   height: 100vh;
   padding: 10px;
-  // background: gray; // for debugging
-
-  display: flex;
-  flex-direction: column;
-
-  ${ComboBox.Root} {
-    width: 600px;
-  }
 `;
 
 CommanderApp.DragHandleWrapper = styled.div``;
 CommanderApp.DragHandle = styled(DragIcon)`
   -webkit-app-region: drag;
+  cursor: grab;
 `;

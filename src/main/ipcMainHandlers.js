@@ -1,4 +1,4 @@
-const { app, ipcMain, globalShortcut } = require('electron');
+const { app, ipcMain, globalShortcut, shell } = require('electron');
 const { db } = require('./services/db');
 const { serverSocket } = require('./services/serverSocket');
 const { exec } = require('child_process');
@@ -8,7 +8,6 @@ const { windowManager } = require('./managers/windowManager');
 const {
   REND,
   OVERLAY,
-  COMMANDER,
   MAIN,
   IO_EMIT,
   IO_ON,
@@ -19,7 +18,6 @@ const { trayManager } = require('./managers/trayManager');
 function initIpcMainHandlers() {
   ipcMain.on(REND.INIT, handleRendererInit);
   ipcMain.on(OVERLAY.INIT, handleOverlayInit);
-  ipcMain.on(COMMANDER.INIT, handleCommanderInit);
 
   ipcMain.on(REND.BUTTON_CREATE, handleButtonCreate);
   ipcMain.on(REND.BUTTON_UPDATE, handleButtonUpdate);
@@ -59,6 +57,24 @@ function initIpcMainHandlers() {
           args: args,
         });
       }
+    }
+  });
+
+  ipcMain.handle(events.ON_COMMANDER_WINDOW_MESSAGE, async (event, args) => {
+    const { message, data } = args;
+
+    switch (message) {
+      case 'close':
+        windowManager.commanderWindow.close();
+        break;
+      case 'init':
+        return handleCommanderInit();
+      case 'openPath':
+        return shell.openPath(data.path);
+      case 'openExternal':
+        return shell.openExternal(data.url);
+      default:
+        break;
     }
   });
 }
@@ -154,12 +170,16 @@ async function handleCommanderInit(event, args) {
             return;
           }
 
-          event.reply(events.ON_API_PROPS, {
-            ...response.data,
-            address: socket.handshake.address,
-            cloudId: socket.handshake.query.cloudId,
-            name: socket.handshake.query.name,
-          });
+          windowManager.send(
+            windowManager.commanderWindow,
+            events.ON_API_PROPS,
+            {
+              ...response.data,
+              address: socket.handshake.address,
+              cloudId: socket.handshake.query.cloudId,
+              name: socket.handshake.query.name,
+            }
+          );
         }
       );
 
@@ -184,7 +204,11 @@ async function handleCommanderInit(event, args) {
             return;
           }
 
-          event.reply(events.ON_COMMAND_ARGUMENT_VALUES, response.data);
+          windowManager.send(
+            windowManager.commanderWindow,
+            events.ON_COMMAND_ARGUMENT_VALUES,
+            response.data
+          );
         }
       );
   }

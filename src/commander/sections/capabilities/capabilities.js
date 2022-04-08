@@ -1,16 +1,30 @@
 import { makeBooleanCapabilitySection } from './boolean';
 import { makeNumberCapabilitySection } from './number';
 import { makeEnumCapabilitySection } from './enum';
+import { makeStringCapabilitySection } from './string';
 
-export function makeCapabilitySection({ value }) {
+export function makeCapabilitySections({ value }) {
+  let next = null;
+
   switch (value.capability.type) {
     case 'boolean':
-      return makeBooleanCapabilitySection({ value });
+      next = makeBooleanCapabilitySection({ value });
+      break;
     case 'number':
-      return makeNumberCapabilitySection({ value });
+      next = makeNumberCapabilitySection({ value });
+      break;
     case 'enum':
-      return makeEnumCapabilitySection({ value });
+      next = makeEnumCapabilitySection({ value });
+      break;
+    case 'string':
+      next = makeStringCapabilitySection({ value });
+      break;
     default:
-      return [];
+      next = [];
+      break;
   }
+
+  return {
+    sections: next,
+  };
 }

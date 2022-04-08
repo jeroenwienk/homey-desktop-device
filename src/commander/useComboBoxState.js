@@ -15,13 +15,17 @@ import { useEffect, useRef, useState } from 'react';
 import { useMenuTriggerState } from '@react-stately/menu';
 
 /**
+ * This is a reduced version since we dont have closing behavior.
+ */
+
+/**
  * Provides state management for a combo box component. Handles building a collection
  * of items from props and manages the option selection state of the combo box. In addition, it tracks the input value,
  * focus state, and other properties of the combo box.
  */
 export function useComboBoxState(props) {
   const {
-    allowsCustomValue,
+    allowsCustomValue = true, // OVERRIDE
     shouldCloseOnBlur = false, // OVERRIDE
   } = props;
 
@@ -68,21 +72,22 @@ export function useComboBoxState(props) {
     defaultOpen: undefined, // OVERRIDE
   });
 
+  // OVERRIDE
   const open = (focusStrategy, trigger) => {};
   const toggle = (focusStrategy, trigger) => {};
 
-  let lastValue = useRef(inputValue);
-  let resetInputValue = () => {
-    let itemText = collection.getItem(selectedKey)?.textValue ?? '';
+  const lastValue = useRef(inputValue);
+  const resetInputValue = () => {
+    const itemText = collection.getItem(selectedKey)?.textValue ?? '';
     lastValue.current = itemText;
     setInputValue(itemText);
   };
 
-  let isInitialRender = useRef(true);
-  let lastSelectedKey = useRef(
+  const isInitialRender = useRef(true);
+  const lastSelectedKey = useRef(
     props.selectedKey ?? props.defaultSelectedKey ?? null
   );
-  let lastSelectedKeyText = useRef(
+  const lastSelectedKeyText = useRef(
     collection.getItem(selectedKey)?.textValue ?? ''
   );
   // intentional omit dependency array, want this to happen on every render
@@ -128,7 +133,7 @@ export function useComboBoxState(props) {
     // This is to handle cases where a selectedKey is specified but the items aren't available (async loading) or the selected item's text value updates.
     // Only reset if the user isn't currently within the field so we don't erroneously modify user input.
     // If inputValue is controlled, it is the user's responsibility to update the inputValue when items change.
-    let selectedItemText = collection.getItem(selectedKey)?.textValue ?? '';
+    const selectedItemText = collection.getItem(selectedKey)?.textValue ?? '';
     if (
       !isFocused &&
       selectedKey != null &&
@@ -147,7 +152,7 @@ export function useComboBoxState(props) {
   });
 
   // Revert input value and close menu
-  let revert = () => {
+  const revert = () => {
     if (allowsCustomValue && selectedKey == null) {
       commitCustomValue();
     } else {
@@ -155,18 +160,18 @@ export function useComboBoxState(props) {
     }
   };
 
-  let commitCustomValue = () => {
+  const commitCustomValue = () => {
     lastSelectedKey.current = null;
     setSelectedKey(null);
   };
 
-  let commitSelection = () => {
+  const commitSelection = () => {
     // If multiple things are controlled, call onSelectionChange
     if (props.selectedKey !== undefined && props.inputValue !== undefined) {
       props.onSelectionChange(selectedKey);
 
       // Stop menu from reopening from useEffect
-      let itemText = collection.getItem(selectedKey)?.textValue ?? '';
+      const itemText = collection.getItem(selectedKey)?.textValue ?? '';
       lastValue.current = itemText;
     } else {
       // If only a single aspect of combobox is controlled, reset input value and close menu for the user
@@ -174,7 +179,7 @@ export function useComboBoxState(props) {
     }
   };
 
-  let commit = () => {
+  const commit = () => {
     if (selectionManager.focusedKey != null) {
       // Reset inputValue and close menu here if the selected key is already the focused key. Otherwise
       // fire onSelectionChange to allow the application to control the closing.
@@ -191,15 +196,15 @@ export function useComboBoxState(props) {
     }
   };
 
-  let setFocused = (isFocused) => {
+  const setFocused = (isFocused) => {
     if (isFocused) {
     } else if (shouldCloseOnBlur) {
-      let itemText = collection.getItem(selectedKey)?.textValue ?? '';
-      if (allowsCustomValue && inputValue !== itemText) {
-        commitCustomValue();
-      } else {
-        commitSelection();
-      }
+      // let itemText = collection.getItem(selectedKey)?.textValue ?? '';
+      // if (allowsCustomValue && inputValue !== itemText) {
+      //   commitCustomValue();
+      // } else {
+      //   commitSelection();
+      // }
     }
 
     setFocusedState(isFocused);

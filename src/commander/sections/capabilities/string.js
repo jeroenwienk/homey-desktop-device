@@ -1,6 +1,6 @@
 import { store } from '../../CommanderApp';
 
-export function makeNumberCapabilitySection({ value }) {
+export function makeStringCapabilitySection({ value }) {
   const baseKey = `${value.key}-capability`;
 
   function action({ input }) {
@@ -8,7 +8,7 @@ export function makeNumberCapabilitySection({ value }) {
     value.device
       .setCapabilityValue({
         capabilityId: value.capability.id,
-        value: parseFloat(input),
+        value: input,
       })
       .catch(console.log)
       .finally(() => {
@@ -20,9 +20,7 @@ export function makeNumberCapabilitySection({ value }) {
     key: `${baseKey}-set`,
     type: 'action',
     textValue: 'Set',
-    hint: `min ${value.capability.min ?? '-'}, max ${
-      value.capability.max ?? '-'
-    }, step ${value.capability.step ?? '-'}`,
+    hint: ``,
     action: action, // maybe log that action requires an input?
     inputAction: action,
   };

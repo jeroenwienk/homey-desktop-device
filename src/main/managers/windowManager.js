@@ -485,6 +485,14 @@ class WindowManager extends EventEmitter {
       saveBounds();
     });
 
+    this.commanderWindow.on('focus', (event) => {
+      console.log('commanderWindow:focus');
+    });
+
+    this.commanderWindow.on('blur', (event) => {
+      console.log('commanderWindow:blur');
+    });
+
     this.commanderWindow.webContents.on('dom-ready', (event) => {
       this.emit('commander-window-dom-ready', event);
     });

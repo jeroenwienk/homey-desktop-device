@@ -6,7 +6,7 @@ import {
   useListBoxSection,
   useSeparator,
 } from 'react-aria';
-import { mergeRefs } from '../renderer/lib/mergeRefs';
+import { mergeRefs } from '../../lib/mergeRefs';
 
 export function renderCollectionItem(sourceItem) {
   return (

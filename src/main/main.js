@@ -79,7 +79,7 @@ app.whenReady().then(() => {
   function handler() {
     console.log(`${accelerator} is pressed`);
 
-    if (windowManager.commanderWindow.isVisible() === false) {
+    if (windowManager.commanderWindow.isVisible() === false || windowManager.commanderWindow.isFocused() === false) {
       windowManager.commanderWindow.show();
       windowManager.commanderWindow.maximize();
       windowManager.commanderWindow.webContents.focus();

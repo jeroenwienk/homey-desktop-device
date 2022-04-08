@@ -1,35 +1,44 @@
+import { ipcRenderer } from 'electron';
+
 import React from 'react';
 import ReactDOM from 'react-dom';
 import create from 'zustand';
+import { subscribeWithSelector } from 'zustand/middleware';
 import { createGlobalStyle } from 'styled-components';
 import { default as HomeyAPIApp } from 'homey-api/lib/HomeyAPI/HomeyAPIApp';
 
-import { ipcRenderer } from 'electron';
-import { MAIN, events } from '../shared/events';
+import { ipc } from './ipc';
+import { events } from '../shared/events';
 
 import { GlobalStyles } from '../renderer/theme/GlobalStyles';
 
 import { CommanderApp } from './CommanderApp';
 
-export const apiStore = create((set, get, api) => ({}));
+export const apiStore = create(
+  subscribeWithSelector((set, get, api) => {
+    return {};
+  })
+);
 
-export const commandStore = create((set, get, api) => {
-  return {};
-});
+export const commandStore = create(
+  subscribeWithSelector((set, get, api) => {
+    return {};
+  })
+);
 
 ipcRenderer.on(events.ON_COMMAND_ARGUMENT_VALUES, (event, data) => {
   if (data?.homeyId != null && data.arguments != null) {
     commandStore.setState({
-      [data.homeyId]: data.arguments
-    })
+      [data.homeyId]: {
+        ...data,
+      },
+    });
   }
 });
 
-ipcRenderer.on(MAIN.ON_API_PROPS, (event, data) => {
-  console.log(MAIN.ON_API_PROPS, event, data);
-
+ipcRenderer.on(events.ON_API_PROPS, (event, data) => {
   if (data == null) {
-    console.log(`${MAIN.ON_API_PROPS} returned ${data}`);
+    console.log(`${events.ON_API_PROPS} returned ${data}`);
     return;
   }
 
@@ -73,6 +82,12 @@ ipcRenderer.on(MAIN.ON_API_PROPS, (event, data) => {
 });
 
 const CommanderStyles = createGlobalStyle`
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  
   body {
     color: #181818;
     background-color: transparent;
@@ -80,6 +95,15 @@ const CommanderStyles = createGlobalStyle`
 `;
 
 const rootElement = document.getElementById('root');
+
+window.addEventListener('keydown', (event) => {
+  if (event.target === document.body && event.key === 'Escape') {
+    event.preventDefault();
+    event.stopPropagation();
+
+    ipc.send({ message: 'close' }).catch(console.error);
+  }
+});
 
 ReactDOM.render(
   <React.StrictMode>
