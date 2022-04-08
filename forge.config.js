@@ -35,7 +35,7 @@ module.exports = {
     {
       name: '@electron-forge/maker-deb',
       config: {
-        icon: path.resolve('src/assets/homey-white.png'),
+        icon: path.resolve('src/assets/homey-white@x4.png'),
         bin: 'desktop-device',
         name: 'desktop-device',
         productName: 'Desktop Device',
@@ -44,7 +44,7 @@ module.exports = {
     {
       name: '@electron-forge/maker-rpm',
       config: {
-        icon: path.resolve('src/assets/homey-white.png'),
+        icon: path.resolve('src/assets/homey-white@x4.png'),
         bin: 'desktop-device',
         name: 'desktop-device',
         productName: 'Desktop Device',
