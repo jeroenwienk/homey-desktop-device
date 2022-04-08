@@ -18,6 +18,8 @@ if (allowContinue === false) {
   app.exit(0);
 }
 
+const { images } = require('./images');
+
 const { mdns } = require('./services/mdns');
 const { serverSocket } = require('./services/serverSocket');
 const { db } = require('./services/db');
@@ -35,10 +37,12 @@ setApplicationMenu();
 
 initIpcMainHandlers();
 
-console.log({ cwd: process.cwd() });
-console.log({ __dirname });
-console.log({ __filename });
-console.log({ userData: app.getPath('userData') });
+console.log({
+  cwd: process.cwd(),
+  __dirname,
+  __filename,
+  userData: app.getPath('userData'),
+});
 
 app.on('ready', async () => {
   console.log('app:ready');
@@ -141,5 +145,5 @@ app.on('activate', (event) => {
 });
 
 if (process.platform === 'darwin') {
-  app.dock.setIcon(require('../assets/homey-white.icns'));
+  app.dock.setIcon(images.dock);
 }

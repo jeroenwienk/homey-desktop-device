@@ -23,6 +23,10 @@ module.exports = {
 
     return process.platform !== 'win32' ? homeyWhiteImage : homeyWhiteIco;
   },
+  get dock() {
+    const icnsPath = path.resolve(__dirname, '../assets/homey-white.icns');
+    return nativeImage.createFromPath(icnsPath);
+  },
   get colored() {
     const icoColoredPath = path.resolve(
       __dirname,
