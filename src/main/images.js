@@ -11,8 +11,13 @@ const { nativeImage } = require('electron');
 
 module.exports = {
   get white() {
-    const imagePath = path.join(__dirname, '../assets/homey-white.png');
-    const icoPath = path.join(__dirname, '../assets/homey-white.ico');
+    const icoPath = require('../assets/homey-white.ico').default;
+    const imagePath = require('../assets/homey-white.png').default;
+    require('../assets/homey-white@x1.5.png').default
+    require('../assets/homey-white@x2.png').default
+    require('../assets/homey-white@x3.png').default
+    require('../assets/homey-white@x4.png').default
+
     const homeyWhiteImage = nativeImage.createFromPath(imagePath);
     const homeyWhiteIco = nativeImage.createFromPath(icoPath);
 

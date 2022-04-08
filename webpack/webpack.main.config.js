@@ -7,6 +7,19 @@ module.exports = {
   target: 'electron-main',
   devtool: 'source-map',
   module: {
-    rules: [...rules],
+    rules: [
+      ...rules,
+      {
+        test: /\.(png|jpe?g|gif|svg|ico|icns)$/i,
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              name: '[path][name].[ext]',
+            },
+          },
+        ],
+      },
+    ],
   },
 };
