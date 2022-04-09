@@ -79,7 +79,7 @@ function ButtonForm(props) {
       });
       reset(button);
     }
-  }, [props.editId, props.buttonList]);
+  }, [reset, props.editId, props.buttonList]);
 
   return (
     <DialogForm id={props.formId} key={props.editId}>

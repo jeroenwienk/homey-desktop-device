@@ -44,7 +44,7 @@ function SettingsForm(props) {
 
   useEffect(() => {
     reset(settings);
-  }, [settings]);
+  }, [reset, settings]);
 
   const onSubmit = (data) => {
     setSettings({ ...data });

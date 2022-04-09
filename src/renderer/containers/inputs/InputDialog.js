@@ -75,7 +75,7 @@ function InputForm(props) {
       });
       reset(input);
     }
-  }, [props.editId, props.inputList]);
+  }, [reset, props.editId, props.inputList]);
 
   return (
     <DialogForm id={props.formId} key={props.editId}>

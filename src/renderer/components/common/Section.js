@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { useSectionContext } from './ListBox';
 
 export function Section(props) {
+  // eslint-disable-next-line no-unused-vars
   const { section, item, state, children } = useSectionContext();
 
   return (

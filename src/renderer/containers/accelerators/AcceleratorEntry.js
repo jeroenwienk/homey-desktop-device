@@ -25,7 +25,7 @@ export const AcceleratorEntry = forwardRef(function (props, forwardedRef) {
   }
 
   useEffect(() => {
-    ipcRenderer.on(MAIN.ACCELERATOR_TEST, (event, data) => {
+    function handler(event, data) {
       if (data.id === props.accelerator.id) {
         buttonRef.current.animate(
           [{ transform: 'scale(1)' }, { transform: 'scale(1.05)' }],
@@ -37,8 +37,14 @@ export const AcceleratorEntry = forwardRef(function (props, forwardedRef) {
           }
         );
       }
-    });
-  }, []);
+    }
+
+    ipcRenderer.on(MAIN.ACCELERATOR_TEST, handler);
+
+    return function () {
+      ipcRenderer.off(MAIN.ACCELERATOR_TEST, handler);
+    };
+  }, [props.accelerator.id]);
 
   return (
     <sc.ButtonBase

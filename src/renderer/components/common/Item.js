@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { useOptionContext } from './ListBox';
 
 export function Item(props) {
+  // eslint-disable-next-line no-unused-vars
   const { ref, option, state, item } = useOptionContext();
 
   const description = item.value.description;

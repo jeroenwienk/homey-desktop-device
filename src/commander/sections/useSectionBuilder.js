@@ -25,6 +25,7 @@ export function useSectionBuilder({ cacheRef, state, forcedUpdate }) {
           const sectionsByHomeyId = cache.commands.sectionsByHomeyId;
           const collectedSectionChildren = [];
 
+          // eslint-disable-next-line no-unused-vars
           for (const [homeyId, sections] of Object.entries(sectionsByHomeyId)) {
             for (const section of sections) {
               collectedSectionChildren.push(section.children);
@@ -45,6 +46,7 @@ export function useSectionBuilder({ cacheRef, state, forcedUpdate }) {
           const sectionsByHomeyId = cache.devices.sectionsByHomeyId;
           const collectedSectionChildren = [];
 
+          // eslint-disable-next-line no-unused-vars
           for (const [homeyId, sections] of Object.entries(sectionsByHomeyId)) {
             for (const section of sections) {
               collectedSectionChildren.push(section.children);
@@ -87,6 +89,8 @@ export function useSectionBuilder({ cacheRef, state, forcedUpdate }) {
       default:
         return state.sections;
     }
+    // We control it with forcedUpdate
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.path, forcedUpdate]);
 
   return sections;

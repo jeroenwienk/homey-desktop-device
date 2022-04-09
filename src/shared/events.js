@@ -1,4 +1,4 @@
-const REND = {
+module.exports.REND = {
   INIT: 'renderer:init',
   BUTTON_CREATE: 'button:create',
   BUTTON_UPDATE: 'button:update',
@@ -19,10 +19,11 @@ const REND = {
   TEST: 'test',
 };
 
-const OVERLAY = {
+module.exports.OVERLAY = {
   INIT: 'overlay:init',
 };
-const MAIN = {
+
+module.exports.MAIN = {
   BUTTONS_INIT: 'buttons:init',
   ACCELERATORS_INIT: 'accelerators:init',
   ACCELERATOR_TEST: 'accelerator:test',
@@ -44,7 +45,7 @@ const MAIN = {
   TEST: 'test',
 };
 
-const IO_EMIT = {
+module.exports.IO_EMIT = {
   BUTTONS_SYNC: 'buttons:sync',
   BUTTON_RUN: 'button:run',
   ACCELERATORS_SYNC: 'accelerators:sync',
@@ -54,7 +55,7 @@ const IO_EMIT = {
   INPUT_RUN: 'input:run',
 };
 
-const IO_ON = {
+module.exports.IO_ON = {
   BROWSER_OPEN_RUN: 'browser:open:run',
   PATH_OPEN_RUN: 'path:open:run',
   WINDOW_ACTION_RUN: 'window:action:run',
@@ -70,7 +71,7 @@ const IO_ON = {
   FLOW_ACCELERATOR_SAVED: 'flow:accelerator:saved',
 };
 
-const events = {
+module.exports.events = {
   BUTTONS_SYNC: 'buttons:sync',
 
   ACCELERATORS_SYNC: 'accelerators:sync',
@@ -90,14 +91,4 @@ const events = {
   SEND_COMMAND: 'sendCommand',
 
   ON_COMMANDER_WINDOW_MESSAGE: 'onCommanderWindowMessage',
-};
-
-module.exports = {
-  REND,
-  OVERLAY,
-  MAIN,
-  IO_EMIT,
-  IO_ON,
-
-  events,
 };

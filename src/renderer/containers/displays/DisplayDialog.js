@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import styled from 'styled-components';
 import { v4 as uuid } from 'uuid';
 
 import { useForm } from 'react-hook-form';
@@ -79,7 +78,7 @@ function DisplayForm(props) {
       });
       reset(display);
     }
-  }, [props.editId, props.displayList]);
+  }, [reset, props.editId, props.displayList]);
 
   return (
     <DialogForm id={props.formId} key={props.editId}>

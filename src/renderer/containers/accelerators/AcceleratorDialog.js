@@ -80,7 +80,7 @@ function AcceleratorForm(props) {
 
       reset(accelerator);
     }
-  }, [props.editId, props.acceleratorList]);
+  }, [reset, props.editId, props.acceleratorList]);
 
   return (
     <DialogForm id={props.formId} key={props.editId}>

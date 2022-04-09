@@ -91,6 +91,8 @@ export function useComboBox(props, state) {
       case 'ArrowUp':
         state.open('last', 'manual');
         break;
+      default:
+        break;
       // case 'ArrowLeft':
       // case 'ArrowRight':
       //   state.selectionManager.setFocusedKey(null);
@@ -202,8 +204,10 @@ export function useComboBox(props, state) {
   let lastItem = useRef(itemKey);
   useEffect(() => {
     if (isAppleDevice() && focusedItem != null && itemKey !== lastItem.current) {
+      // eslint-disable-next-line no-unused-vars
       let isSelected = state.selectionManager.isSelected(itemKey);
       let section = sectionKey != null ? state.collection.getItem(sectionKey) : null;
+      // eslint-disable-next-line no-unused-vars
       let sectionTitle = section?.['aria-label'] || (typeof section?.rendered === 'string' ? section.rendered : '') || '';
 
       // let announcement = formatMessage('focusAnnouncement', {
@@ -246,6 +250,7 @@ export function useComboBox(props, state) {
   let lastSelectedKey = useRef(state.selectedKey);
   useEffect(() => {
     if (isAppleDevice() && state.isFocused && state.selectedItem && state.selectedKey !== lastSelectedKey.current) {
+      // eslint-disable-next-line no-unused-vars
       let optionText = state.selectedItem['aria-label'] || state.selectedItem.textValue || '';
       // let announcement = formatMessage('selectedAnnouncement', {optionText});
       // announce(announcement);

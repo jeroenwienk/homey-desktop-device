@@ -104,5 +104,5 @@ export function useCommands({ cacheStore, setExecutionState }) {
     return function () {
       unsubscribe();
     };
-  }, [cacheStore]);
+  }, [cacheStore, setExecutionState]);
 }

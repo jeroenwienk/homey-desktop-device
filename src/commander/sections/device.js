@@ -1,5 +1,3 @@
-import React from 'react';
-
 function makeHint(capability) {
   switch (capability.type) {
     case 'number':

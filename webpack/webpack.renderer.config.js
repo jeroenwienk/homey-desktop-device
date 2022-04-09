@@ -1,3 +1,4 @@
+const ESLintPlugin = require('eslint-webpack-plugin');
 const rules = require('./webpack.rules');
 
 module.exports = {
@@ -18,5 +19,5 @@ module.exports = {
       },
     ],
   },
-  plugins: [],
+  plugins: [new ESLintPlugin()],
 };

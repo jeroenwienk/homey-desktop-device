@@ -60,6 +60,7 @@ const colorFunctionalVars = {
   color_selected_accent: colors.color_blue_005,
 };
 
+// eslint-disable-next-line no-unused-vars
 const colorsFunctional = new Proxy(colorFunctionalVars, varHandler);
 
 const borderVars = {

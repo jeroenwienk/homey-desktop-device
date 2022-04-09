@@ -9,6 +9,7 @@ export function RadioGroup(props) {
   const state = useRadioGroupState(props);
   const radioGroup = useRadioGroup(props, state);
 
+  // eslint-disable-next-line no-unused-vars
   const register = props.register?.({
     required: props.required,
   });
