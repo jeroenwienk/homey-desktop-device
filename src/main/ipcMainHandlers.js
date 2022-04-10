@@ -90,9 +90,15 @@ function initIpcMainHandlers() {
         }
 
         if (result?.length === 1) {
-          clipboard.writeText(String(result[0]));
+          const value = result[0];
+
+          if (typeof value === 'string') {
+            clipboard.writeText(value);
+          } else {
+            clipboard.writeText(JSON.stringify(result[0], null, 2));
+          }
         } else {
-          clipboard.writeText(String(result));
+          clipboard.writeText(JSON.stringify(result, null, 2));
         }
         break;
       }
