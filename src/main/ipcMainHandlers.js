@@ -84,6 +84,15 @@ function initIpcMainHandlers() {
 
         return windowManager.webAppWindow.webContents.executeJavaScript(code, true);
       }
+      case 'openWebAppWindow': {
+        if (windowManager.webAppWindow == null) {
+          throw new Error(`Window is disabled.`);
+        }
+
+        windowManager.webAppWindow.show();
+
+        break;
+      }
       case 'writeToClipBoard': {
         clipboard.writeText(data.text);
         break;

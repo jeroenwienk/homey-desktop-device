@@ -57,12 +57,31 @@ export function makeSystemSections({ value }) {
     },
   };
 
+  const webApp = {
+    key: `${baseKey}-web-app`,
+    textValue: `Web App`,
+    hint: `Open Web App window`,
+    filter: `open web app`,
+    action({ input }) {
+      ipc
+        .send({
+          message: 'openWebAppWindow',
+          data: {},
+        })
+        .then((result) => {
+          console.log(result);
+          return ipc.send({ message: 'close' });
+        })
+        .catch(console.error);
+    },
+  };
+
   return {
     sections: [
       {
         key: baseKey,
         title: 'System',
-        children: [close, path, external].sort(defaultTextValueSort),
+        children: [close, path, external, webApp].sort(defaultTextValueSort),
       },
     ],
   };

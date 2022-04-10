@@ -121,6 +121,7 @@ Item.Root = styled.li`
   display: flex;
   outline: 0;
   cursor: pointer;
+  min-height: 24px;
 
   &[data-is-selected='true'] {
     color: green;
