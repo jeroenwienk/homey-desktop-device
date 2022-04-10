@@ -1,11 +1,16 @@
+import { v4 as uuid } from 'uuid';
+
 import { defaultTextValueSort } from '../defaultTextValueSort';
 import { ipc } from '../ipc';
 
 export function makeHomeySections({ value }) {
   const baseKey = `${value.key}-homey`;
-  console.log(value);
 
-  function openInWindowAction({ subPath } = {}) {
+  const keys = {
+    open: `${baseKey}-open`,
+  };
+
+  function openInWindowAction({ subPath, state } = {}) {
     Promise.resolve()
       .then(async () => {
         try {
@@ -15,6 +20,7 @@ export function makeHomeySections({ value }) {
             message: 'openInWindow',
             data: {
               path,
+              state,
             },
           });
           await ipc.send({ message: 'close' });
@@ -25,7 +31,7 @@ export function makeHomeySections({ value }) {
       .catch(console.error);
   }
 
-  function openInBrowserAction({ subPath } = {}) {
+  function openInBrowserAction({ subPath, state } = {}) {
     Promise.resolve()
       .then(async () => {
         try {
@@ -35,6 +41,7 @@ export function makeHomeySections({ value }) {
             message: 'openInBrowser',
             data: {
               url,
+              state,
             },
           });
           await ipc.send({ message: 'close' });
@@ -48,13 +55,13 @@ export function makeHomeySections({ value }) {
   return {
     sections: [
       {
-        key: `${baseKey}-general`,
-        title: 'General',
+        key: keys.open,
+        title: 'Open',
         children: [
           {
-            key: `${baseKey}-home`,
+            key: `${keys.open}-home`,
             textValue: 'Home',
-            hint: 'Open in window (!b for browser)',
+            hint: 'open in window (!b for browser)',
             action({ input }) {
               if (input === 'b') {
                 openInBrowserAction();
@@ -64,9 +71,9 @@ export function makeHomeySections({ value }) {
             },
           },
           {
-            key: `${baseKey}-open-devices`,
+            key: `${keys.open}-devices`,
             textValue: 'Devices',
-            hint: 'Open in window (!b for browser)',
+            hint: 'open in window (!b for browser)',
             action({ input }) {
               if (input === 'b') {
                 openInBrowserAction({ subPath: '/devices' });
@@ -76,9 +83,9 @@ export function makeHomeySections({ value }) {
             },
           },
           {
-            key: `${baseKey}-open-flows`,
+            key: `${keys.open}-flows`,
             textValue: 'Flows',
-            hint: 'Open in window (!b for browser)',
+            hint: 'open in window (!b for browser)',
             action({ input }) {
               if (input === 'b') {
                 openInBrowserAction({ subPath: '/flows' });
@@ -88,9 +95,9 @@ export function makeHomeySections({ value }) {
             },
           },
           {
-            key: `${baseKey}-open-insights`,
+            key: `${keys.open}-insights`,
             textValue: 'Insights',
-            hint: 'Open in window (!b for browser)',
+            hint: 'open in window (!b for browser)',
             action({ input }) {
               if (input === 'b') {
                 openInBrowserAction({ subPath: '/insights' });
@@ -100,14 +107,38 @@ export function makeHomeySections({ value }) {
             },
           },
           {
-            key: `${baseKey}-open-homey-script`,
+            key: `${keys.open}-homey-script`,
             textValue: 'HomeyScript',
-            hint: 'Open in window (!b for browser)',
+            hint: 'open in window (!b for browser)',
             action({ input }) {
               if (input === 'b') {
                 openInBrowserAction({ subPath: '/script' });
               } else {
                 openInWindowAction({ subPath: '/script' });
+              }
+            },
+          },
+          {
+            key: `${keys.open}-new-device`,
+            textValue: 'New Device',
+            hint: 'open in window (no browser support yet)',
+            action({ input }) {
+              if (input === 'b') {
+                openInBrowserAction({ state: { pairDialog: { type: 'pair' } } });
+              } else {
+                openInWindowAction({ state: { pairDialog: { type: 'pair' } } });
+              }
+            },
+          },
+          {
+            key: `${keys.open}-new-flow`,
+            textValue: 'New Flow',
+            hint: 'open in window (!b for browser)',
+            action({ input }) {
+              if (input === 'b') {
+                openInBrowserAction({ subPath: `/flows/create?id=${uuid()}` });
+              } else {
+                openInWindowAction({ subPath: `/flows/create?id=${uuid()}` });
               }
             },
           },

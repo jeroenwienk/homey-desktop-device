@@ -24,6 +24,8 @@ import { Section } from '../renderer/components/common/Section';
 import { ComboBox } from './ComboBox';
 import { makeHelpSections } from './sections/help';
 import { makeHomeySections } from './sections/homey';
+import { makeJSONPathSections } from './sections/jsonpath';
+import { Console } from './Console';
 
 export const cacheStore = create(
   subscribeWithSelector((set, get, api) => {
@@ -41,7 +43,6 @@ export const store = create(
   subscribeWithSelector((set, get, api) => {
     return {
       isSearchLocked: false,
-      command: null,
       placeholder: 'Search...',
       path: [],
       sections: [],
@@ -111,7 +112,6 @@ export function CommanderApp() {
       sections: [],
       placeholder: '',
       isSearchLocked: false,
-      command: null,
     };
 
     switch (value.type) {
@@ -139,23 +139,17 @@ export function CommanderApp() {
       case 'command':
         const baseKey = `${value.key}-command`;
 
-        let nextCommand = {
+        const nextCommand = {
           key: `${baseKey}-run`,
+          ...value,
+          type: null, // remove the type
           textValue: 'Run',
-          hint: value.command.hint,
-          description: value.command.description,
-          action({ input }) {
-            value.command.run({
-              input: input,
-            });
-          },
         };
 
         next = {
           ...next,
           placeholder: 'Enter to run',
           isSearchLocked: true,
-          command: nextCommand,
           sections: [
             {
               key: baseKey,
@@ -163,6 +157,14 @@ export function CommanderApp() {
               children: [nextCommand],
             },
           ],
+        };
+        break;
+      case 'jsonpath':
+        next = {
+          ...next,
+          placeholder: 'Enter to run',
+          isSearchLocked: true,
+          ...makeJSONPathSections({ value }),
         };
         break;
       default:
@@ -187,24 +189,27 @@ export function CommanderApp() {
   function onKeyDown(event, comboBoxState) {
     switch (event.key) {
       case '!':
-        if (comboBoxState.selectionManager.focusedKey == null) {
-          const firstKey = comboBoxState.collection.getFirstKey();
-          const firstItem = comboBoxState.collection.getItem(firstKey);
-
-          if (firstItem.type === 'section') {
-            comboBoxState.selectionManager.setFocusedKey(firstItem.nextKey);
-          } else {
-            comboBoxState.selectionManager.setFocusedKey(firstItem.key);
-          }
-        }
-
+        // We always focus now so this is commented out.
+        // if (comboBoxState.selectionManager.focusedKey == null) {
+        //
+        //   console.log(comboBoxState);
+        //
+        //   const firstKey = comboBoxState.collection.getFirstKey();
+        //   const firstItem = comboBoxState.collection.getItem(firstKey);
+        //
+        //   if (firstItem.type === 'section') {
+        //     comboBoxState.selectionManager.setFocusedKey(firstItem.nextKey);
+        //   } else {
+        //     comboBoxState.selectionManager.setFocusedKey(firstItem.key);
+        //   }
+        // }
         break;
       case 'Enter':
         // Only if the input is the only thing that is focused. Else the normal action handler
         // is used.
-        if (state.command != null && comboBoxState.selectionManager.focusedKey == null) {
-          state.command.action({ input: event.currentTarget.value });
-        }
+        // if (state.command != null && comboBoxState.selectionManager.focusedKey == null) {
+        //   state.command.action({ input: event.currentTarget.value });
+        // }
         break;
       case 'Backspace':
         if (inputValue === '') {
@@ -371,6 +376,8 @@ export function CommanderApp() {
       </CommanderApp.Header>
 
       <CommanderApp.Content>
+        <CommanderApp.LeftWrapper />
+
         <CommanderApp.ComboBoxWrapper>
           <ComboBox
             ref={comboBoxRef}
@@ -390,6 +397,10 @@ export function CommanderApp() {
             onSelectionChange={onSelectionChange}
           />
         </CommanderApp.ComboBoxWrapper>
+
+        <CommanderApp.RightWrapper>
+          <Console />
+        </CommanderApp.RightWrapper>
       </CommanderApp.Content>
     </CommanderApp.Root>
   );
@@ -407,8 +418,17 @@ CommanderApp.Content = styled.div`
   justify-content: center;
 `;
 
+CommanderApp.LeftWrapper = styled.div`
+  flex: 1 1 0;
+`;
+
+CommanderApp.RightWrapper = styled.div`
+  padding-left: 16px;
+  flex: 1 1 0;
+`;
+
 CommanderApp.ComboBoxWrapper = styled.div`
-  width: 720px;
+  flex: 0 0 720px;
 `;
 
 CommanderApp.Root = styled.div`

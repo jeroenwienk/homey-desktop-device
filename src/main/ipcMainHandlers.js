@@ -73,8 +73,14 @@ function initIpcMainHandlers() {
           throw new Error(`Window is disabled.`);
         }
 
+        const state = data.state ? JSON.stringify(data.state) : null;
+
         windowManager.webAppWindow.show();
-        const code = `window.router.history.push('${data.path}')`;
+        let code = `window.router.history.push('${data.path}')`;
+
+        if (state != null) {
+          code = `window.router.history.push('${data.path}', ${state})`;
+        }
 
         return windowManager.webAppWindow.webContents.executeJavaScript(code, true);
       }

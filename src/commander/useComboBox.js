@@ -10,15 +10,15 @@
  * governing permissions and limitations under the License.
  */
 
-import {ariaHideOutside} from '@react-aria/overlays';
-import {getItemId, listData} from '@react-aria/listbox';
-import {chain, isAppleDevice, mergeProps, useLabels} from '@react-aria/utils';
-import {useEffect, useMemo, useRef} from 'react';
-import {getItemCount} from '@react-stately/collections';
+import { ariaHideOutside } from '@react-aria/overlays';
+import { getItemId, listData } from '@react-aria/listbox';
+import { chain, isAppleDevice, mergeProps, useLabels } from '@react-aria/utils';
+import { useEffect, useMemo, useRef } from 'react';
+import { getItemCount } from '@react-stately/collections';
 // @ts-ignore
-import {ListKeyboardDelegate, useSelectableCollection} from '@react-aria/selection';
-import {useMenuTrigger} from '@react-aria/menu';
-import {useTextField} from '@react-aria/textfield';
+import { ListKeyboardDelegate, useSelectableCollection } from '@react-aria/selection';
+import { useMenuTrigger } from '@react-aria/menu';
+import { useTextField } from '@react-aria/textfield';
 
 /**
  * Provides the behavior and accessibility implementation for a combo box component.
@@ -36,30 +36,30 @@ export function useComboBox(props, state) {
     // completionMode = 'suggest',
     shouldFocusWrap,
     isReadOnly,
-    isDisabled
+    isDisabled,
   } = props;
 
-  let {menuTriggerProps, menuProps} = useMenuTrigger(
+  let { menuTriggerProps, menuProps } = useMenuTrigger(
     {
       type: 'listbox',
-      isDisabled: isDisabled || isReadOnly
+      isDisabled: isDisabled || isReadOnly,
     },
     state,
     buttonRef
   );
 
   // Set listbox id so it can be used when calling getItemId later
-  listData.set(state, {id: menuProps.id});
+  listData.set(state, { id: menuProps.id });
 
   // By default, a KeyboardDelegate is provided which uses the DOM to query layout information (e.g. for page up/page down).
   // When virtualized, the layout object will be passed in as a prop and override this.
-  let delegate = useMemo(() =>
-      keyboardDelegate ||
-      new ListKeyboardDelegate(state.collection, state.disabledKeys, listBoxRef)
-    , [keyboardDelegate, state.collection, state.disabledKeys, listBoxRef]);
+  let delegate = useMemo(
+    () => keyboardDelegate || new ListKeyboardDelegate(state.collection, state.disabledKeys, listBoxRef),
+    [keyboardDelegate, state.collection, state.disabledKeys, listBoxRef]
+  );
 
   // Use useSelectableCollection to get the keyboard handlers to apply to the textfield
-  let {collectionProps} = useSelectableCollection({
+  let { collectionProps } = useSelectableCollection({
     selectionManager: state.selectionManager,
     keyboardDelegate: delegate,
     disallowTypeAhead: true,
@@ -67,8 +67,39 @@ export function useComboBox(props, state) {
     shouldFocusWrap,
     ref: inputRef,
     // Prevent item scroll behavior from being applied here, should be handled in the user's Popover + ListBox component
-    isVirtualized: true
+    isVirtualized: true,
   });
+
+  // CUSTOM
+  // TODO
+  // needs work maybe only when the collection has not yet been navigated with keyboard up and down
+  //
+  // Ensure the first item is always focused when the collection changes.
+  // const [controlled, setControlled] = useState(false);
+  // console.log(controlled);
+
+  const controlled = useRef({ focusedKey: null });
+  useEffect(() => {
+    // Use delegate to make sure it's a key board focusable key and not a section or disabled item.
+    // Inner logic of delegate ensures this.
+    const firstItemKey = delegate.getFirstKey();
+
+    if (state.selectionManager.focusedKey == null && firstItemKey != null) {
+      controlled.current.focusedKey = firstItemKey;
+      state.selectionManager.setFocusedKey(firstItemKey);
+    } else if (state.selectionManager.focusedKey === controlled.current.focusedKey) {
+      // Kinda works but ideally we need to know if the user has focused something or we have focused something.
+      const firstItemKey = delegate.getFirstKey();
+      if (firstItemKey != null) {
+        controlled.current.focusedKey = firstItemKey;
+        state.selectionManager.setFocusedKey(firstItemKey);
+      }
+    }
+
+    // Appears selectionManager is always a new object.
+    // If the collection changes so does the keyboard delegate.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.collection]);
 
   // For textfield specific keydown operations
   let onKeyDown = (e) => {
@@ -93,6 +124,8 @@ export function useComboBox(props, state) {
         break;
       default:
         break;
+      // CUSTOM
+      // Disabled this because it's annoying.
       // case 'ArrowLeft':
       // case 'ArrowRight':
       //   state.selectionManager.setFocusedKey(null);
@@ -125,15 +158,18 @@ export function useComboBox(props, state) {
     state.setFocused(true);
   };
 
-  let {labelProps, inputProps, descriptionProps, errorMessageProps} = useTextField({
-    ...props,
-    onChange: state.setInputValue,
-    onKeyDown: !isReadOnly && chain(state.isOpen && collectionProps.onKeyDown, onKeyDown, props.onKeyDown),
-    onBlur,
-    value: state.inputValue,
-    onFocus,
-    autoComplete: 'off'
-  }, inputRef);
+  let { labelProps, inputProps, descriptionProps, errorMessageProps } = useTextField(
+    {
+      ...props,
+      onChange: state.setInputValue,
+      onKeyDown: !isReadOnly && chain(state.isOpen && collectionProps.onKeyDown, onKeyDown, props.onKeyDown),
+      onBlur,
+      value: state.inputValue,
+      onFocus,
+      autoComplete: 'off',
+    },
+    inputRef
+  );
 
   // Press handlers for the ComboBox button
   let onPress = (e) => {
@@ -147,20 +183,20 @@ export function useComboBox(props, state) {
   let onPressStart = (e) => {
     if (e.pointerType !== 'touch') {
       inputRef.current.focus();
-      state.toggle((e.pointerType === 'keyboard' || e.pointerType === 'virtual') ? 'first' : null, 'manual');
+      state.toggle(e.pointerType === 'keyboard' || e.pointerType === 'virtual' ? 'first' : null, 'manual');
     }
   };
 
   let triggerLabelProps = useLabels({
     id: menuTriggerProps.id,
     //'aria-label': formatMessage('buttonLabel'),
-    'aria-labelledby': props['aria-labelledby'] || labelProps.id
+    'aria-labelledby': props['aria-labelledby'] || labelProps.id,
   });
 
   let listBoxProps = useLabels({
     id: menuProps.id,
     //'aria-label': formatMessage('listboxLabel'),
-    'aria-labelledby': props['aria-labelledby'] || labelProps.id
+    'aria-labelledby': props['aria-labelledby'] || labelProps.id,
   });
 
   // If a touch happens on direct center of ComboBox input, might be virtual click from iPad so open ComboBox menu
@@ -177,11 +213,11 @@ export function useComboBox(props, state) {
       return;
     }
 
-    let rect = (e.target).getBoundingClientRect();
+    let rect = e.target.getBoundingClientRect();
     let touch = e.changedTouches[0];
 
-    let centerX = Math.ceil(rect.left + .5 * rect.width);
-    let centerY = Math.ceil(rect.top + .5 * rect.height);
+    let centerX = Math.ceil(rect.left + 0.5 * rect.width);
+    let centerY = Math.ceil(rect.top + 0.5 * rect.height);
 
     if (touch.clientX === centerX && touch.clientY === centerY) {
       e.preventDefault();
@@ -195,9 +231,10 @@ export function useComboBox(props, state) {
   // VoiceOver has issues with announcing aria-activedescendant properly on change
   // (especially on iOS). We use a live region announcer to announce focus changes
   // manually. In addition, section titles are announced when navigating into a new section.
-  let focusedItem = state.selectionManager.focusedKey != null && state.isOpen
-                    ? state.collection.getItem(state.selectionManager.focusedKey)
-                    : undefined;
+  let focusedItem =
+    state.selectionManager.focusedKey != null && state.isOpen
+      ? state.collection.getItem(state.selectionManager.focusedKey)
+      : undefined;
   let sectionKey = focusedItem?.parentKey ?? null;
   let itemKey = state.selectionManager.focusedKey ?? null;
   let lastSection = useRef(sectionKey);
@@ -208,7 +245,8 @@ export function useComboBox(props, state) {
       let isSelected = state.selectionManager.isSelected(itemKey);
       let section = sectionKey != null ? state.collection.getItem(sectionKey) : null;
       // eslint-disable-next-line no-unused-vars
-      let sectionTitle = section?.['aria-label'] || (typeof section?.rendered === 'string' ? section.rendered : '') || '';
+      let sectionTitle =
+        section?.['aria-label'] || (typeof section?.rendered === 'string' ? section.rendered : '') || '';
 
       // let announcement = formatMessage('focusAnnouncement', {
       //   isGroupChange: section && sectionKey !== lastSection.current,
@@ -234,8 +272,7 @@ export function useComboBox(props, state) {
     // focused item, otherwise screen readers will typically read e.g. "1 of 6".
     // The exception is VoiceOver since this isn't included in the message above.
     let didOpenWithoutFocusedItem =
-      state.isOpen !== lastOpen.current &&
-      (state.selectionManager.focusedKey == null || isAppleDevice());
+      state.isOpen !== lastOpen.current && (state.selectionManager.focusedKey == null || isAppleDevice());
 
     if (state.isOpen && (didOpenWithoutFocusedItem || optionCount !== lastSize.current)) {
       // let announcement = formatMessage('countAnnouncement', {optionCount});
@@ -273,7 +310,7 @@ export function useComboBox(props, state) {
       excludeFromTabOrder: true,
       onPress,
       onPressStart,
-      isDisabled: isDisabled || isReadOnly
+      isDisabled: isDisabled || isReadOnly,
     },
     inputProps: mergeProps(inputProps, {
       role: 'combobox',
@@ -286,15 +323,15 @@ export function useComboBox(props, state) {
       // This disable's iOS's autocorrect suggestions, since the combo box provides its own suggestions.
       autoCorrect: 'off',
       // This disable's the macOS Safari spell check auto corrections.
-      spellCheck: 'false'
+      spellCheck: 'false',
     }),
     listBoxProps: mergeProps(menuProps, listBoxProps, {
       autoFocus: state.focusStrategy,
       shouldUseVirtualFocus: true,
       shouldSelectOnPressUp: true,
-      shouldFocusOnHover: true
+      shouldFocusOnHover: true,
     }),
     descriptionProps,
-    errorMessageProps
+    errorMessageProps,
   };
 }

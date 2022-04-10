@@ -98,7 +98,11 @@ const target = {
   ...boxShadowVars,
 };
 
+/**
+ * @type {typeof colorVars}
+ */
 export const vars = new Proxy(target, varHandler);
+
 const values = new Proxy(target, valueHandler);
 
 export const GlobalStyles = createGlobalStyle`

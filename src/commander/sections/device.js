@@ -104,8 +104,8 @@ export function makeDeviceSections({ value }) {
         title: 'General',
         children: [
           {
-            key: `${keys.general}-home`,
-            textValue: 'Home',
+            key: `${keys.general}-controls`,
+            textValue: 'Controls',
             hint: 'Open in window (!b for browser)',
             action({ input }) {
               if (input === 'b') {
@@ -175,9 +175,10 @@ export function makeDeviceSections({ value }) {
                 .then(async () => {
                   try {
                     await ipc.send({
-                      message: 'writeToClipBoard',
+                      message: 'writeJSONPathToClipBoard',
                       data: {
-                        text: JSON.stringify(value.device, null, 2),
+                        path: '$',
+                        value: value.device,
                       },
                     });
                     await ipc.send({ message: 'close' });
@@ -190,6 +191,7 @@ export function makeDeviceSections({ value }) {
           },
           {
             key: `${keys.copy}-json-path`,
+            type: 'jsonpath',
             textValue: 'Path',
             filter: 'copy path',
             hint: 'json path to clipboard',
@@ -211,6 +213,7 @@ export function makeDeviceSections({ value }) {
                 })
                 .catch(console.error);
             },
+            device: value.device, // passing for jsonpath type
           },
         ].sort(defaultTextValueSort),
       },

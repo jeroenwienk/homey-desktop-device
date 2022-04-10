@@ -17,3 +17,6 @@ Features
 - open an url in the desktop's default manner
 - open a path in the desktop's default manner
 - run a CLI command
+
+TODO  
+https://mdxjs.com/docs/getting-started/
