@@ -35,10 +35,7 @@ export function useSectionBuilder({ cacheRef, state, forcedUpdate }) {
           result.push({
             key: 'commands',
             title: 'Commands',
-            children: Array.prototype.concat.apply(
-              [],
-              collectedSectionChildren
-            ),
+            children: Array.prototype.concat.apply([], collectedSectionChildren),
           });
         }
 
@@ -56,10 +53,7 @@ export function useSectionBuilder({ cacheRef, state, forcedUpdate }) {
           result.push({
             key: 'devices',
             title: 'Devices',
-            children: Array.prototype.concat.apply(
-              [],
-              collectedSectionChildren
-            ),
+            children: Array.prototype.concat.apply([], collectedSectionChildren),
           });
         }
 
@@ -72,6 +66,9 @@ export function useSectionBuilder({ cacheRef, state, forcedUpdate }) {
       }
       case pathChunk.type === 'homey': {
         let result = [];
+
+        // Add the default created sections.
+        result = Array.prototype.concat.apply(result, state.sections);
 
         if (cache.commands != null) {
           const sections = cache.commands.sectionsByHomeyId[pathChunk.key];

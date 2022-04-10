@@ -4,6 +4,7 @@ export function makeNumberCapabilitySection({ value }) {
   const baseKey = `${value.key}-capability`;
 
   function action({ input }) {
+    // maybe log that action requires an input?
     store.getState().incrementLoadingCount();
     value.device
       .setCapabilityValue({
@@ -18,13 +19,11 @@ export function makeNumberCapabilitySection({ value }) {
 
   const set = {
     key: `${baseKey}-set`,
-    type: 'action',
     textValue: 'Set',
-    hint: `min ${value.capability.min ?? '-'}, max ${
-      value.capability.max ?? '-'
-    }, step ${value.capability.step ?? '-'}`,
-    action: action, // maybe log that action requires an input?
-    inputAction: action,
+    hint: `min ${value.capability.min ?? '-'}, max ${value.capability.max ?? '-'}, step ${
+      value.capability.step ?? '-'
+    }`,
+    action: action,
   };
 
   return [

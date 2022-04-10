@@ -4,6 +4,7 @@ export function makeEnumCapabilitySection({ value }) {
   const baseKey = `${value.key}-capability`;
 
   function action({ input }) {
+    // maybe log that action requires an input?
     store.getState().incrementLoadingCount();
     value.device
       .setCapabilityValue({
@@ -18,11 +19,9 @@ export function makeEnumCapabilitySection({ value }) {
 
   const set = {
     key: `${baseKey}-set`,
-    type: 'action',
     textValue: 'Set',
     description: JSON.stringify(value.capability.values, null, 2),
-    action: action, // maybe log that action requires an input?
-    inputAction: action,
+    action: action,
   };
 
   return [

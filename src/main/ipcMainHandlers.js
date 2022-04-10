@@ -1,4 +1,5 @@
-const { app, ipcMain, globalShortcut, shell } = require('electron');
+const { app, ipcMain, globalShortcut, shell, clipboard } = require('electron');
+const jp = require('jsonpath');
 const { db } = require('./services/db');
 const { serverSocket } = require('./services/serverSocket');
 const { exec } = require('child_process');
@@ -65,23 +66,35 @@ function initIpcMainHandlers() {
       case 'openPath':
         return shell.openPath(data.path);
       case 'openExternal':
+      case 'openInBrowser':
         return shell.openExternal(data.url);
-      case 'openDeviceInBrowser': {
-        const url = `https://my.homey.app/homeys/${data.homeyId}/devices/${data.deviceId}`;
-        return shell.openExternal(url);
-      }
-      case 'openDeviceInWindow': {
-        const url = `/homeys/${data.homeyId}/devices/${data.deviceId}`;
-
+      case 'openInWindow': {
         if (windowManager.webAppWindow == null) {
           throw new Error(`Window is disabled.`);
         }
 
         windowManager.webAppWindow.show();
-
-        const code = `window.router.history.push('${url}')`;
+        const code = `window.router.history.push('${data.path}')`;
 
         return windowManager.webAppWindow.webContents.executeJavaScript(code, true);
+      }
+      case 'writeToClipBoard': {
+        clipboard.writeText(data.text);
+        break;
+      }
+      case 'writeJSONPathToClipBoard': {
+        const result = jp.query(data.value, data.path);
+
+        if (result == null) {
+          throw new Error(`No result for path '${data.path}'`);
+        }
+
+        if (result?.length === 1) {
+          clipboard.writeText(String(result[0]));
+        } else {
+          clipboard.writeText(String(result));
+        }
+        break;
       }
       default:
         break;

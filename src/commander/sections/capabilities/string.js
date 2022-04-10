@@ -4,6 +4,8 @@ export function makeStringCapabilitySection({ value }) {
   const baseKey = `${value.key}-capability`;
 
   function action({ input }) {
+    // maybe log that action requires an input?
+
     store.getState().incrementLoadingCount();
     value.device
       .setCapabilityValue({
@@ -18,11 +20,9 @@ export function makeStringCapabilitySection({ value }) {
 
   const set = {
     key: `${baseKey}-set`,
-    type: 'action',
     textValue: 'Set',
     hint: ``,
-    action: action, // maybe log that action requires an input?
-    inputAction: action,
+    action: action,
   };
 
   return [

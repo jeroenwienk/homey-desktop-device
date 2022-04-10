@@ -62,7 +62,7 @@ export function useCommands({ cacheStore, setExecutionState }) {
             type: 'command',
             textValue: entry.command,
             hint: entry.hint,
-            inputAction: run,
+            action: run,
             command: {
               ...entry,
               run,

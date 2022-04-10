@@ -23,6 +23,7 @@ import { Item } from '../renderer/components/common/Item';
 import { Section } from '../renderer/components/common/Section';
 import { ComboBox } from './ComboBox';
 import { makeHelpSections } from './sections/help';
+import { makeHomeySections } from './sections/homey';
 
 export const cacheStore = create(
   subscribeWithSelector((set, get, api) => {
@@ -92,7 +93,6 @@ export function CommanderApp() {
 
   const [forcedUpdate, forceUpdate] = useState({});
   const cacheRef = useRef({});
-  console.log(cacheRef.current);
 
   const sections = useSectionBuilder({ cacheRef, state, forcedUpdate });
 
@@ -119,6 +119,7 @@ export function CommanderApp() {
         next = {
           ...next,
           type: 'homey',
+          ...makeHomeySections({ value }),
         };
         break;
       case 'device':
@@ -140,7 +141,6 @@ export function CommanderApp() {
 
         let nextCommand = {
           key: `${baseKey}-run`,
-          type: 'run',
           textValue: 'Run',
           hint: value.command.hint,
           description: value.command.description,
@@ -153,7 +153,6 @@ export function CommanderApp() {
 
         next = {
           ...next,
-          type: 'command',
           placeholder: 'Enter to run',
           isSearchLocked: true,
           command: nextCommand,
@@ -203,10 +202,7 @@ export function CommanderApp() {
       case 'Enter':
         // Only if the input is the only thing that is focused. Else the normal action handler
         // is used.
-        if (
-          state.command != null &&
-          comboBoxState.selectionManager.focusedKey == null
-        ) {
+        if (state.command != null && comboBoxState.selectionManager.focusedKey == null) {
           state.command.action({ input: event.currentTarget.value });
         }
         break;
@@ -223,8 +219,7 @@ export function CommanderApp() {
             path: nextPath,
             sections: nextPath[nextPath.length - 1]?.sections ?? [],
             placeholder: nextPath[nextPath.length - 1]?.placeholder ?? '',
-            isSearchLocked:
-              nextPath[nextPath.length - 1]?.isSearchLocked ?? false,
+            isSearchLocked: nextPath[nextPath.length - 1]?.isSearchLocked ?? false,
           });
 
           setSelectedKey(null);
@@ -250,32 +245,42 @@ export function CommanderApp() {
     const item = comboBoxState.collection.getItem(key) ?? null;
     const markIndex = inputRef.current.value.indexOf('!');
 
-    if (item == null || item.value?.selectable === false) return;
+    if (item == null) return;
 
     let inputActionInput = null;
 
     if (markIndex !== -1) {
-      inputActionInput = inputRef.current.value.substring(
-        markIndex + 1,
-        inputRef.current.value.length
-      );
-    }
-
-    if (item.value.inputAction != null && inputActionInput != null) {
-      item.value.inputAction({ input: inputActionInput });
-      return;
+      inputActionInput = inputRef.current.value.substring(markIndex + 1, inputRef.current.value.length);
     }
 
     if (item.value.action != null) {
-      // this does not work with input because you are also filtering
-      item.value.action({ input: inputRef.current.value });
-      return;
-    } else {
-      // It doesnt really make sense for now to even have a selection.
-      // The current path can be considered the selection.
-      setSelectedKey(null);
-      setInputValue('');
+      switch (true) {
+        // !someinput is typed so we supply it to the action.
+        case inputActionInput != null: {
+          item.value.action({ input: inputActionInput });
+          return;
+        }
+        // When a type is defined this means it has child sections so we dont trigger
+        // the action then. When the search is locked we supply the current input value
+        // to the action.
+        case item.value.type == null: {
+          item.value.action({ input: state.isSearchLocked ? inputRef.current.value : null });
+          return;
+        }
+        default:
+          break;
+      }
     }
+
+    // E.g. help sections are not selectable.
+    if (item.value.type == null) return;
+
+    // It doesnt really make sense for now to even have a selection.
+    // The current path can be considered the selection.
+    setSelectedKey(null);
+
+    // Clear input on select.
+    setInputValue('');
 
     setNext({
       key,
@@ -296,8 +301,7 @@ export function CommanderApp() {
         return (
           isSameType &&
           (instanceRef.current.contains(textValue, chunk) ||
-            (node?.filter != null &&
-              instanceRef.current.contains(node.filter, chunk)))
+            (node?.filter != null && instanceRef.current.contains(node.filter, chunk)))
         );
       });
     },
@@ -317,17 +321,9 @@ export function CommanderApp() {
 
     if (questionIndex === 0) {
       const helpSections = cacheStore.getState().help.sections;
-      const filter = filterPart.substring(1)
+      const filter = filterPart.substring(1);
 
-      console.log(helpSections);
-      console.log(filter);
-
-      return filterNodes(
-        helpSections,
-        filter,
-        typeFilter,
-        instanceRef.current.defaultFilter
-      );
+      return filterNodes(helpSections, filter, typeFilter, instanceRef.current.defaultFilter);
     }
 
     if (atIndex === 0) {
@@ -363,12 +359,7 @@ export function CommanderApp() {
       filterPart = filterPart.substring(0, markIndex);
     }
 
-    return filterNodes(
-      sections,
-      filterPart,
-      typeFilter,
-      instanceRef.current.defaultFilter
-    );
+    return filterNodes(sections, filterPart, typeFilter, instanceRef.current.defaultFilter);
   }, [sections, inputValue, state.isSearchLocked]);
 
   return (

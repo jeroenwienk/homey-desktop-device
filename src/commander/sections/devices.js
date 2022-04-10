@@ -22,9 +22,9 @@ export async function makeDevicesSections({ value }) {
               key: id,
               type: 'device',
               textValue: zone != null ? `${zone.name} - ${device.name}` : `${device.name}`,
-              hint: device.class,
-              filter: `${device.class}`,
-              inputAction({ input }) {
+              hint: device.virtualClass ?? device.class,
+              filter: `${device.virtualClass ?? device.class}`,
+              action({ input }) {
                 Promise.resolve()
                   .then(async () => {
                     try {

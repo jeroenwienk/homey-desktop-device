@@ -24,6 +24,7 @@
     "electron-store": "^8.0.0",
     "history": "^4.10.1",
     "homey-api": "^1.5.24",
+    "jsonpath": "^1.1.1",
     "macaddress": "^0.5.2",
     "nedb": "^1.8.0",
     "node-fetch": "^2.6.2",

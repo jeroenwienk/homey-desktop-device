@@ -5,15 +5,13 @@ export function makeHelpSections({ value }) {
 
   const inputMode = {
     key: `${baseKey}-input-mode`,
-    type: 'help',
     textValue: `Input mode`,
     hint: `!`,
     description:
       'Use ! to put the input in submit mode. When an item has an action and it is selected' +
-      ' this will directly pass the currently typed value to the action of the command.' +
+      ' this will directly pass the currently typed value after the ! to the action of the command.' +
       ' If the item has no action it will just select it instead.',
     filter: ``,
-    selectable: false,
   };
 
   return {
