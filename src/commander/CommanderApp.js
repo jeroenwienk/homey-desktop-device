@@ -22,12 +22,16 @@ import { DragIcon } from '../renderer/components/common/IconMask';
 import { Item } from '../renderer/components/common/Item';
 import { Section } from '../renderer/components/common/Section';
 import { ComboBox } from './ComboBox';
+import { makeHelpSections } from './sections/help';
 
 export const cacheStore = create(
   subscribeWithSelector((set, get, api) => {
     return {
       __pending: {},
       __timeout: null,
+      help: {
+        ...makeHelpSections({ value: null }),
+      },
     };
   })
 );
@@ -65,9 +69,7 @@ export function CommanderApp() {
 
   useEffect(() => {
     ipc.send({ message: 'init' }).catch(console.log);
-  }, []);
 
-  useEffect(() => {
     ipcRenderer.on('focusComboBox', (event, message) => {
       inputRef.current.focus();
     });
@@ -248,7 +250,7 @@ export function CommanderApp() {
     const item = comboBoxState.collection.getItem(key) ?? null;
     const markIndex = inputRef.current.value.indexOf('!');
 
-    if (item == null) return;
+    if (item == null || item.value?.selectable === false) return;
 
     let inputActionInput = null;
 
@@ -311,6 +313,22 @@ export function CommanderApp() {
     let typeFilter = null;
 
     const atIndex = inputValue.indexOf('@');
+    const questionIndex = inputValue.indexOf('?');
+
+    if (questionIndex === 0) {
+      const helpSections = cacheStore.getState().help.sections;
+      const filter = filterPart.substring(1)
+
+      console.log(helpSections);
+      console.log(filter);
+
+      return filterNodes(
+        helpSections,
+        filter,
+        typeFilter,
+        instanceRef.current.defaultFilter
+      );
+    }
 
     if (atIndex === 0) {
       const found = filterPart.match(/^(?<category>@\w*)/);

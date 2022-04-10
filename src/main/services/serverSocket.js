@@ -456,7 +456,7 @@ class ServerSocket {
         windowManager.send(windowManager.commanderWindow, events.ON_API_PROPS, {
           ...response.data,
           address: socket.handshake.address,
-          cloudId: socket.handshake.query.cloudId,
+          homeyId: socket.handshake.query.homeyId,
           name: socket.handshake.query.name,
         });
       } catch (error) {
@@ -492,7 +492,7 @@ class ServerSocket {
       return {
         id: socket.id,
         socketId: socket.id,
-        cloudId: socket.handshake.query.cloudId,
+        homeyId: socket.handshake.query.homeyId,
         name: socket.handshake.query.name,
         connected: socket.connected,
       };

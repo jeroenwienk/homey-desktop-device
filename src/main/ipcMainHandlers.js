@@ -5,14 +5,7 @@ const { exec } = require('child_process');
 
 const { windowManager } = require('./managers/windowManager');
 
-const {
-  REND,
-  OVERLAY,
-  MAIN,
-  IO_EMIT,
-  IO_ON,
-  events,
-} = require('../shared/events');
+const { REND, OVERLAY, MAIN, IO_EMIT, IO_ON, events } = require('../shared/events');
 const { trayManager } = require('./managers/trayManager');
 
 function initIpcMainHandlers() {
@@ -73,6 +66,23 @@ function initIpcMainHandlers() {
         return shell.openPath(data.path);
       case 'openExternal':
         return shell.openExternal(data.url);
+      case 'openDeviceInBrowser': {
+        const url = `https://my.homey.app/homeys/${data.homeyId}/devices/${data.deviceId}`;
+        return shell.openExternal(url);
+      }
+      case 'openDeviceInWindow': {
+        const url = `/homeys/${data.homeyId}/devices/${data.deviceId}`;
+
+        if (windowManager.webAppWindow == null) {
+          throw new Error(`Window is disabled.`);
+        }
+
+        windowManager.webAppWindow.show();
+
+        const code = `window.router.history.push('${url}')`;
+
+        return windowManager.webAppWindow.webContents.executeJavaScript(code, true);
+      }
       default:
         break;
     }
@@ -149,68 +159,48 @@ async function handleCommanderInit(event, args) {
   const connected = await serverSocket.getConnected();
 
   for (const socket of connected) {
-    socket
-      .timeout(5000)
-      .emit(
-        events.GET_API_PROPS,
-        { data: null },
-        (timeout, error, response) => {
-          if (timeout != null) {
-            console.log(timeout);
-            return;
-          }
+    socket.timeout(5000).emit(events.GET_API_PROPS, { data: null }, (timeout, error, response) => {
+      if (timeout != null) {
+        console.log(timeout);
+        return;
+      }
 
-          if (error != null) {
-            console.log(error);
-            return;
-          }
+      if (error != null) {
+        console.log(error);
+        return;
+      }
 
-          if (response.data == null) {
-            console.log('Missing response data', response);
-            return;
-          }
+      if (response.data == null) {
+        console.log('Missing response data', response);
+        return;
+      }
 
-          windowManager.send(
-            windowManager.commanderWindow,
-            events.ON_API_PROPS,
-            {
-              ...response.data,
-              address: socket.handshake.address,
-              cloudId: socket.handshake.query.cloudId,
-              name: socket.handshake.query.name,
-            }
-          );
-        }
-      );
+      windowManager.send(windowManager.commanderWindow, events.ON_API_PROPS, {
+        ...response.data,
+        address: socket.handshake.address,
+        homeyId: socket.handshake.query.homeyId,
+        name: socket.handshake.query.name,
+      });
+    });
 
-    socket
-      .timeout(5000)
-      .emit(
-        events.GET_COMMAND_ARGUMENT_VALUES,
-        { data: null },
-        (timeout, error, response) => {
-          if (timeout != null) {
-            console.log(timeout);
-            return;
-          }
+    socket.timeout(5000).emit(events.GET_COMMAND_ARGUMENT_VALUES, { data: null }, (timeout, error, response) => {
+      if (timeout != null) {
+        console.log(timeout);
+        return;
+      }
 
-          if (error != null) {
-            console.log(error);
-            return;
-          }
+      if (error != null) {
+        console.log(error);
+        return;
+      }
 
-          if (response.data == null) {
-            console.log('Missing response data', response);
-            return;
-          }
+      if (response.data == null) {
+        console.log('Missing response data', response);
+        return;
+      }
 
-          windowManager.send(
-            windowManager.commanderWindow,
-            events.ON_COMMAND_ARGUMENT_VALUES,
-            response.data
-          );
-        }
-      );
+      windowManager.send(windowManager.commanderWindow, events.ON_COMMAND_ARGUMENT_VALUES, response.data);
+    });
   }
 }
 
@@ -301,16 +291,13 @@ function registerAccelerators(accelerators) {
   // TODO: fails on arrows
   accelerators.forEach((accelerator) => {
     try {
-      const ret = globalShortcut.register(
-        accelerator.keys.replaceAll(' ', '+'),
-        () => {
-          windowManager.sendToMainWindow(MAIN.ACCELERATOR_TEST, {
-            id: accelerator.id,
-          });
+      const ret = globalShortcut.register(accelerator.keys.replaceAll(' ', '+'), () => {
+        windowManager.sendToMainWindow(MAIN.ACCELERATOR_TEST, {
+          id: accelerator.id,
+        });
 
-          serverSocket.io.emit(events.ACCELERATOR_RUN, { id: accelerator.id });
-        }
-      );
+        serverSocket.io.emit(events.ACCELERATOR_RUN, { id: accelerator.id });
+      });
 
       if (!ret) {
         console.log('registration failed');

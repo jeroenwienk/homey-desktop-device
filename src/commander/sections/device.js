@@ -1,3 +1,6 @@
+import { defaultTextValueSort } from '../defaultTextValueSort';
+import { ipc } from '../ipc';
+
 function makeHint(capability) {
   switch (capability.type) {
     case 'number':
@@ -21,10 +24,64 @@ function makeDescription(capability) {
 export function makeDeviceSections({ value }) {
   const baseKey = `${value.key}-device`;
 
+  console.log(value);
+
   return {
     sections: [
       {
-        key: baseKey,
+        key: `${baseKey}-general`,
+        title: 'General',
+        children: [
+          {
+            key: `open-browser`,
+            textValue: 'Open',
+            hint: 'Open in browser',
+            action() {
+              Promise.resolve()
+                .then(async () => {
+                  try {
+                    await ipc.send({
+                      message: 'openDeviceInBrowser',
+                      data: {
+                        homeyId: value.device.homey.id,
+                        deviceId: value.device.id,
+                      },
+                    });
+                    await ipc.send({ message: 'close' });
+                  } catch (error) {
+                    console.log(error);
+                  }
+                })
+                .catch(console.error);
+            },
+          },
+          {
+            key: `open-window`,
+            textValue: 'Open',
+            hint: 'Open in window',
+            action() {
+              Promise.resolve()
+                .then(async () => {
+                  try {
+                    await ipc.send({
+                      message: 'openDeviceInWindow',
+                      data: {
+                        homeyId: value.device.homey.id,
+                        deviceId: value.device.id,
+                      },
+                    });
+                    await ipc.send({ message: 'close' });
+                  } catch (error) {
+                    console.log(error);
+                  }
+                })
+                .catch(console.error);
+            },
+          }
+        ].sort(defaultTextValueSort),
+      },
+      {
+        key: `${baseKey}-capabilities`,
         title: 'Capabilities',
         children: Object.entries(value.device.capabilitiesObj)
           .map(([capabilityId, capability]) => {
@@ -39,9 +96,7 @@ export function makeDeviceSections({ value }) {
               capability,
             };
           })
-          .sort((a, b) => {
-            return a.textValue.localeCompare(b.textValue);
-          }),
+          .sort(defaultTextValueSort),
       },
     ],
   };

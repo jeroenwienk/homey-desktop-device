@@ -44,7 +44,7 @@ ipcRenderer.on(events.ON_API_PROPS, (event, data) => {
 
   const state = apiStore.getState();
 
-  if (state[data.cloudId]) {
+  if (state[data.homeyId]) {
     // todo
     // check if still valid token
     return;
@@ -66,11 +66,15 @@ ipcRenderer.on(events.ON_API_PROPS, (event, data) => {
     },
   });
 
+  // TODO
+  // fix in node-homey-api
+  homeyAPI.id = data.homeyId;
+
   homeyAPI
     .login()
     .then(() => {
       apiStore.setState({
-        [data.cloudId]: {
+        [data.homeyId]: {
           ...data,
           api: homeyAPI,
         },

@@ -14,7 +14,7 @@ export function Connections() {
         return (
           <sc.Entry
             key={connectionEntry.id}
-            title={connectionEntry.cloudId}
+            title={connectionEntry.homeyId}
             connected={connectionEntry.connected}
           >
             {connectionEntry.name}

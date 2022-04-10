@@ -9,8 +9,7 @@
     "start:debug": "cross-env DEBUG=engine,socket.io* electron-forge start",
     "package": "electron-forge package",
     "make": "cross-env NODE_ENV=production electron-forge make",
-    "publish": "electron-forge publish",
-    "lint": "echo \"No linting configured\""
+    "publish": "electron-forge publish"
   },
   "keywords": [],
   "author": {
