@@ -7,7 +7,7 @@ import { OverlayProvider } from 'react-aria';
 import { history } from './memoryHistory';
 
 import { App } from './App';
-import { GlobalStyles } from './theme/GlobalStyles';
+import { GlobalStyles } from '../shared/theme/GlobalStyles';
 
 const rootElement = document.getElementById('root');
 

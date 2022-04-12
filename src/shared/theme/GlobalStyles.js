@@ -35,7 +35,7 @@ const colorVars = {
 
 const colors = new Proxy(colorVars, varHandler);
 
-const colorFunctionalVars = {
+const colorSemanticVars = {
   color_primary_text: '#c9d1d9',
   color_primary_text_accent: '#8b949e',
 
@@ -61,7 +61,7 @@ const colorFunctionalVars = {
 };
 
 // eslint-disable-next-line no-unused-vars
-const colorsFunctional = new Proxy(colorFunctionalVars, varHandler);
+const colorsSemantic = new Proxy(colorSemanticVars, varHandler);
 
 const borderVars = {
   border_error: `2px solid ${colors.color_red}`,
@@ -91,7 +91,7 @@ const boxShadowVars = {
 
 const target = {
   ...colorVars,
-  ...colorFunctionalVars,
+  ...colorSemanticVars,
   ...borderVars,
   ...zIndexVars,
   ...iconSizeVars,
@@ -99,7 +99,7 @@ const target = {
 };
 
 /**
- * @type {typeof colorVars}
+ * @type {(typeof colorVars | typeof colorSemanticVars | typeof borderVars | typeof zIndexVars | typeof iconSizeVars | typeof boxShadowVars)}
  */
 export const vars = new Proxy(target, varHandler);
 
@@ -116,22 +116,25 @@ export const GlobalStyles = createGlobalStyle`
 
   * {
     box-sizing: border-box;
+    margin: 0;
+  }
+
+  html, body, #root {
+    height: 100vh;
   }
 
   body {
     font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji;
     font-size: 16px;
     overflow: hidden;
-    margin: 0;
     padding: 0;
-    height: 100vh;
     width: 100vw;
     background-color: ${vars.color_background_app};
-    color: ${vars.color_primary_text}
+    color: ${vars.color_primary_text};
+    -webkit-font-smoothing: antialiased;
   }
 
-  button, input, ul {
-    margin: 0;
+  button, input, textarea, select, ul {
     padding: 0;
     border: 0;
     outline: 0;

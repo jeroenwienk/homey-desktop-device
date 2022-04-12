@@ -1,23 +1,25 @@
 import { store } from '../../CommanderApp';
+import { consoleManager } from "../../Console";
 
 export function makeBooleanCapabilitySection({ value }) {
   const baseKey = `${value.key}-capability`;
+  const { device, capability } = value.context;
 
   const toggle = {
     key: `${baseKey}-toggle`,
     textValue: 'Toggle',
     action() {
       store.getState().incrementLoadingCount();
-      value.device.homey.devices
-        .getDevice({ id: value.device.id })
+      device.homey.devices
+        .getDevice({ id: device.id })
         .then((device) => {
-          return value.device.setCapabilityValue({
-            capabilityId: value.capability.id,
-            value: device.capabilitiesObj[value.capability.id].value !== true,
+          return device.setCapabilityValue({
+            capabilityId: capability.id,
+            value: device.capabilitiesObj[capability.id].value !== true,
           });
         })
         .then(console.log)
-        .catch(console.log)
+        .catch((error) => consoleManager.addError(error))
         .finally(() => {
           store.getState().decrementLoadingCount();
         });
@@ -30,9 +32,9 @@ export function makeBooleanCapabilitySection({ value }) {
     action() {
       store.getState().incrementLoadingCount();
 
-      value.device
+      device
         .setCapabilityValue({
-          capabilityId: value.capability.id,
+          capabilityId: capability.id,
           value: true,
         })
         .catch(console.log)
@@ -48,9 +50,9 @@ export function makeBooleanCapabilitySection({ value }) {
     action() {
       store.getState().incrementLoadingCount();
 
-      value.device
+      device
         .setCapabilityValue({
-          capabilityId: value.capability.id,
+          capabilityId: capability.id,
           value: false,
         })
         .catch(console.log)

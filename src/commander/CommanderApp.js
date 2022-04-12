@@ -17,15 +17,15 @@ import { useFetchDevices } from './fetchers/useFetchDevices';
 import { filterNodes } from './filterNodes';
 import { makeCapabilitySections } from './sections/capabilities/capabilities';
 import { makeDeviceSections } from './sections/device';
-
-import { DragIcon } from '../renderer/components/common/IconMask';
-import { Item } from '../renderer/components/common/Item';
-import { Section } from '../renderer/components/common/Section';
-import { ComboBox } from './ComboBox';
 import { makeHelpSections } from './sections/help';
 import { makeHomeySections } from './sections/homey';
 import { makeJSONPathSections } from './sections/jsonpath';
+
 import { Console } from './Console';
+import { DragIcon } from '../shared/components/IconMask';
+import { Item } from "./Item";
+import { Section } from '../shared/components/Section';
+import { ComboBox } from './ComboBox';
 
 export const cacheStore = create(
   subscribeWithSelector((set, get, api) => {
@@ -133,6 +133,8 @@ export function CommanderApp() {
         next = {
           ...next,
           type: 'capability',
+          placeholder: 'Enter to run',
+          isSearchLocked: true,
           ...makeCapabilitySections({ value }),
         };
         break;

@@ -11,14 +11,14 @@ import {
   removeDisplay,
 } from '../../store/displayStore';
 
-import { DialogBase } from '../../components/dialog/DialogBase';
-import { DialogActions } from '../../components/dialog/DialogActions';
-import { DialogContent } from '../../components/dialog/DialogContent';
-import { DialogForm } from '../../components/dialog/DialogForm';
-import { IconButton } from '../../components/common/IconButton';
-import { CancelIcon, RemoveIcon } from '../../components/common/IconMask';
-import { TextField } from '../../components/form/TextField';
-import { Button } from '../../components/common/Button';
+import { DialogBase } from '../../../shared/components/dialog/DialogBase';
+import { DialogActions } from '../../../shared/components/dialog/DialogActions';
+import { DialogContent } from '../../../shared/components/dialog/DialogContent';
+import { DialogForm } from '../../../shared/components/dialog/DialogForm';
+import { IconButton } from '../../../shared/components/IconButton';
+import { CancelIcon, RemoveIcon } from '../../../shared/components/IconMask';
+import { TextField } from '../../../shared/components/form/TextField';
+import { Button } from '../../../shared/components/Button';
 
 export function DisplayDialog(props) {
   const formId = useId();

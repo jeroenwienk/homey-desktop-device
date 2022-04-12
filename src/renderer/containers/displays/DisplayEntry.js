@@ -3,11 +3,11 @@ import styled from 'styled-components';
 
 import { useButton, useFocusRing, mergeProps } from 'react-aria';
 
-import { vars } from '../../theme/GlobalStyles';
-import { mergeRefs } from '../../lib/mergeRefs';
+import { vars } from '../../../shared/theme/GlobalStyles';
+import { mergeRefs } from '../../../shared/lib/mergeRefs';
 
-import { IconButton } from '../../components/common/IconButton';
-import { SettingsIcon } from '../../components/common/IconMask';
+import { IconButton } from '../../../shared/components/IconButton';
+import { SettingsIcon } from '../../../shared/components/IconMask';
 
 export const DisplayEntry = forwardRef(function (props, forwardedRef) {
   const buttonRef = useRef();

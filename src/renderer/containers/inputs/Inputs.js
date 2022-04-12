@@ -10,7 +10,7 @@ import { useInputList } from '../../store/inputStore';
 
 import { InputDialog } from './InputDialog';
 import { InputEntry } from './InputEntry';
-import { Heading } from '../../components/common/Heading';
+import { Heading } from '../../../shared/components/Heading';
 
 export function Inputs() {
   const inputList = useInputList();

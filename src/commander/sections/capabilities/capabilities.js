@@ -6,7 +6,7 @@ import { makeStringCapabilitySection } from './string';
 export function makeCapabilitySections({ value }) {
   let next = null;
 
-  switch (value.capability.type) {
+  switch (value.context.capability.type) {
     case 'boolean':
       next = makeBooleanCapabilitySection({ value });
       break;

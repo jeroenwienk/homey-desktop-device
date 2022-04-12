@@ -82,17 +82,17 @@ module.exports = {
           config: './webpack/webpack.renderer.config.js',
           entryPoints: [
             {
-              html: './src/renderer/index.html',
+              html: './src/shared/index.html',
               js: './src/renderer/renderer.js',
               name: 'main_window',
             },
             {
-              html: './src/renderer/index.html',
+              html: './src/shared/index.html',
               js: './src/overlay/overlay.js',
               name: 'overlay_window',
             },
             {
-              html: './src/renderer/index.html',
+              html: './src/shared/index.html',
               js: './src/commander/commander.js',
               name: 'commander_window',
             },

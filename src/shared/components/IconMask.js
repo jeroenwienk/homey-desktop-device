@@ -1,23 +1,23 @@
 import React, { forwardRef } from 'react';
 import styled from 'styled-components';
 
-import { vars } from '../../theme/GlobalStyles';
+import { vars } from '../theme/GlobalStyles';
 
-import add from '../../../assets/actions/add.svg';
-import save from '../../../assets/actions/save.svg';
-import cancel from '../../../assets/actions/cancel.svg';
-import remove from '../../../assets/actions/remove.svg';
-import clear from '../../../assets/actions/clear.svg';
-import drag from '../../../assets/actions/drag.svg';
-import settings from '../../../assets/actions/settings.svg';
-import search from '../../../assets/actions/search.svg';
+import add from '../../assets/actions/add.svg';
+import save from '../../assets/actions/save.svg';
+import cancel from '../../assets/actions/cancel.svg';
+import remove from '../../assets/actions/remove.svg';
+import clear from '../../assets/actions/clear.svg';
+import drag from '../../assets/actions/drag.svg';
+import settings from '../../assets/actions/settings.svg';
+import search from '../../assets/actions/search.svg';
 
-import nolink from '../../../assets/status/nolink.svg';
-import warning from '../../../assets/status/warning.svg';
-import error from '../../../assets/status/error.svg';
+import nolink from '../../assets/status/nolink.svg';
+import warning from '../../assets/status/warning.svg';
+import error from '../../assets/status/error.svg';
 
-import browser from '../../../assets/history/browser.svg';
-import path from '../../../assets/history/path.svg';
+import browser from '../../assets/history/browser.svg';
+import path from '../../assets/history/path.svg';
 
 export const IconMask = styled.div`
   display: inline-block;

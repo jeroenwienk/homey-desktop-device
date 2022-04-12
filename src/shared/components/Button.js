@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 import { useButton, useFocusRing, mergeProps } from 'react-aria';
 
-import { vars } from '../../theme/GlobalStyles';
+import { vars } from '../theme/GlobalStyles';
 
 import { ButtonBase } from './ButtonBase';
 

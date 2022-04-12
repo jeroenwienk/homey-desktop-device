@@ -10,7 +10,7 @@ import { default as HomeyAPIApp } from 'homey-api/lib/HomeyAPI/HomeyAPIApp';
 import { ipc } from './ipc';
 import { events } from '../shared/events';
 
-import { GlobalStyles } from '../renderer/theme/GlobalStyles';
+import { GlobalStyles } from '../shared/theme/GlobalStyles';
 
 import { CommanderApp } from './CommanderApp';
 
@@ -86,12 +86,6 @@ ipcRenderer.on(events.ON_API_PROPS, (event, data) => {
 });
 
 const CommanderStyles = createGlobalStyle`
-  * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-  }
-  
   body {
     color: #181818;
     background-color: transparent;

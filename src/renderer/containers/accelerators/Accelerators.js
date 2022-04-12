@@ -10,7 +10,7 @@ import { useAcceleratorList } from '../../store/acceleratorStore';
 
 import { AcceleratorDialog } from './AcceleratorDialog';
 import { AcceleratorEntry } from './AcceleratorEntry';
-import { Heading } from '../../components/common/Heading';
+import { Heading } from '../../../shared/components/Heading';
 
 export function Accelerators() {
   const acceleratorList = useAcceleratorList();

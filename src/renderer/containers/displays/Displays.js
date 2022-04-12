@@ -8,7 +8,7 @@ import { useDisplayList } from '../../store/displayStore';
 
 import { DisplayDialog } from './DisplayDialog';
 import { DisplayEntry } from './DisplayEntry';
-import { Heading } from '../../components/common/Heading';
+import { Heading } from '../../../shared/components/Heading';
 
 export function Displays() {
   const displayList = useDisplayList();

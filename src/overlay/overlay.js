@@ -6,7 +6,7 @@ import { createGlobalStyle } from 'styled-components';
 
 import { MAIN } from '../shared/events';
 
-import { GlobalStyles } from '../renderer/theme/GlobalStyles';
+import { GlobalStyles } from '../shared/theme/GlobalStyles';
 
 import { App } from './App';
 

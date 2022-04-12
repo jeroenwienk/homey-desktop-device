@@ -11,15 +11,15 @@ import {
   removeButton,
 } from '../../store/buttonStore';
 
-import { DialogBase } from '../../components/dialog/DialogBase';
-import { DialogContent } from '../../components/dialog/DialogContent';
-import { DialogActions } from '../../components/dialog/DialogActions';
-import { DialogForm } from '../../components/dialog/DialogForm';
-import { IconButton } from '../../components/common/IconButton';
-import { CancelIcon, RemoveIcon } from '../../components/common/IconMask';
-import { TextField } from '../../components/form/TextField';
-import { Checkbox } from '../../components/form/Checkbox';
-import { Button } from '../../components/common/Button';
+import { DialogBase } from '../../../shared/components/dialog/DialogBase';
+import { DialogContent } from '../../../shared/components/dialog/DialogContent';
+import { DialogActions } from '../../../shared/components/dialog/DialogActions';
+import { DialogForm } from '../../../shared/components/dialog/DialogForm';
+import { IconButton } from '../../../shared/components/IconButton';
+import { CancelIcon, RemoveIcon } from '../../../shared/components/IconMask';
+import { TextField } from '../../../shared/components/form/TextField';
+import { Checkbox } from '../../../shared/components/form/Checkbox';
+import { Button } from '../../../shared/components/Button';
 
 export function ButtonDialog(props) {
   const formId = useId();

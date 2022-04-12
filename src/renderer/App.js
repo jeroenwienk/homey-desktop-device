@@ -7,7 +7,7 @@ import { Route } from 'react-router';
 import { REND } from '../shared/events';
 
 import { history } from './memoryHistory';
-import { vars } from './theme/GlobalStyles';
+import { vars } from '../shared/theme/GlobalStyles';
 
 import { SettingsDialog } from './SettingsDialog';
 
@@ -19,11 +19,11 @@ import { Accelerators } from './containers/accelerators/Accelerators';
 import { Displays } from './containers/displays/Displays';
 import { Inputs } from './containers/inputs/Inputs';
 
-import { MenuButton } from './components/common/Menu';
-import { ExternalLink } from './components/common/ExternalLink';
-import { IconButton } from './components/common/IconButton';
+import { MenuButton } from '../shared/components/Menu';
+import { ExternalLink } from '../shared/components/ExternalLink';
+import { IconButton } from '../shared/components/IconButton';
 
-import { SettingsIcon } from './components/common/IconMask';
+import { SettingsIcon } from '../shared/components/IconMask';
 
 export function App() {
   const [isLatestVersion, setIsLatestVersion] = useState(true);

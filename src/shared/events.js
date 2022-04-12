@@ -90,5 +90,6 @@ module.exports.events = {
   GET_COMMAND_ARGUMENT_VALUES: 'getCommandArgumentValues',
   SEND_COMMAND: 'sendCommand',
 
+  ON_MAIN_PROCESS_MESSAGE: 'onMainProcessMessage',
   ON_COMMANDER_WINDOW_MESSAGE: 'onCommanderWindowMessage',
 };

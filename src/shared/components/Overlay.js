@@ -18,7 +18,7 @@ import {
 import { getFocusableTreeWalker } from '@react-aria/focus';
 
 import { useInteract } from './useInteract';
-import { mergeRefs } from '../../lib/mergeRefs';
+import { mergeRefs } from '../lib/mergeRefs';
 
 const OverlayStackContext = createContext(null);
 const OverlayPreventCloseContext = createContext();

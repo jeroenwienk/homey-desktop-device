@@ -4,17 +4,14 @@ import styled from 'styled-components';
 import { useComboBox } from './useComboBox';
 import { useComboBoxState } from './useComboBoxState';
 
-import {
-  renderCollectionItem,
-  renderCollectionSection,
-} from '../renderer/components/common/ListBox';
-import { mergeRefs } from '../renderer/lib/mergeRefs';
+import { renderCollectionItem, renderCollectionSection } from '../shared/components/ListBox';
+import { mergeRefs } from '../shared/lib/mergeRefs';
 
-import { vars } from '../renderer/theme/GlobalStyles';
+import { vars } from '../shared/theme/GlobalStyles';
 
-import { ListBox as ListBoxBase } from '../renderer/components/common/ListBox';
-import { Spinner } from '../renderer/components/common/Spinner';
-import { SearchIcon } from '../renderer/components/common/IconMask';
+import { ListBox as ListBoxBase } from '../shared/components/ListBox';
+import { Spinner } from '../shared/components/Spinner';
+import { SearchIcon } from '../shared/components/IconMask';
 
 export const ComboBox = forwardRef((props, forwardedRef) => {
   const buttonRef = useRef();
@@ -30,10 +27,7 @@ export const ComboBox = forwardRef((props, forwardedRef) => {
   const sharedProps = {
     ...props,
     onKeyDown,
-    children:
-      props.renderSection != null
-        ? renderCollectionSection
-        : renderCollectionItem,
+    children: props.renderSection != null ? renderCollectionSection : renderCollectionItem,
     onSelectionChange(key) {
       props.onSelectionChange(key, comboBoxState);
     },
@@ -43,9 +37,18 @@ export const ComboBox = forwardRef((props, forwardedRef) => {
     ...sharedProps,
   });
 
+  const item = comboBoxState.collection.getItem(comboBoxState.selectionManager.focusedKey);
+
+  let placeholder = props.placeholder;
+  if (item?.value.inputModeHint != null) {
+    console.log(item);
+    placeholder = item.value.inputModeHint;
+  }
+
   const comboBox = useComboBox(
     {
       ...sharedProps,
+      placeholder,
       inputRef,
       buttonRef,
       listBoxRef,
@@ -59,11 +62,7 @@ export const ComboBox = forwardRef((props, forwardedRef) => {
       {/*<ComboBox.Label {...comboBox.labelProps}>{props.label}</ComboBox.Label>*/}
       <ComboBox.InputContainer ref={overlayTargetRef}>
         <ComboBox.IconWrapper>
-          {props.isLoading ? (
-            <Spinner size="20px" />
-          ) : (
-            <SearchIcon size={vars.icon_size_small} color="#d1d2d5" />
-          )}
+          {props.isLoading ? <Spinner size="20px" /> : <SearchIcon size={vars.icon_size_small} color="#d1d2d5" />}
         </ComboBox.IconWrapper>
 
         <ComboBox.PathChunkContainer>
@@ -76,10 +75,7 @@ export const ComboBox = forwardRef((props, forwardedRef) => {
           })}
         </ComboBox.PathChunkContainer>
 
-        <ComboBox.Input
-          {...comboBox.inputProps}
-          ref={mergeRefs([inputRef, props.inputRef])}
-        />
+        <ComboBox.Input {...comboBox.inputProps} ref={mergeRefs([inputRef, props.inputRef])} />
       </ComboBox.InputContainer>
 
       <ComboBox.Hint>Type ? for help and tips</ComboBox.Hint>

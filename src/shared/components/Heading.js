@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-import { vars } from '../../theme/GlobalStyles';
+import { vars } from '../theme/GlobalStyles';
 
 export const Heading = styled.h3`
   font-weight: 700;

@@ -11,15 +11,15 @@ import {
   removeAccelerator,
 } from '../../store/acceleratorStore';
 
-import { DialogBase } from '../../components/dialog/DialogBase';
-import { DialogContent } from '../../components/dialog/DialogContent';
-import { DialogActions } from '../../components/dialog/DialogActions';
-import { DialogForm } from '../../components/dialog/DialogForm';
-import { IconButton } from '../../components/common/IconButton';
-import { CancelIcon, RemoveIcon } from '../../components/common/IconMask';
-import { AcceleratorField } from '../../components/form/AcceleratorField';
-import { Button } from '../../components/common/Button';
-import { TextField } from "../../components/form/TextField";
+import { DialogBase } from '../../../shared/components/dialog/DialogBase';
+import { DialogContent } from '../../../shared/components/dialog/DialogContent';
+import { DialogActions } from '../../../shared/components/dialog/DialogActions';
+import { DialogForm } from '../../../shared/components/dialog/DialogForm';
+import { IconButton } from '../../../shared/components/IconButton';
+import { CancelIcon, RemoveIcon } from '../../../shared/components/IconMask';
+import { AcceleratorField } from '../../../shared/components/form/AcceleratorField';
+import { Button } from '../../../shared/components/Button';
+import { TextField } from "../../../shared/components/form/TextField";
 
 export function AcceleratorDialog(props) {
   const formId = useId();

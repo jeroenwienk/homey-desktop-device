@@ -388,7 +388,7 @@ class WindowManager extends EventEmitter {
 
     store.set('commanderWindow.windowState', windowState);
 
-    let debug = false;
+    let debug = true;
 
     this.commanderWindow = new BrowserWindow({
       x: windowState.bounds.x,

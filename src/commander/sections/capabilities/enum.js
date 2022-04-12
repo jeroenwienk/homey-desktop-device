@@ -1,17 +1,20 @@
 import { store } from '../../CommanderApp';
+import { consoleManager } from '../../Console';
 
 export function makeEnumCapabilitySection({ value }) {
   const baseKey = `${value.key}-capability`;
+  const { device, capability } = value.context;
 
   function action({ input }) {
     // maybe log that action requires an input?
     store.getState().incrementLoadingCount();
-    value.device
+    device
       .setCapabilityValue({
-        capabilityId: value.capability.id,
+        capabilityId: capability.id,
         value: input,
       })
-      .catch(console.log)
+      .then(console.log)
+      .catch((error) => consoleManager.addError(error))
       .finally(() => {
         store.getState().decrementLoadingCount();
       });
@@ -20,7 +23,8 @@ export function makeEnumCapabilitySection({ value }) {
   const set = {
     key: `${baseKey}-set`,
     textValue: 'Set',
-    description: JSON.stringify(value.capability.values, null, 2),
+    // description: JSON.stringify(value.capability.values, null, 2),
+    hint: capability.values.map((value) => value.id).join(','),
     action: action,
   };
 

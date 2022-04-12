@@ -1,11 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import { useOptionContext } from './ListBox';
+import { useOptionContext } from '../shared/components/ListBox';
 
-// import { vars } from '../../theme/GlobalStyles';
-
-import { Icon } from './Icon';
+import { Icon } from '../shared/components/Icon';
 
 // import iconExpandable from '../../../assets/status/expandable.svg';
 

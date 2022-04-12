@@ -6,10 +6,10 @@ import { useHover } from 'react-aria';
 import { OVERLAY } from '../shared/events';
 import { displayStore } from './overlay';
 
-import { vars } from '../renderer/theme/GlobalStyles';
+import { vars } from '../shared/theme/GlobalStyles';
 
-import { IconButton } from '../renderer/components/common/IconButton';
-import { DragIcon, SettingsIcon } from '../renderer/components/common/IconMask';
+import { IconButton } from '../shared/components/IconButton';
+import { DragIcon, SettingsIcon } from '../shared/components/IconMask';
 
 export function App() {
   const texts = displayStore((state) => state.texts);

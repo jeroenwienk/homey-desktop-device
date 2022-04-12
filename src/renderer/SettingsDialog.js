@@ -8,15 +8,15 @@ import { useId } from 'react-aria';
 import { history } from './memoryHistory';
 import { setSettings, useSettings } from './store/settingStore';
 
-import { DialogBase } from './components/dialog/DialogBase';
-import { DialogActions } from './components/dialog/DialogActions';
-import { DialogContent } from './components/dialog/DialogContent';
-import { DialogForm } from './components/dialog/DialogForm';
-import { IconButton } from './components/common/IconButton';
-import { CancelIcon } from './components/common/IconMask';
+import { DialogBase } from '../shared/components/dialog/DialogBase';
+import { DialogActions } from '../shared/components/dialog/DialogActions';
+import { DialogContent } from '../shared/components/dialog/DialogContent';
+import { DialogForm } from '../shared/components/dialog/DialogForm';
+import { IconButton } from '../shared/components/IconButton';
+import { CancelIcon } from '../shared/components/IconMask';
 // import { TextField } from './components/form/TextField';
-import { Button } from './components/common/Button';
-import { Checkbox } from './components/form/Checkbox';
+import { Button } from '../shared/components/Button';
+import { Checkbox } from '../shared/components/form/Checkbox';
 
 export function SettingsDialog(props) {
   const formId = useId();

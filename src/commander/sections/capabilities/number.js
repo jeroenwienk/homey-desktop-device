@@ -1,17 +1,20 @@
 import { store } from '../../CommanderApp';
+import { consoleManager } from "../../Console";
 
 export function makeNumberCapabilitySection({ value }) {
   const baseKey = `${value.key}-capability`;
+  const { device, capability } = value.context;
 
   function action({ input }) {
     // maybe log that action requires an input?
     store.getState().incrementLoadingCount();
-    value.device
+    device
       .setCapabilityValue({
-        capabilityId: value.capability.id,
+        capabilityId: capability.id,
         value: parseFloat(input),
       })
-      .catch(console.log)
+      .then(console.log)
+      .catch((error) => consoleManager.addError(error))
       .finally(() => {
         store.getState().decrementLoadingCount();
       });
@@ -20,9 +23,7 @@ export function makeNumberCapabilitySection({ value }) {
   const set = {
     key: `${baseKey}-set`,
     textValue: 'Set',
-    hint: `min ${value.capability.min ?? '-'}, max ${value.capability.max ?? '-'}, step ${
-      value.capability.step ?? '-'
-    }`,
+    hint: `min ${capability.min ?? '-'}, max ${capability.max ?? '-'}, step ${capability.step ?? '-'}`,
     action: action,
   };
 

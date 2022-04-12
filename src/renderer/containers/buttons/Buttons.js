@@ -10,7 +10,7 @@ import { useButtonList } from '../../store/buttonStore';
 
 import { ButtonDialog } from './ButtonDialog';
 import { ButtonEntry } from './ButtonEntry';
-import { Heading } from '../../components/common/Heading';
+import { Heading } from '../../../shared/components/Heading';
 
 export function Buttons() {
   const buttonList = useButtonList();

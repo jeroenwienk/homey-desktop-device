@@ -15,7 +15,7 @@ import {
   mergeProps,
 } from 'react-aria';
 
-import { vars } from '../../theme/GlobalStyles';
+import { vars } from '../theme/GlobalStyles';
 
 import { IconButton } from './IconButton';
 import { AddIcon } from './IconMask';

@@ -1,29 +1,10 @@
 import { defaultTextValueSort } from '../defaultTextValueSort';
 import { ipc } from '../ipc';
-
-function makeHint(capability) {
-  switch (capability.type) {
-    case 'number':
-      return `${capability.type}, min ${capability.min ?? '-'}, max ${capability.max ?? '-'}, step ${
-        capability.step ?? '-'
-      }`;
-    default:
-      return capability.type;
-  }
-}
-
-function makeDescription(capability) {
-  switch (capability.type) {
-    case 'enum':
-      return JSON.stringify(capability.values, null, 2); //<pre>{JSON.stringify(capability.values, null, 2)}</pre>;
-    default:
-      return null;
-  }
-}
+import { store } from '../CommanderApp';
+import { consoleManager } from '../Console';
 
 export function makeDeviceSections({ value }) {
   const baseKey = `${value.key}-device`;
-  console.log(value);
 
   const settingsSubPath = `?dialog=device-settings&key=${value.device.id}`;
 
@@ -217,24 +198,98 @@ export function makeDeviceSections({ value }) {
           },
         ].sort(defaultTextValueSort),
       },
-      {
-        key: keys.capabilities,
-        title: 'Capabilities',
-        children: Object.entries(value.device.capabilitiesObj)
-          .map(([capabilityId, capability]) => {
-            return {
-              key: `${keys.capabilities}-${capabilityId}`,
-              type: 'capability',
-              textValue: capability.title,
-              filter: `${capability.id} ${capability.type}`,
-              hint: makeHint(capability),
-              description: makeDescription(capability),
-              device: value.device,
-              capability,
-            };
-          })
-          .sort(defaultTextValueSort),
-      },
+      makeCapabilitiesSection({ key: keys.capabilities, value }),
     ],
+  };
+}
+
+function makeHint(capability) {
+  switch (capability.type) {
+    case 'number':
+      if (capability.setable) {
+        return `${capability.type}, min ${capability.min ?? '-'}, max ${capability.max ?? '-'}, step ${
+          capability.step ?? '-'
+        }`;
+      }
+      break;
+    case 'enum':
+      return capability.values.map((value) => value.id).join(',');
+    default:
+      return capability.type;
+  }
+}
+
+function makeDescription(capability) {
+  switch (capability.type) {
+    default:
+      return null;
+  }
+}
+
+function makeCapabilitiesSection({ key, value }) {
+  const device = value.device;
+
+  function setCapabilityValue({ capability, input }) {
+    let parsedValue = null;
+    const inputAsNum = Number(input);
+
+    switch (true) {
+      case capability.type === 'number':
+        parsedValue = Number(input);
+        break;
+      case capability.type === 'string':
+        parsedValue = String(input);
+        break;
+      case capability.type === 'boolean':
+        if (Number.isNaN(inputAsNum)) {
+          parsedValue = input === 'true';
+        } else {
+          parsedValue = Boolean(inputAsNum);
+        }
+
+        break;
+      default:
+        parsedValue = input;
+        break;
+    }
+
+    store.getState().incrementLoadingCount();
+    device
+      .setCapabilityValue({
+        capabilityId: capability.id,
+        value: parsedValue,
+      })
+      .then(console.log)
+      .catch((error) => consoleManager.addError(error))
+      .finally(() => {
+        store.getState().decrementLoadingCount();
+      });
+  }
+
+  const capabilitiesObjEntries = Object.entries(value.device.capabilitiesObj ?? {});
+
+  function mapCapability([capabilityId, capability]) {
+    return {
+      key: `${key}-${capabilityId}`,
+      type: 'capability',
+      textValue: capability.title,
+      filter: `${capability.id} ${capability.type}`,
+      hint: makeHint(capability),
+      description: makeDescription(capability),
+      inputModeHint: '! for input mode or enter to dive into',
+      context: {
+        device: device,
+        capability: capability,
+      },
+      action({ input }) {
+        setCapabilityValue({ capability, input });
+      },
+    };
+  }
+
+  return {
+    key: key,
+    title: 'Capabilities',
+    children: capabilitiesObjEntries.map(mapCapability).sort(defaultTextValueSort),
   };
 }

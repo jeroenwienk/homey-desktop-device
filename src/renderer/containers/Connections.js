@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import { vars } from '../theme/GlobalStyles';
+import { vars } from '../../shared/theme/GlobalStyles';
 
 import { useConnectionList } from '../store/connectionStore';
 

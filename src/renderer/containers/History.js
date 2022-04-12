@@ -1,10 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import { vars } from '../theme/GlobalStyles';
+import { vars } from '../../shared/theme/GlobalStyles';
 import { useHistoryList } from '../store/historyStore';
 
-import { BrowserIcon, PathIcon } from '../components/common/IconMask';
+import { BrowserIcon, PathIcon } from '../../shared/components/IconMask';
 
 const dateOptions = {
   weekday: 'short',
