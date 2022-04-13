@@ -1,6 +1,7 @@
 import { defaultTextValueSort } from '../defaultTextValueSort';
 
 import { ipc } from '../ipc';
+import { consoleManager } from '../Console';
 
 export function makeSystemSections({ value }) {
   const baseKey = `system`;
@@ -11,7 +12,9 @@ export function makeSystemSections({ value }) {
     hint: `Close window`,
     filter: ``,
     action() {
-      ipc.send({ message: 'close' });
+      ipc.send({ message: 'close' }).catch((error) => {
+        consoleManager.addError(error);
+      });
     },
   };
 
@@ -29,10 +32,11 @@ export function makeSystemSections({ value }) {
           },
         })
         .then((result) => {
-          console.log(result);
           return ipc.send({ message: 'close' });
         })
-        .catch(console.error);
+        .catch((error) => {
+          consoleManager.addError(error);
+        });
     },
   };
 
@@ -50,10 +54,11 @@ export function makeSystemSections({ value }) {
           },
         })
         .then((result) => {
-          console.log(result);
           return ipc.send({ message: 'close' });
         })
-        .catch(console.error);
+        .catch((error) => {
+          consoleManager.addError(error);
+        });
     },
   };
 
@@ -69,10 +74,11 @@ export function makeSystemSections({ value }) {
           data: {},
         })
         .then((result) => {
-          console.log(result);
           return ipc.send({ message: 'close' });
         })
-        .catch(console.error);
+        .catch((error) => {
+          consoleManager.addError(error);
+        });
     },
   };
 

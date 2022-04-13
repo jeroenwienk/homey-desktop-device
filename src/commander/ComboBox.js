@@ -39,16 +39,14 @@ export const ComboBox = forwardRef((props, forwardedRef) => {
 
   const item = comboBoxState.collection.getItem(comboBoxState.selectionManager.focusedKey);
 
-  let placeholder = props.placeholder;
+  let inputModeHint = null;
   if (item?.value.inputModeHint != null) {
-    console.log(item);
-    placeholder = item.value.inputModeHint;
+    inputModeHint = item.value.inputModeHint;
   }
 
   const comboBox = useComboBox(
     {
       ...sharedProps,
-      placeholder,
       inputRef,
       buttonRef,
       listBoxRef,
@@ -78,7 +76,10 @@ export const ComboBox = forwardRef((props, forwardedRef) => {
         <ComboBox.Input {...comboBox.inputProps} ref={mergeRefs([inputRef, props.inputRef])} />
       </ComboBox.InputContainer>
 
-      <ComboBox.Hint>Type ? for help and tips</ComboBox.Hint>
+      <ComboBox.InfoContainer>
+        <ComboBox.Hint>{inputModeHint && `! for ${inputModeHint}`}</ComboBox.Hint>
+        <ComboBox.Hint>Type ? for help and tips</ComboBox.Hint>
+      </ComboBox.InfoContainer>
 
       <ComboBox.ListBox
         {...comboBox.listBoxProps}
@@ -149,10 +150,12 @@ ComboBox.Input = styled.input`
   //}
 `;
 
-ComboBox.Hint = styled.div`
+ComboBox.Hint = styled.div``;
+
+ComboBox.InfoContainer = styled.div`
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
   height: 24px;
   color: #939496;
   font-size: 0.75rem;

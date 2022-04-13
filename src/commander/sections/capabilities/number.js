@@ -1,4 +1,4 @@
-import { store } from '../../CommanderApp';
+import { commanderManager } from '../../CommanderApp';
 import { consoleManager } from "../../Console";
 
 export function makeNumberCapabilitySection({ value }) {
@@ -7,16 +7,16 @@ export function makeNumberCapabilitySection({ value }) {
 
   function action({ input }) {
     // maybe log that action requires an input?
-    store.getState().incrementLoadingCount();
+    commanderManager.incrementLoadingCount();
     device
       .setCapabilityValue({
         capabilityId: capability.id,
         value: parseFloat(input),
       })
-      .then(console.log)
+      .then(() => {})
       .catch((error) => consoleManager.addError(error))
       .finally(() => {
-        store.getState().decrementLoadingCount();
+        commanderManager.decrementLoadingCount();
       });
   }
 
@@ -30,7 +30,7 @@ export function makeNumberCapabilitySection({ value }) {
   return [
     {
       key: baseKey,
-      title: 'Capability',
+      title: capability.title,
       children: [set],
     },
   ];

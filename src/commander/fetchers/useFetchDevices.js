@@ -1,13 +1,13 @@
 import { useEffect } from 'react';
 
-import { cacheStore, store } from '../CommanderApp';
+import { cacheStore, commanderManager } from '../CommanderApp';
 
 import { makeDevicesSections } from '../sections/devices';
 
 export function useFetchDevices({ inputValue }) {
   useEffect(() => {
     // Only start fetching if on the first path and user started typing.
-    if (inputValue.length > 0 && store.getState().path.length === 0) {
+    if (inputValue.length > 0 && commanderManager.get().path.length === 0) {
       useFetchDevices.invoke({});
     }
   }, [inputValue]);
@@ -17,22 +17,22 @@ useFetchDevices.clear = function clear() {};
 
 useFetchDevices.invoke = function invoke({ homeyId }) {
   const homeys =
-    homeyId == null
-      ? cacheStore.getState().homeys.get()
-      : { [homeyId]: cacheStore.getState().homeys.get()[homeyId] };
+    homeyId == null ? cacheStore.getState().homeys.get() : { [homeyId]: cacheStore.getState().homeys.get()[homeyId] };
 
   const state = cacheStore.getState();
   for (const [homeyId, homey] of Object.entries(homeys)) {
     const pendingKey = `${homeyId}-devices`;
 
     if (state.__pending[pendingKey] == null) {
-      store.getState().incrementLoadingCount();
+      commanderManager.incrementLoadingCount();
       state.__pending[pendingKey] = Promise.resolve()
         .then(async () => {
           const { sections, zones, devices } = await makeDevicesSections({
             value: {
               key: pendingKey,
-              homey,
+              context: {
+                homey,
+              },
             },
           });
 
@@ -77,7 +77,7 @@ useFetchDevices.invoke = function invoke({ homeyId }) {
           console.log(error);
         })
         .finally(() => {
-          store.getState().decrementLoadingCount();
+          commanderManager.decrementLoadingCount();
         });
     }
   }

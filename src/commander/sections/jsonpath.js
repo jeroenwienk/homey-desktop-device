@@ -1,5 +1,6 @@
 // import { defaultTextValueSort } from '../defaultTextValueSort';
 import { ipc } from '../ipc';
+import { consoleManager } from '../Console';
 
 export function makeJSONPathSections({ value }) {
   const baseKey = `${value.key}-jsonpath`;
@@ -12,20 +13,18 @@ export function makeJSONPathSections({ value }) {
     action({ input }) {
       Promise.resolve()
         .then(async () => {
-          try {
-            await ipc.send({
-              message: 'writeJSONPathToClipBoard',
-              data: {
-                path: input,
-                value: value.device,
-              },
-            });
-            await ipc.send({ message: 'close' });
-          } catch (error) {
-            console.log(error);
-          }
+          await ipc.send({
+            message: 'writeJSONPathToClipBoard',
+            data: {
+              path: input,
+              value: value.device,
+            },
+          });
+          await ipc.send({ message: 'close' });
         })
-        .catch(console.error);
+        .catch((error) => {
+          consoleManager.addError(error);
+        });
     },
   };
 
@@ -48,21 +47,19 @@ export function makeJSONPathSections({ value }) {
     action() {
       Promise.resolve()
         .then(async () => {
-          try {
-            const url = `https://github.com/dchester/jsonpath`;
+          const url = `https://github.com/dchester/jsonpath`;
 
-            await ipc.send({
-              message: 'openInBrowser',
-              data: {
-                url,
-              },
-            });
-            await ipc.send({ message: 'close' });
-          } catch (error) {
-            console.log(error);
-          }
+          await ipc.send({
+            message: 'openInBrowser',
+            data: {
+              url,
+            },
+          });
+          await ipc.send({ message: 'close' });
         })
-        .catch(console.error);
+        .catch((error) => {
+          consoleManager.addError(error);
+        });
     },
   };
 

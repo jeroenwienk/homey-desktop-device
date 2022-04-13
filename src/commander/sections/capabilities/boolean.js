@@ -1,5 +1,5 @@
-import { store } from '../../CommanderApp';
-import { consoleManager } from "../../Console";
+import { commanderManager } from '../../CommanderApp';
+import { consoleManager } from '../../Console';
 
 export function makeBooleanCapabilitySection({ value }) {
   const baseKey = `${value.key}-capability`;
@@ -9,7 +9,7 @@ export function makeBooleanCapabilitySection({ value }) {
     key: `${baseKey}-toggle`,
     textValue: 'Toggle',
     action() {
-      store.getState().incrementLoadingCount();
+      commanderManager.incrementLoadingCount();
       device.homey.devices
         .getDevice({ id: device.id })
         .then((device) => {
@@ -18,10 +18,10 @@ export function makeBooleanCapabilitySection({ value }) {
             value: device.capabilitiesObj[capability.id].value !== true,
           });
         })
-        .then(console.log)
+        .then(() => {})
         .catch((error) => consoleManager.addError(error))
         .finally(() => {
-          store.getState().decrementLoadingCount();
+          commanderManager.decrementLoadingCount();
         });
     },
   };
@@ -30,16 +30,16 @@ export function makeBooleanCapabilitySection({ value }) {
     key: `${baseKey}-true`,
     textValue: 'On',
     action() {
-      store.getState().incrementLoadingCount();
+      commanderManager.incrementLoadingCount();
 
       device
         .setCapabilityValue({
           capabilityId: capability.id,
           value: true,
         })
-        .catch(console.log)
+        .then(() => {})
         .finally(() => {
-          store.getState().decrementLoadingCount();
+          commanderManager.decrementLoadingCount();
         });
     },
   };
@@ -48,16 +48,16 @@ export function makeBooleanCapabilitySection({ value }) {
     key: `${baseKey}-false`,
     textValue: 'Off',
     action() {
-      store.getState().incrementLoadingCount();
+      commanderManager.incrementLoadingCount();
 
       device
         .setCapabilityValue({
           capabilityId: capability.id,
           value: false,
         })
-        .catch(console.log)
+        .then(() => {})
         .finally(() => {
-          store.getState().decrementLoadingCount();
+          commanderManager.decrementLoadingCount();
         });
     },
   };
@@ -65,7 +65,7 @@ export function makeBooleanCapabilitySection({ value }) {
   return [
     {
       key: baseKey,
-      title: 'Capability',
+      title: capability.title,
       children: [toggle, on, off],
     },
   ];

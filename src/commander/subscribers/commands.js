@@ -1,14 +1,13 @@
-import { ipcRenderer } from 'electron';
-
 import { useEffect } from 'react';
 
 import { debounce } from '../../shared/debounce';
-import { events } from '../../shared/events';
 
+import { ipc } from '../ipc';
 import { commandStore } from '../commander';
-import { store } from '../CommanderApp';
+import { commanderManager } from '../CommanderApp';
+import { consoleManager } from '../Console';
 
-export function useCommands({ cacheStore, setExecutionState }) {
+export function useCommands({ cacheStore }) {
   useEffect(() => {
     const options = { fireImmediately: true };
 
@@ -22,38 +21,23 @@ export function useCommands({ cacheStore, setExecutionState }) {
 
         for (const [index, entry] of commandsResult.arguments.entries()) {
           function run({ input }) {
-            store.getState().incrementLoadingCount();
-            setExecutionState({
-              type: 'loading',
-              data: null,
-            });
+            commanderManager.incrementLoadingCount();
 
-            ipcRenderer
-              .invoke(events.SEND_COMMAND, {
+            ipc
+              .send({
+                message: 'sendCommand',
                 data: {
                   homeyId: homeyId,
                   command: entry.command,
                   input: input,
                 },
               })
-              .then((result) => {
-                console.log(result);
-
-                setExecutionState({
-                  type: 'success',
-                  data: result,
-                });
-              })
+              .then(() => {})
               .catch((error) => {
-                console.error(error);
-
-                setExecutionState({
-                  type: 'error',
-                  data: error,
-                });
+                consoleManager.addError(error);
               })
               .finally(() => {
-                store.getState().decrementLoadingCount();
+                commanderManager.decrementLoadingCount();
               });
           }
 
@@ -63,10 +47,12 @@ export function useCommands({ cacheStore, setExecutionState }) {
             textValue: entry.command,
             hint: entry.hint,
             action: run,
-            command: {
-              ...entry,
-              run,
-            },
+            context: {
+              command: {
+                ...entry,
+                run,
+              },
+            }
           });
         }
 
@@ -104,5 +90,5 @@ export function useCommands({ cacheStore, setExecutionState }) {
     return function () {
       unsubscribe();
     };
-  }, [cacheStore, setExecutionState]);
+  }, [cacheStore]);
 }

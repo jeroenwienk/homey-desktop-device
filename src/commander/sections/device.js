@@ -1,18 +1,19 @@
 import { defaultTextValueSort } from '../defaultTextValueSort';
 import { ipc } from '../ipc';
-import { store } from '../CommanderApp';
+import { commanderManager } from '../CommanderApp';
 import { consoleManager } from '../Console';
 
 export function makeDeviceSections({ value }) {
   const baseKey = `${value.key}-device`;
+  const { device } = value.context;
 
-  const settingsSubPath = `?dialog=device-settings&key=${value.device.id}`;
+  const settingsSubPath = `?dialog=device-settings&key=${device.id}`;
 
   function openDeviceInWindowAction({ subPath } = {}) {
     Promise.resolve()
       .then(async () => {
         try {
-          const path = `/homeys/${value.device.homey.id}/devices/${value.device.id}${subPath ?? ''}`;
+          const path = `/homeys/${device.homey.id}/devices/${device.id}${subPath ?? ''}`;
 
           await ipc.send({
             message: 'openInWindow',
@@ -32,7 +33,7 @@ export function makeDeviceSections({ value }) {
     Promise.resolve()
       .then(async () => {
         try {
-          const url = `https://my.homey.app/homeys/${value.device.homey.id}/devices/${value.device.id}${subPath ?? ''}`;
+          const url = `https://my.homey.app/homeys/${device.homey.id}/devices/${device.id}${subPath ?? ''}`;
 
           await ipc.send({
             message: 'openInBrowser',
@@ -55,7 +56,7 @@ export function makeDeviceSections({ value }) {
           // TODO
           // throw or dont show option on virtual devices
 
-          const appId = value.device.driverUri?.substring('homey:app:'.length);
+          const appId = device.driverUri?.substring('homey:app:'.length);
           const url = `https://homey.app/a/${appId}`;
 
           await ipc.send({
@@ -135,7 +136,7 @@ export function makeDeviceSections({ value }) {
                       message: 'writeJSONPathToClipBoard',
                       data: {
                         path: '$.id',
-                        value: value.device,
+                        value: device,
                       },
                     });
                     await ipc.send({ message: 'close' });
@@ -159,7 +160,7 @@ export function makeDeviceSections({ value }) {
                       message: 'writeJSONPathToClipBoard',
                       data: {
                         path: '$',
-                        value: value.device,
+                        value: device,
                       },
                     });
                     await ipc.send({ message: 'close' });
@@ -184,7 +185,7 @@ export function makeDeviceSections({ value }) {
                       message: 'writeJSONPathToClipBoard',
                       data: {
                         path: input,
-                        value: value.device,
+                        value: device,
                       },
                     });
                     await ipc.send({ message: 'close' });
@@ -194,7 +195,7 @@ export function makeDeviceSections({ value }) {
                 })
                 .catch(console.error);
             },
-            device: value.device, // passing for jsonpath type
+            device: device, // passing for jsonpath type
           },
         ].sort(defaultTextValueSort),
       },
@@ -227,7 +228,7 @@ function makeDescription(capability) {
 }
 
 function makeCapabilitiesSection({ key, value }) {
-  const device = value.device;
+  const device = value.context.device;
 
   function setCapabilityValue({ capability, input }) {
     let parsedValue = null;
@@ -253,20 +254,20 @@ function makeCapabilitiesSection({ key, value }) {
         break;
     }
 
-    store.getState().incrementLoadingCount();
+    commanderManager.incrementLoadingCount();
     device
       .setCapabilityValue({
         capabilityId: capability.id,
         value: parsedValue,
       })
-      .then(console.log)
+      .then(() => {})
       .catch((error) => consoleManager.addError(error))
       .finally(() => {
-        store.getState().decrementLoadingCount();
+        commanderManager.decrementLoadingCount();
       });
   }
 
-  const capabilitiesObjEntries = Object.entries(value.device.capabilitiesObj ?? {});
+  const capabilitiesObjEntries = Object.entries(device.capabilitiesObj ?? {});
 
   function mapCapability([capabilityId, capability]) {
     return {
@@ -276,7 +277,7 @@ function makeCapabilitiesSection({ key, value }) {
       filter: `${capability.id} ${capability.type}`,
       hint: makeHint(capability),
       description: makeDescription(capability),
-      inputModeHint: '! for input mode or enter to dive into',
+      inputModeHint: 'input mode',
       context: {
         device: device,
         capability: capability,

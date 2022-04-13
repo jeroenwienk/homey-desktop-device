@@ -1,11 +1,13 @@
 import { defaultTextValueSort } from '../defaultTextValueSort';
-import { store } from '../CommanderApp';
+import { commanderManager } from '../CommanderApp';
+import { consoleManager } from '../Console';
 
 export async function makeDevicesSections({ value }) {
   const baseKey = `${value.key}-devices`;
+  const { homey } = value.context;
 
-  const devices = await value.homey.api.devices.getDevices();
-  const zones = await value.homey.api.zones.getZones();
+  const devices = await homey.api.devices.getDevices();
+  const zones = await homey.api.zones.getZones();
 
   return {
     devices,
@@ -24,11 +26,12 @@ export async function makeDevicesSections({ value }) {
               textValue: zone != null ? `${zone.name} - ${device.name}` : `${device.name}`,
               hint: device.virtualClass ?? device.class,
               filter: `${device.virtualClass ?? device.class}`,
+              inputModeHint: 'quick action',
               action({ input }) {
                 Promise.resolve()
                   .then(async () => {
                     try {
-                      store.getState().incrementLoadingCount();
+                      commanderManager.incrementLoadingCount();
                       // await device.connect();
 
                       if (device.ui.quickAction == null) return;
@@ -48,21 +51,23 @@ export async function makeDevicesSections({ value }) {
                         nextValue = true;
                       }
 
-                      const result = await device.setCapabilityValue({
+                      await device.setCapabilityValue({
                         capabilityId: capabilityId,
                         value: nextValue,
                       });
-
-                      console.log(result);
                     } catch (error) {
-                      console.log(error);
+                      consoleManager.addError(error);
                     } finally {
-                      store.getState().decrementLoadingCount();
+                      commanderManager.decrementLoadingCount();
                     }
                   })
-                  .catch(console.error);
+                  .catch((error) => {
+                    consoleManager.addError(error);
+                  });
               },
-              device,
+              context: {
+                device,
+              },
             };
           })
           .sort(defaultTextValueSort),

@@ -1,14 +1,15 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import styled, { keyframes } from 'styled-components';
 import create from 'zustand';
 import { persist } from 'zustand/middleware';
 import { subscribeWithSelector } from 'zustand/middleware';
 import { v4 as uuid } from 'uuid';
 
+import { vars } from '../shared/theme/GlobalStyles';
+
 import { IconButton } from '../shared/components/IconButton';
 
 import { iconClear } from '../assets/actions/clear';
-import { vars } from '../shared/theme/GlobalStyles';
 
 export const consoleManager = new (class ConsoleManager {
   constructor() {
@@ -48,6 +49,8 @@ export const consoleManager = new (class ConsoleManager {
           entries: nextEntries,
         };
       });
+    } else {
+      console.log(error);
     }
   }
 
@@ -61,12 +64,7 @@ export const consoleManager = new (class ConsoleManager {
 })();
 
 export function Console() {
-  const isNotInitialRender = useRef(false);
   const state = consoleManager.store();
-
-  useEffect(() => {
-    isNotInitialRender.current = true;
-  }, []);
 
   function handleClearPress() {
     consoleManager.clear();

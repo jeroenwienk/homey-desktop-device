@@ -1,7 +1,8 @@
 import { v4 as uuid } from 'uuid';
 
-import { defaultTextValueSort } from '../defaultTextValueSort';
 import { ipc } from '../ipc';
+import { consoleManager } from '../Console';
+import { defaultTextValueSort } from '../defaultTextValueSort';
 
 export function makeHomeySections({ value }) {
   const baseKey = `${value.key}-homey`;
@@ -13,43 +14,39 @@ export function makeHomeySections({ value }) {
   function openInWindowAction({ subPath, state } = {}) {
     Promise.resolve()
       .then(async () => {
-        try {
-          const path = `/homeys/${value.homey.id}${subPath ?? ''}`;
+        const path = `/homeys/${value.homey.id}${subPath ?? ''}`;
 
-          await ipc.send({
-            message: 'openInWindow',
-            data: {
-              path,
-              state,
-            },
-          });
-          await ipc.send({ message: 'close' });
-        } catch (error) {
-          console.log(error);
-        }
+        await ipc.send({
+          message: 'openInWindow',
+          data: {
+            path,
+            state,
+          },
+        });
+        await ipc.send({ message: 'close' });
       })
-      .catch(console.error);
+      .catch((error) => {
+        consoleManager.addError(error);
+      });
   }
 
   function openInBrowserAction({ subPath, state } = {}) {
     Promise.resolve()
       .then(async () => {
-        try {
-          const url = `https://my.homey.app/homeys/${value.homey.id}${subPath ?? ''}`;
+        const url = `https://my.homey.app/homeys/${value.homey.id}${subPath ?? ''}`;
 
-          await ipc.send({
-            message: 'openInBrowser',
-            data: {
-              url,
-              state,
-            },
-          });
-          await ipc.send({ message: 'close' });
-        } catch (error) {
-          console.log(error);
-        }
+        await ipc.send({
+          message: 'openInBrowser',
+          data: {
+            url,
+            state,
+          },
+        });
+        await ipc.send({ message: 'close' });
       })
-      .catch(console.error);
+      .catch((error) => {
+        consoleManager.addError(error);
+      });
   }
 
   return {

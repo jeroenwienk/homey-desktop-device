@@ -40,20 +40,6 @@ function initIpcMainHandlers() {
     return { version: app.getVersion() };
   });
 
-  ipcMain.handle(events.SEND_COMMAND, async (event, args) => {
-    const connected = await serverSocket.getConnected();
-
-    // Should only be one.
-    for (const socket of connected) {
-      if (serverSocket.getHomeyId(socket) === args.data.homeyId) {
-        return serverSocket.send(socket, {
-          event: events.SEND_COMMAND,
-          args: args,
-        });
-      }
-    }
-  });
-
   ipcMain.handle(events.ON_COMMANDER_WINDOW_MESSAGE, async (event, args) => {
     const { message, data } = args;
 
@@ -115,6 +101,21 @@ function initIpcMainHandlers() {
         } else {
           clipboard.writeText(JSON.stringify(result, null, 2));
         }
+        break;
+      }
+      case 'sendCommand': {
+        const connected = await serverSocket.getConnected();
+
+        // Should only be one.
+        for (const socket of connected) {
+          if (serverSocket.getHomeyId(socket) === data.homeyId) {
+            return serverSocket.send(socket, {
+              event: events.SEND_COMMAND,
+              args: { data },
+            });
+          }
+        }
+
         break;
       }
       default:

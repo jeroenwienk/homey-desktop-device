@@ -15,7 +15,7 @@ import { useCacheSubscriber } from './subscribers/useCacheSubscriber';
 import { useFetchDevices } from './fetchers/useFetchDevices';
 
 import { filterNodes } from './filterNodes';
-import { makeCapabilitySections } from './sections/capabilities/capabilities';
+import { makeCapabilitySections } from './sections/capabilities/capability';
 import { makeDeviceSections } from './sections/device';
 import { makeHelpSections } from './sections/help';
 import { makeHomeySections } from './sections/homey';
@@ -23,7 +23,7 @@ import { makeJSONPathSections } from './sections/jsonpath';
 
 import { Console } from './Console';
 import { DragIcon } from '../shared/components/IconMask';
-import { Item } from "./Item";
+import { Item } from './Item';
 import { Section } from '../shared/components/Section';
 import { ComboBox } from './ComboBox';
 
@@ -39,31 +39,45 @@ export const cacheStore = create(
   })
 );
 
-export const store = create(
-  subscribeWithSelector((set, get, api) => {
-    return {
-      isSearchLocked: false,
-      placeholder: 'Search...',
-      path: [],
-      sections: [],
-      loadingCount: 0,
-      incrementLoadingCount() {
-        if (get().loadingCount > 0) {
-          get().loadingCount = get().loadingCount + 1;
-        } else {
-          set({ loadingCount: get().loadingCount + 1 });
-        }
-      },
-      decrementLoadingCount() {
-        if (get().loadingCount > 1) {
-          get().loadingCount = get().loadingCount - 1;
-        } else {
-          set({ loadingCount: get().loadingCount - 1 });
-        }
-      },
-    };
-  })
-);
+export const commanderManager = new (class CommanderManager {
+  constructor() {
+    this.store = create(
+      subscribeWithSelector((set, get, api) => {
+        return {
+          isSearchLocked: false,
+          placeholder: 'Search...',
+          path: [],
+          sections: [],
+          loadingCount: 0,
+        };
+      })
+    );
+  }
+
+  get() {
+    return this.store.getState();
+  }
+
+  set(state) {
+    this.store.setState(state);
+  }
+
+  incrementLoadingCount() {
+    if (this.get().loadingCount > 0) {
+      this.get().loadingCount = this.get().loadingCount + 1;
+    } else {
+      this.set({ loadingCount: this.get().loadingCount + 1 });
+    }
+  }
+
+  decrementLoadingCount() {
+    if (this.get().loadingCount > 1) {
+      this.get().loadingCount = this.get().loadingCount - 1;
+    } else {
+      this.set({ loadingCount: this.get().loadingCount - 1 });
+    }
+  }
+})();
 
 export function CommanderApp() {
   const comboBoxRef = useRef();
@@ -85,12 +99,11 @@ export function CommanderApp() {
     return <Section />;
   }
 
-  const state = store();
+  const state = commanderManager.store();
   const isLoading = state.loadingCount > 0;
 
   const [inputValue, setInputValue] = useState('');
   const [selectedKey, setSelectedKey] = useState(null);
-  const [executionState, setExecutionState] = useState({ type: null });
 
   const [forcedUpdate, forceUpdate] = useState({});
   const cacheRef = useRef({});
@@ -98,7 +111,7 @@ export function CommanderApp() {
   const sections = useSectionBuilder({ cacheRef, state, forcedUpdate });
 
   useHomeys({ cacheStore });
-  useCommands({ cacheStore, setExecutionState });
+  useCommands({ cacheStore });
 
   useCacheSubscriber({ key: 'homeys', cacheRef, forceUpdate });
   useCacheSubscriber({ key: 'commands', cacheRef, forceUpdate });
@@ -173,9 +186,9 @@ export function CommanderApp() {
         break;
     }
 
-    const currentState = store.getState();
+    const currentState = commanderManager.get();
 
-    store.setState({
+    commanderManager.set({
       ...next,
       path: [
         ...currentState.path,
@@ -222,7 +235,7 @@ export function CommanderApp() {
 
           if (currentPathItem == null) return;
 
-          store.setState({
+          commanderManager.set({
             path: nextPath,
             sections: nextPath[nextPath.length - 1]?.sections ?? [],
             placeholder: nextPath[nextPath.length - 1]?.placeholder ?? '',
@@ -390,7 +403,6 @@ export function CommanderApp() {
             items={filteredSections}
             inputValue={inputValue}
             selectedKey={selectedKey}
-            executionState={executionState}
             isLoading={isLoading}
             renderItem={renderItem}
             renderSection={renderSection}
