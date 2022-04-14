@@ -327,7 +327,7 @@ function registerAccelerators(accelerators) {
   accelerators.forEach((accelerator) => {
     try {
       const ret = globalShortcut.register(accelerator.keys.replaceAll(' ', '+'), () => {
-        windowManager.sendToMainWindow(MAIN.ACCELERATOR_TEST, {
+        windowManager.send(windowManager.mainWindow, MAIN.ACCELERATOR_TEST, {
           id: accelerator.id,
         });
 
@@ -372,7 +372,7 @@ async function handleDisplayRemove(event, args) {
 
 async function emitDisplaySync(event) {
   const displays = await db.getDisplays();
-  windowManager.sendToOverlayWindow(MAIN.DISPLAYS_INIT, displays);
+  windowManager.send(windowManager.overlayWindow, MAIN.DISPLAYS_INIT, displays);
   serverSocket.io.emit(events.DISPLAYS_SYNC, { displays });
 }
 

@@ -59,7 +59,7 @@ class ServerSocket {
       next();
     });
 
-    windowManager.once('main-window-dom-ready', (event) => {
+    windowManager.once('mainWindow-dom-ready', (event) => {
       this.listen();
     });
   }
@@ -76,13 +76,13 @@ class ServerSocket {
     console.log('connect:', socket.id);
 
     this.getConnections().then((result) => {
-      windowManager.sendToMainWindow(MAIN.SOCKETS_INIT, result);
+      windowManager.send(windowManager.mainWindow, MAIN.SOCKETS_INIT, result);
     });
 
     socket.on('disconnect', (reason) => {
       console.log('disconnect:', reason);
       this.getConnections().then((result) => {
-        windowManager.sendToMainWindow(MAIN.SOCKETS_INIT, result);
+        windowManager.send(windowManager.mainWindow, MAIN.SOCKETS_INIT, result);
       });
     });
 
@@ -167,7 +167,7 @@ class ServerSocket {
         date: new Date(),
       });
 
-      windowManager.sendToMainWindow(MAIN.HISTORY_PUSH, historyEntry);
+      windowManager.send(windowManager.mainWindow, MAIN.HISTORY_PUSH, historyEntry);
       await shell.openExternal(data.url);
       callback();
     } catch (error) {
@@ -184,7 +184,7 @@ class ServerSocket {
         date: new Date(),
       });
 
-      windowManager.sendToMainWindow(MAIN.HISTORY_PUSH, historyEntry);
+      windowManager.send(windowManager.mainWindow, MAIN.HISTORY_PUSH, historyEntry);
       await shell.openPath(data.path);
       callback();
     } catch (error) {
@@ -255,7 +255,7 @@ class ServerSocket {
           break;
       }
 
-      windowManager.sendToMainWindow(MAIN.HISTORY_PUSH, historyEntry);
+      windowManager.send(windowManager.mainWindow, MAIN.HISTORY_PUSH, historyEntry);
       callback();
     } catch (error) {
       console.error(error);
@@ -366,7 +366,7 @@ class ServerSocket {
   async handleDisplaySet(data, callback) {
     try {
       await db.updateDisplay(data.display.id, { text: data.text });
-      windowManager.sendToOverlayWindow(MAIN.DISPLAY_SET, data);
+      windowManager.send(windowManager.overlayWindow, MAIN.DISPLAY_SET, data);
       callback();
     } catch (error) {
       console.error(error);

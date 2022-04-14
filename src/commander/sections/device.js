@@ -131,20 +131,16 @@ export function makeDeviceSections({ value }) {
             action() {
               Promise.resolve()
                 .then(async () => {
-                  try {
-                    await ipc.send({
-                      message: 'writeJSONPathToClipBoard',
-                      data: {
-                        path: '$.id',
-                        value: device,
-                      },
-                    });
-                    await ipc.send({ message: 'close' });
-                  } catch (error) {
-                    console.log(error);
-                  }
+                  await ipc.send({
+                    message: 'writeJSONPathToClipBoard',
+                    data: {
+                      path: '$.id',
+                      value: device,
+                    },
+                  });
+                  await ipc.send({ message: 'close' });
                 })
-                .catch(console.error);
+                .catch((error) => consoleManager.addError(error));
             },
           },
           {
@@ -155,20 +151,16 @@ export function makeDeviceSections({ value }) {
             action() {
               Promise.resolve()
                 .then(async () => {
-                  try {
-                    await ipc.send({
-                      message: 'writeJSONPathToClipBoard',
-                      data: {
-                        path: '$',
-                        value: device,
-                      },
-                    });
-                    await ipc.send({ message: 'close' });
-                  } catch (error) {
-                    console.log(error);
-                  }
+                  await ipc.send({
+                    message: 'writeJSONPathToClipBoard',
+                    data: {
+                      path: '$',
+                      value: device,
+                    },
+                  });
+                  await ipc.send({ message: 'close' });
                 })
-                .catch(console.error);
+                .catch((error) => consoleManager.addError(error));
             },
           },
           {
@@ -180,20 +172,16 @@ export function makeDeviceSections({ value }) {
             action({ input }) {
               Promise.resolve()
                 .then(async () => {
-                  try {
-                    await ipc.send({
-                      message: 'writeJSONPathToClipBoard',
-                      data: {
-                        path: input,
-                        value: device,
-                      },
-                    });
-                    await ipc.send({ message: 'close' });
-                  } catch (error) {
-                    console.log(error);
-                  }
+                  await ipc.send({
+                    message: 'writeJSONPathToClipBoard',
+                    data: {
+                      path: input,
+                      value: device,
+                    },
+                  });
+                  await ipc.send({ message: 'close' });
                 })
-                .catch(console.error);
+                .catch((error) => consoleManager.addError(error));
             },
             device: device, // passing for jsonpath type
           },

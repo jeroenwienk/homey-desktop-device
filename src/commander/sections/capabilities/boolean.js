@@ -38,6 +38,7 @@ export function makeBooleanCapabilitySection({ value }) {
           value: true,
         })
         .then(() => {})
+        .catch((error) => consoleManager.addError(error))
         .finally(() => {
           commanderManager.decrementLoadingCount();
         });
@@ -56,6 +57,7 @@ export function makeBooleanCapabilitySection({ value }) {
           value: false,
         })
         .then(() => {})
+        .catch((error) => consoleManager.addError(error))
         .finally(() => {
           commanderManager.decrementLoadingCount();
         });
