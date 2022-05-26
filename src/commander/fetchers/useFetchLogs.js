@@ -3,31 +3,31 @@ import { useEffect } from 'react';
 import { commander } from '../CommanderApp';
 import { cache } from '../cache';
 
-import { makeDevicesSections } from '../sections/devices';
+import { makeInsightsSections } from '../sections/insights';
 
-export function useFetchDevices({ inputValue }) {
+export function useFetchLogs({ inputValue }) {
   useEffect(() => {
     // Only start fetching if on the first path and user started typing.
     if (inputValue.length > 0 && commander.get().path.length === 0) {
-      useFetchDevices.invoke({});
+      useFetchLogs.invoke({});
     }
   }, [inputValue]);
 }
 
-useFetchDevices.clear = () => {};
+useFetchLogs.clear = () => {};
 
-useFetchDevices.invoke = ({ homeyId }) => {
+useFetchLogs.invoke = ({ homeyId }) => {
   const homeys = homeyId == null ? cache.get().homeys.get() : { [homeyId]: cache.get().homeys.get()[homeyId] };
 
   const state = cache.get();
   for (const [homeyId, homey] of Object.entries(homeys)) {
-    const pendingKey = `${homeyId}-devices`;
+    const pendingKey = `${homeyId}-logs`;
 
     if (state.__pending[pendingKey] == null) {
       commander.incrementLoadingCount();
       state.__pending[pendingKey] = Promise.resolve()
         .then(async () => {
-          const { sections, zones, devices } = await makeDevicesSections({
+          const { sections, logs } = await makeInsightsSections({
             value: {
               key: pendingKey,
               context: {
@@ -36,38 +36,22 @@ useFetchDevices.invoke = ({ homeyId }) => {
             },
           });
 
-          const nextDeviceSourcesByHomeyId = {
-            ...cache.get().devices?.sourcesbyHomeyId,
+          const nextLogSourcesByHomeyId = {
+            ...cache.get().logs?.sourcesbyHomeyId,
             [homeyId]: {
-              ...devices,
+              ...logs,
             },
           };
 
-          const nextDeviceSectionsByHomeyId = {
-            ...cache.get().devices?.sectionsByHomeyId,
+          const nextLogSectionsByHomeyId = {
+            ...cache.get().logs?.sectionsByHomeyId,
             [homeyId]: sections,
           };
 
-          const nextZoneSourcesByHomeyId = {
-            ...cache.get().zones?.sourcesbyHomeyId,
-            [homeyId]: {
-              ...zones,
-            },
-          };
-
-          const nextZoneSectionsByHomeyId = {
-            ...cache.get().zones?.sectionsByHomeyId,
-            [homeyId]: [], // TODO
-          };
-
           cache.set({
-            devices: {
-              sourcesbyHomeyId: nextDeviceSourcesByHomeyId,
-              sectionsByHomeyId: nextDeviceSectionsByHomeyId,
-            },
-            zones: {
-              sourcesbyHomeyId: nextZoneSourcesByHomeyId,
-              sectionsByHomeyId: nextZoneSectionsByHomeyId,
+            logs: {
+              sourcesbyHomeyId: nextLogSourcesByHomeyId,
+              sectionsByHomeyId: nextLogSectionsByHomeyId,
             },
           });
 

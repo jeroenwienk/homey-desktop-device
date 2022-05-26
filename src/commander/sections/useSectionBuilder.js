@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 
 import { useFetchDevices } from '../fetchers/useFetchDevices';
 import { makeSystemSections } from './system';
+import { useFetchLogs } from '../fetchers/useFetchLogs';
 
 export function useSectionBuilder({ cacheRef, state, forcedUpdate }) {
   const sections = useMemo(() => {
@@ -57,6 +58,24 @@ export function useSectionBuilder({ cacheRef, state, forcedUpdate }) {
           });
         }
 
+        if (cache.logs != null) {
+          const sectionsByHomeyId = cache.logs.sectionsByHomeyId;
+          const collectedSectionChildren = [];
+
+          // eslint-disable-next-line no-unused-vars
+          for (const [homeyId, sections] of Object.entries(sectionsByHomeyId)) {
+            for (const section of sections) {
+              collectedSectionChildren.push(section.children);
+            }
+          }
+
+          result.push({
+            key: 'logs',
+            title: 'Logs',
+            children: Array.prototype.concat.apply([], collectedSectionChildren),
+          });
+        }
+
         if (true) {
           const { sections } = makeSystemSections({});
           result = Array.prototype.concat.apply(result, sections);
@@ -78,6 +97,12 @@ export function useSectionBuilder({ cacheRef, state, forcedUpdate }) {
         useFetchDevices.invoke({ homeyId: pathChunk.key });
         if (cache.devices != null) {
           const sections = cache.devices.sectionsByHomeyId[pathChunk.key];
+          result = Array.prototype.concat.apply(result, sections);
+        }
+
+        useFetchLogs.invoke({ homeyId: pathChunk.key });
+        if (cache.logs != null) {
+          const sections = cache.logs.sectionsByHomeyId[pathChunk.key];
           result = Array.prototype.concat.apply(result, sections);
         }
 

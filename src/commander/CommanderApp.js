@@ -7,17 +7,18 @@ import { subscribeWithSelector } from 'zustand/middleware';
 import { useFilter } from 'react-aria';
 
 import { ipc } from './ipc';
+import { cache } from './cache';
 
 import { useSectionBuilder } from './sections/useSectionBuilder';
 import { useHomeys } from './subscribers/homeys';
 import { useCommands } from './subscribers/commands';
 import { useCacheSubscriber } from './subscribers/useCacheSubscriber';
 import { useFetchDevices } from './fetchers/useFetchDevices';
+import { useFetchLogs } from './fetchers/useFetchLogs';
 
 import { filterNodes } from './filterNodes';
 import { makeCapabilitySections } from './sections/capabilities/capability';
 import { makeDeviceSections } from './sections/device';
-import { makeHelpSections } from './sections/help';
 import { makeHomeySections } from './sections/homey';
 import { makeJSONPathSections } from './sections/jsonpath';
 
@@ -27,19 +28,7 @@ import { Item } from './Item';
 import { Section } from '../shared/components/Section';
 import { ComboBox } from './ComboBox';
 
-export const cacheStore = create(
-  subscribeWithSelector((set, get, api) => {
-    return {
-      __pending: {},
-      __timeout: null,
-      help: {
-        ...makeHelpSections({ value: null }),
-      },
-    };
-  })
-);
-
-export const commanderManager = new (class CommanderManager {
+export const commander = new (class Commander {
   constructor() {
     this.store = create(
       subscribeWithSelector((set, get, api) => {
@@ -99,7 +88,7 @@ export function CommanderApp() {
     return <Section />;
   }
 
-  const state = commanderManager.store();
+  const state = commander.store();
   const isLoading = state.loadingCount > 0;
 
   const [inputValue, setInputValue] = useState('');
@@ -110,14 +99,16 @@ export function CommanderApp() {
 
   const sections = useSectionBuilder({ cacheRef, state, forcedUpdate });
 
-  useHomeys({ cacheStore });
-  useCommands({ cacheStore });
+  useHomeys();
+  useCommands();
 
   useCacheSubscriber({ key: 'homeys', cacheRef, forceUpdate });
   useCacheSubscriber({ key: 'commands', cacheRef, forceUpdate });
   useCacheSubscriber({ key: 'devices', cacheRef, forceUpdate });
+  useCacheSubscriber({ key: 'logs', cacheRef, forceUpdate });
 
   useFetchDevices({ inputValue });
+  useFetchLogs({ inputValue });
 
   async function setNext({ key, value }) {
     let next = {
@@ -186,9 +177,9 @@ export function CommanderApp() {
         break;
     }
 
-    const currentState = commanderManager.get();
+    const currentState = commander.get();
 
-    commanderManager.set({
+    commander.set({
       ...next,
       path: [
         ...currentState.path,
@@ -235,7 +226,7 @@ export function CommanderApp() {
 
           if (currentPathItem == null) return;
 
-          commanderManager.set({
+          commander.set({
             path: nextPath,
             sections: nextPath[nextPath.length - 1]?.sections ?? [],
             placeholder: nextPath[nextPath.length - 1]?.placeholder ?? '',
@@ -340,7 +331,7 @@ export function CommanderApp() {
     const questionIndex = inputValue.indexOf('?');
 
     if (questionIndex === 0) {
-      const helpSections = cacheStore.getState().help.sections;
+      const helpSections = cache.get().help.sections;
       const filter = filterPart.substring(1);
 
       return filterNodes(helpSections, filter, typeFilter, instanceRef.current.defaultFilter);

@@ -2,11 +2,12 @@ import { useEffect } from 'react';
 
 import { debounce } from '../../shared/debounce';
 
-import { apiStore } from '../commander';
+import { apiStore } from '../index';
+import { cache } from '../cache';
 
 import { defaultTextValueSort } from '../defaultTextValueSort';
 
-export function useHomeys({ cacheStore }) {
+export function useHomeys() {
   useEffect(() => {
     const options = { fireImmediately: true };
 
@@ -26,7 +27,7 @@ export function useHomeys({ cacheStore }) {
         })
         .sort(defaultTextValueSort);
 
-      cacheStore.setState({
+      cache.set({
         homeys: {
           get() {
             return apiStore.getState();
@@ -47,5 +48,5 @@ export function useHomeys({ cacheStore }) {
     return function () {
       unsubscribe();
     };
-  }, [cacheStore]);
+  }, []);
 }

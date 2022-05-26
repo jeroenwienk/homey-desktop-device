@@ -93,7 +93,7 @@ module.exports = {
             },
             {
               html: './src/shared/index.html',
-              js: './src/commander/commander.js',
+              js: './src/commander/index.js',
               name: 'commander_window',
             },
           ],

@@ -1,4 +1,4 @@
-import { commanderManager } from '../../CommanderApp';
+import { commander } from '../../CommanderApp';
 import { consoleManager } from '../../Console';
 
 export function makeEnumCapabilitySection({ value }) {
@@ -7,7 +7,7 @@ export function makeEnumCapabilitySection({ value }) {
 
   function action({ input }) {
     // maybe log that action requires an input?
-    commanderManager.incrementLoadingCount();
+    commander.incrementLoadingCount();
     device
       .setCapabilityValue({
         capabilityId: capability.id,
@@ -16,7 +16,7 @@ export function makeEnumCapabilitySection({ value }) {
       .then(() => {})
       .catch((error) => consoleManager.addError(error))
       .finally(() => {
-        commanderManager.decrementLoadingCount();
+        commander.decrementLoadingCount();
       });
   }
 

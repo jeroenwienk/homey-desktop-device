@@ -3,11 +3,12 @@ import { useEffect } from 'react';
 import { debounce } from '../../shared/debounce';
 
 import { ipc } from '../ipc';
-import { commandStore } from '../commander';
-import { commanderManager } from '../CommanderApp';
+import { cache } from "../cache";
+import { commandStore } from '../index';
+import { commander } from '../CommanderApp';
 import { consoleManager } from '../Console';
 
-export function useCommands({ cacheStore }) {
+export function useCommands() {
   useEffect(() => {
     const options = { fireImmediately: true };
 
@@ -21,7 +22,7 @@ export function useCommands({ cacheStore }) {
 
         for (const [index, entry] of commandsResult.arguments.entries()) {
           function run({ input }) {
-            commanderManager.incrementLoadingCount();
+            commander.incrementLoadingCount();
 
             ipc
               .send({
@@ -37,7 +38,7 @@ export function useCommands({ cacheStore }) {
                 consoleManager.addError(error);
               })
               .finally(() => {
-                commanderManager.decrementLoadingCount();
+                commander.decrementLoadingCount();
               });
           }
 
@@ -65,18 +66,18 @@ export function useCommands({ cacheStore }) {
         ];
 
         const nextCommandSourcesByHomeyId = {
-          ...cacheStore.getState().commands?.sourcesbyHomeyId,
+          ...cache.get().commands?.sourcesbyHomeyId,
           [homeyId]: {
             ...commandsResult,
           },
         };
 
         const nextCommandSectionsByHomeyId = {
-          ...cacheStore.getState().commands?.sectionsByHomeyId,
+          ...cache.get().commands?.sectionsByHomeyId,
           [homeyId]: sections,
         };
 
-        cacheStore.setState({
+        cache.set({
           commands: {
             sourcesbyHomeyId: nextCommandSourcesByHomeyId,
             sectionsByHomeyId: nextCommandSectionsByHomeyId,
@@ -90,5 +91,5 @@ export function useCommands({ cacheStore }) {
     return function () {
       unsubscribe();
     };
-  }, [cacheStore]);
+  }, []);
 }

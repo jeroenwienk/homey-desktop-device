@@ -17,11 +17,15 @@ class WindowManager extends EventEmitter {
   }
 
   setIsQuitting(value) {
-    this.isQuitting = value;
+    this.mainWindow.isQuitting = value;
+    this.overlayWindow.isQuitting = value;
+    this.webAppWindow.isQuitting = value;
+    this.commanderWindow.isQuitting = value;
   }
 
   createMainWindow() {
     this.mainWindow = new BaseBrowserWindow(
+      this,
       { name: 'mainWindow', url: MAIN_WINDOW_WEBPACK_ENTRY },
       {
         icon: images.white,
@@ -36,6 +40,7 @@ class WindowManager extends EventEmitter {
 
   createOverlayWindow() {
     this.overlayWindow = new BaseBrowserWindow(
+      this,
       { name: 'overlayWindow', url: OVERLAY_WINDOW_WEBPACK_ENTRY },
       {
         icon: images.white,
@@ -53,6 +58,7 @@ class WindowManager extends EventEmitter {
 
   createWebAppWindow() {
     this.webAppWindow = new BaseBrowserWindow(
+      this,
       { name: 'webAppWindow', url: 'https://my.homey.app' },
       {
         icon: images.colored,
@@ -92,6 +98,7 @@ class WindowManager extends EventEmitter {
     let debug = true;
 
     this.commanderWindow = new BaseBrowserWindow(
+      this,
       { name: 'commanderWindow', url: COMMANDER_WINDOW_WEBPACK_ENTRY },
       {
         icon: images.white,
@@ -136,7 +143,7 @@ class WindowManager extends EventEmitter {
   }
 
   closeAll() {
-    this.isQuitting = true;
+    this.setIsQuitting(true);
     this.webAppWindow.close();
     this.overlayWindow.close();
     this.commanderWindow.close();

@@ -1,4 +1,4 @@
-import { commanderManager } from '../../CommanderApp';
+import { commander } from '../../CommanderApp';
 import { consoleManager } from "../../Console";
 
 export function makeNumberCapabilitySection({ value }) {
@@ -7,7 +7,7 @@ export function makeNumberCapabilitySection({ value }) {
 
   function action({ input }) {
     // maybe log that action requires an input?
-    commanderManager.incrementLoadingCount();
+    commander.incrementLoadingCount();
     device
       .setCapabilityValue({
         capabilityId: capability.id,
@@ -16,7 +16,7 @@ export function makeNumberCapabilitySection({ value }) {
       .then(() => {})
       .catch((error) => consoleManager.addError(error))
       .finally(() => {
-        commanderManager.decrementLoadingCount();
+        commander.decrementLoadingCount();
       });
   }
 

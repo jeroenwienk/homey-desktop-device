@@ -1,4 +1,4 @@
-import { commanderManager } from '../../CommanderApp';
+import { commander } from '../../CommanderApp';
 import { consoleManager } from '../../Console';
 
 export function makeBooleanCapabilitySection({ value }) {
@@ -9,7 +9,7 @@ export function makeBooleanCapabilitySection({ value }) {
     key: `${baseKey}-toggle`,
     textValue: 'Toggle',
     action() {
-      commanderManager.incrementLoadingCount();
+      commander.incrementLoadingCount();
       device.homey.devices
         .getDevice({ id: device.id })
         .then((device) => {
@@ -21,7 +21,7 @@ export function makeBooleanCapabilitySection({ value }) {
         .then(() => {})
         .catch((error) => consoleManager.addError(error))
         .finally(() => {
-          commanderManager.decrementLoadingCount();
+          commander.decrementLoadingCount();
         });
     },
   };
@@ -30,7 +30,7 @@ export function makeBooleanCapabilitySection({ value }) {
     key: `${baseKey}-true`,
     textValue: 'On',
     action() {
-      commanderManager.incrementLoadingCount();
+      commander.incrementLoadingCount();
 
       device
         .setCapabilityValue({
@@ -40,7 +40,7 @@ export function makeBooleanCapabilitySection({ value }) {
         .then(() => {})
         .catch((error) => consoleManager.addError(error))
         .finally(() => {
-          commanderManager.decrementLoadingCount();
+          commander.decrementLoadingCount();
         });
     },
   };
@@ -49,7 +49,7 @@ export function makeBooleanCapabilitySection({ value }) {
     key: `${baseKey}-false`,
     textValue: 'Off',
     action() {
-      commanderManager.incrementLoadingCount();
+      commander.incrementLoadingCount();
 
       device
         .setCapabilityValue({
@@ -59,7 +59,7 @@ export function makeBooleanCapabilitySection({ value }) {
         .then(() => {})
         .catch((error) => consoleManager.addError(error))
         .finally(() => {
-          commanderManager.decrementLoadingCount();
+          commander.decrementLoadingCount();
         });
     },
   };

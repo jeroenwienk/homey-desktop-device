@@ -1,5 +1,5 @@
 import { defaultTextValueSort } from '../defaultTextValueSort';
-import { commanderManager } from '../CommanderApp';
+import { commander } from '../CommanderApp';
 import { consoleManager } from '../Console';
 
 export async function makeDevicesSections({ value }) {
@@ -31,7 +31,7 @@ export async function makeDevicesSections({ value }) {
                 Promise.resolve()
                   .then(async () => {
                     try {
-                      commanderManager.incrementLoadingCount();
+                      commander.incrementLoadingCount();
                       // await device.connect();
 
                       if (device.ui.quickAction == null) return;
@@ -58,7 +58,7 @@ export async function makeDevicesSections({ value }) {
                     } catch (error) {
                       consoleManager.addError(error);
                     } finally {
-                      commanderManager.decrementLoadingCount();
+                      commander.decrementLoadingCount();
                     }
                   })
                   .catch((error) => {

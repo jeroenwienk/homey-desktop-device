@@ -5,7 +5,7 @@ const { BrowserWindow } = require('electron');
 const { store } = require('./windowStore');
 
 export class BaseBrowserWindow extends BrowserWindow {
-  constructor(options, windowOptions) {
+  constructor(manager, options, windowOptions) {
     const storeWindowState = store.get(`${options.name}.windowState`);
 
     let windowState = {
@@ -32,6 +32,7 @@ export class BaseBrowserWindow extends BrowserWindow {
     };
 
     super({ ...windowOptions, ...baseOptions });
+    this.manager = manager;
 
     if (windowState.isMaximized && windowState.isHidden === false) {
       this.maximize();
@@ -94,7 +95,9 @@ export class BaseBrowserWindow extends BrowserWindow {
     });
 
     this.webContents.on('dom-ready', (event) => {
-      this.emit(`${options.name}-dom-ready`, event);
+      this.manager.emit(`${options.name}-dom-ready`, event);
     });
+
+    this.isQuitting = false;
   }
 }

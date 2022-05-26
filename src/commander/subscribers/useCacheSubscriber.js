@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import shallow from 'zustand/shallow';
 
-import { cacheStore } from '../CommanderApp';
+import { cache } from '../cache';
 
 export function useCacheSubscriber({ key, cacheRef, forceUpdate }) {
   useEffect(() => {
@@ -14,15 +14,15 @@ export function useCacheSubscriber({ key, cacheRef, forceUpdate }) {
     function handler(value) {
       cacheRef.current[key] = value;
 
-      if (cacheStore.getState().__timeout == null) {
-        cacheStore.getState().__timeout = setTimeout(() => {
-          cacheStore.getState().__timeout = null;
+      if (cache.get().__timeout == null) {
+        cache.get().__timeout = setTimeout(() => {
+          cache.get().__timeout = null;
           forceUpdate({});
         }, 100);
       }
     }
 
-    const unsubscribe = cacheStore.subscribe(selectKey, handler, options);
+    const unsubscribe = cache.store.subscribe(selectKey, handler, options);
 
     return function () {
       // cacheRef.current[key] = null;

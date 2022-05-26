@@ -1,6 +1,6 @@
 import { defaultTextValueSort } from '../defaultTextValueSort';
 import { ipc } from '../ipc';
-import { commanderManager } from '../CommanderApp';
+import { commander } from '../CommanderApp';
 import { consoleManager } from '../Console';
 
 export function makeDeviceSections({ value }) {
@@ -242,7 +242,7 @@ function makeCapabilitiesSection({ key, value }) {
         break;
     }
 
-    commanderManager.incrementLoadingCount();
+    commander.incrementLoadingCount();
     device
       .setCapabilityValue({
         capabilityId: capability.id,
@@ -251,7 +251,7 @@ function makeCapabilitiesSection({ key, value }) {
       .then(() => {})
       .catch((error) => consoleManager.addError(error))
       .finally(() => {
-        commanderManager.decrementLoadingCount();
+        commander.decrementLoadingCount();
       });
   }
 
