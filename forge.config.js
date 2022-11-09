@@ -73,9 +73,9 @@ module.exports = {
     },
   ],
   plugins: [
-    [
-      '@electron-forge/plugin-webpack',
-      {
+    {
+      name: '@electron-forge/plugin-webpack',
+      config: {
         mainConfig: './webpack/webpack.main.config.js',
         renderer: {
           nodeIntegration: true,
@@ -103,6 +103,6 @@ module.exports = {
         port: 9000,
         loggerPort: 9001,
       },
-    ],
+    },
   ],
 };
