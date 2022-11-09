@@ -68,7 +68,7 @@ module.exports = {
           owner: 'jeroenwienk',
           name: 'homey-desktop-device',
         },
-        prerelease: true,
+        draft: true,
       },
     },
   ],
