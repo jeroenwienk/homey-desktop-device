@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
 
-import { useFetchDevices } from '../fetchers/useFetchDevices';
-import { makeSystemSections } from './system';
-import { useFetchLogs } from '../fetchers/useFetchLogs';
+// import { useFetchDevices } from '../fetchers/useFetchDevices';
+// import { makeSystemSections } from './system';
+// import { useFetchLogs } from '../fetchers/useFetchLogs';
 
 export function useSectionBuilder({ cacheRef, state, forcedUpdate }) {
   const sections = useMemo(() => {
@@ -76,10 +76,10 @@ export function useSectionBuilder({ cacheRef, state, forcedUpdate }) {
           });
         }
 
-        if (true) {
-          const { sections } = makeSystemSections({});
-          result = Array.prototype.concat.apply(result, sections);
-        }
+        // if (true) {
+        //   const { sections } = makeSystemSections({});
+        //   result = Array.prototype.concat.apply(result, sections);
+        // }
 
         return result;
       }
@@ -94,17 +94,17 @@ export function useSectionBuilder({ cacheRef, state, forcedUpdate }) {
           result = Array.prototype.concat.apply(result, sections);
         }
 
-        useFetchDevices.invoke({ homeyId: pathChunk.key });
-        if (cache.devices != null) {
-          const sections = cache.devices.sectionsByHomeyId[pathChunk.key];
-          result = Array.prototype.concat.apply(result, sections);
-        }
-
-        useFetchLogs.invoke({ homeyId: pathChunk.key });
-        if (cache.logs != null) {
-          const sections = cache.logs.sectionsByHomeyId[pathChunk.key];
-          result = Array.prototype.concat.apply(result, sections);
-        }
+        // useFetchDevices.invoke({ homeyId: pathChunk.key });
+        // if (cache.devices != null) {
+        //   const sections = cache.devices.sectionsByHomeyId[pathChunk.key];
+        //   result = Array.prototype.concat.apply(result, sections);
+        // }
+        //
+        // useFetchLogs.invoke({ homeyId: pathChunk.key });
+        // if (cache.logs != null) {
+        //   const sections = cache.logs.sectionsByHomeyId[pathChunk.key];
+        //   result = Array.prototype.concat.apply(result, sections);
+        // }
 
         return result;
       }

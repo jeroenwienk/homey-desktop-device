@@ -50,9 +50,9 @@ app.on('ready', async () => {
   const settings = await db.getSettings();
   console.log({ settings });
 
-  if (settings.webAppWindowEnabled === true) {
-    windowManager.createWebAppWindow();
-  }
+  // if (settings.webAppWindowEnabled === true) {
+  //   windowManager.createWebAppWindow();
+  // }
 
   windowManager.createMainWindow();
   windowManager.createOverlayWindow();
@@ -60,9 +60,9 @@ app.on('ready', async () => {
 
   trayManager.createTray();
 
-  if (settings.webAppWindowEnabled === true) {
-    trayManager.createWebAppTray();
-  }
+  // if (settings.webAppWindowEnabled === true) {
+  //   trayManager.createWebAppTray();
+  // }
 
   const buttons = await db.getButtons();
   const trayButtons = buttons.filter((button) => {

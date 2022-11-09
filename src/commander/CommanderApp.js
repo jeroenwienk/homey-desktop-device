@@ -10,11 +10,11 @@ import { ipc } from './ipc';
 import { cache } from './cache';
 
 import { useSectionBuilder } from './sections/useSectionBuilder';
-import { useHomeys } from './subscribers/homeys';
+// import { useHomeys } from './subscribers/homeys';
 import { useCommands } from './subscribers/commands';
 import { useCacheSubscriber } from './subscribers/useCacheSubscriber';
-import { useFetchDevices } from './fetchers/useFetchDevices';
-import { useFetchLogs } from './fetchers/useFetchLogs';
+// import { useFetchDevices } from './fetchers/useFetchDevices';
+// import { useFetchLogs } from './fetchers/useFetchLogs';
 
 import { filterNodes } from './filterNodes';
 import { makeCapabilitySections } from './sections/capabilities/capability';
@@ -99,16 +99,16 @@ export function CommanderApp() {
 
   const sections = useSectionBuilder({ cacheRef, state, forcedUpdate });
 
-  useHomeys();
+  // useHomeys();
   useCommands();
 
-  useCacheSubscriber({ key: 'homeys', cacheRef, forceUpdate });
+  // useCacheSubscriber({ key: 'homeys', cacheRef, forceUpdate });
   useCacheSubscriber({ key: 'commands', cacheRef, forceUpdate });
-  useCacheSubscriber({ key: 'devices', cacheRef, forceUpdate });
-  useCacheSubscriber({ key: 'logs', cacheRef, forceUpdate });
+  // useCacheSubscriber({ key: 'devices', cacheRef, forceUpdate });
+  // useCacheSubscriber({ key: 'logs', cacheRef, forceUpdate });
 
-  useFetchDevices({ inputValue });
-  useFetchLogs({ inputValue });
+  // useFetchDevices({ inputValue });
+  // useFetchLogs({ inputValue });
 
   async function setNext({ key, value }) {
     let next = {

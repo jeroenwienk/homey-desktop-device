@@ -86,7 +86,9 @@ class WindowManager extends EventEmitter {
 
       if (url?.startsWith('https://') === true) {
         setImmediate(() => {
-          shell.openExternal(url);
+          shell.openExternal(url).catch((error) => {
+            console.error(error);
+          });
         });
       }
 
