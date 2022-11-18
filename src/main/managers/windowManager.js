@@ -17,10 +17,10 @@ class WindowManager extends EventEmitter {
   }
 
   setIsQuitting(value) {
-    this.mainWindow.isQuitting = value;
-    this.overlayWindow.isQuitting = value;
-    this.webAppWindow.isQuitting = value;
-    this.commanderWindow.isQuitting = value;
+    this.mainWindow && (this.mainWindow.isQuitting = value);
+    this.overlayWindow && (this.overlayWindow.isQuitting = value);
+    this.webAppWindow && (this.webAppWindow.isQuitting = value);
+    this.commanderWindow && (this.commanderWindow.isQuitting = value);
   }
 
   createMainWindow() {
@@ -38,7 +38,7 @@ class WindowManager extends EventEmitter {
     );
   }
 
-  createOverlayWindow() {
+  createOverlayWindow({ show = false } = {}) {
     this.overlayWindow = new BaseBrowserWindow(
       this,
       { name: 'overlayWindow', url: OVERLAY_WINDOW_WEBPACK_ENTRY },
@@ -54,6 +54,10 @@ class WindowManager extends EventEmitter {
         skipTaskbar: true,
       }
     );
+
+    if (show === true) {
+      this.overlayWindow.show();
+    }
   }
 
   createWebAppWindow() {
@@ -139,17 +143,22 @@ class WindowManager extends EventEmitter {
     }
   }
 
-  detroyWebAppWindow() {
-    this.webAppWindow.destroy();
+  destroyWebAppWindow() {
+    this.webAppWindow && this.webAppWindow.destroy();
     this.webAppWindow = null;
+  }
+
+  destroyOverlayWindow() {
+    this.overlayWindow && this.overlayWindow.destroy();
+    this.overlayWindow = null;
   }
 
   closeAll() {
     this.setIsQuitting(true);
-    this.webAppWindow.close();
-    this.overlayWindow.close();
-    this.commanderWindow.close();
-    this.mainWindow.close();
+    this.webAppWindow && this.webAppWindow.close();
+    this.overlayWindow && this.overlayWindow.close();
+    this.commanderWindow && this.commanderWindow.close();
+    this.mainWindow && this.mainWindow.close();
   }
 }
 

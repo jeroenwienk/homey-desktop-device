@@ -175,11 +175,19 @@ async function handleSettingsUpdate(event, args) {
         windowManager.createWebAppWindow();
         trayManager.createWebAppTray();
       } else {
-        trayManager.detroyWebAppTray();
-        windowManager.detroyWebAppWindow();
+        trayManager.destroyWebAppTray();
+        windowManager.destroyWebAppWindow();
       }
     }
-    // apply them
+
+    if (previousSettings.overlayWindowEnabled !== args.overlayWindowEnabled) {
+      if (args.overlayWindowEnabled === true) {
+        windowManager.createOverlayWindow({ show: true });
+      } else {
+        windowManager.destroyOverlayWindow();
+      }
+    }
+
   } catch (error) {
     console.error(error);
   }

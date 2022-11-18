@@ -55,10 +55,13 @@ app.on('ready', async () => {
   // }
 
   windowManager.createMainWindow();
-  windowManager.createOverlayWindow();
   windowManager.createCommanderWindow();
 
   trayManager.createTray();
+
+  if (settings.overlayWindowEnabled === true) {
+    windowManager.createOverlayWindow();
+  }
 
   // if (settings.webAppWindowEnabled === true) {
   //   trayManager.createWebAppTray();

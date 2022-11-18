@@ -21,9 +21,9 @@ import { Inputs } from './containers/inputs/Inputs';
 
 import { MenuButton } from '../shared/components/Menu';
 import { ExternalLink } from '../shared/components/ExternalLink';
-// import { IconButton } from '../shared/components/IconButton';
+import { IconButton } from '../shared/components/IconButton';
 
-// import { SettingsIcon } from '../shared/components/IconMask';
+import { SettingsIcon } from '../shared/components/IconMask';
 
 export function App() {
   const [isLatestVersion, setIsLatestVersion] = useState(true);
@@ -73,13 +73,13 @@ export function App() {
             <MenuButton.Item key="display">Display</MenuButton.Item>
           </MenuButton>
 
-          {/*<IconButton*/}
-          {/*  iconComponent={SettingsIcon}*/}
-          {/*  aria-label="settings"*/}
-          {/*  onPress={() => {*/}
-          {/*    history.push(`/settings`);*/}
-          {/*  }}*/}
-          {/*/>*/}
+          <IconButton
+            iconComponent={SettingsIcon}
+            aria-label="settings"
+            onPress={() => {
+              history.push(`/settings`);
+            }}
+          />
         </div>
 
         {isLatestVersion === false && (

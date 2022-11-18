@@ -29,10 +29,10 @@ export function SettingsDialog(props) {
     <DialogBase onClose={handleClose} isOpen>
       <DialogContent>
         <DialogActions>
-          <IconButton iconComponent={CancelIcon} onPress={handleClose} />
+          <IconButton iconComponent={CancelIcon} onPress={handleClose}/>
         </DialogActions>
 
-        <SettingsForm formId={formId} onSubmit={handleClose} />
+        <SettingsForm formId={formId} onSubmit={handleClose}/>
       </DialogContent>
     </DialogBase>
   );
@@ -53,12 +53,19 @@ function SettingsForm(props) {
 
   return (
     <DialogForm id={props.formId} key={props.editId}>
+      {/*<Checkbox*/}
+      {/*  label="Enable web app window"*/}
+      {/*  name="webAppWindowEnabled"*/}
+      {/*  defaultValue={true}*/}
+      {/*  register={register}*/}
+      {/*  error={errors.webAppWindowEnabled}*/}
+      {/*/>*/}
       <Checkbox
-        label="Enable web app window"
-        name="webAppWindowEnabled"
+        label="Enable overlay window"
+        name="overlayWindowEnabled"
         defaultValue={true}
         register={register}
-        error={errors.webAppWindowEnabled}
+        error={errors.overlayWindowEnabled}
       />
 
       <Button onPress={handleSubmit(onSubmit)}>Save</Button>

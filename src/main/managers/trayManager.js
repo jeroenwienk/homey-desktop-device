@@ -1,4 +1,3 @@
-const path = require('path');
 const EventEmitter = require('events');
 const { Tray, Menu } = require('electron');
 
@@ -67,44 +66,47 @@ class TrayManager extends EventEmitter {
       }),
       { type: 'separator' },
       ...items,
-      {
-        label: 'Show Overlay',
-        click: () => {
-          windowManager.overlayWindow.show();
-          this.rebuildMenu();
-        },
-      },
-      {
-        label: 'Hide Overlay',
-        click: () => {
-          windowManager.overlayWindow.hide();
-          this.rebuildMenu();
-        },
-      },
-      { type: 'separator' },
-      {
-        label: windowManager.overlayWindow.isAlwaysOnTop()
-          ? 'Overlay disable always on top'
-          : 'Overlay enable always on top',
-        click: () => {
-          windowManager.overlayWindow.setAlwaysOnTop(
-            !windowManager.overlayWindow.isAlwaysOnTop()
-          );
-          this.rebuildMenu();
-        },
-      },
-      {
-        label: 'Disable overlay mouse',
-        click() {
-          windowManager.overlayWindow.setIgnoreMouseEvents(true);
-        },
-      },
-      {
-        label: 'Enable overlay mouse',
-        click() {
-          windowManager.overlayWindow.setIgnoreMouseEvents(false);
-        },
-      },
+
+      ...(windowManager.overlayWindow
+        ? [
+            {
+              label: 'Show Overlay',
+              click: () => {
+                windowManager.overlayWindow.show();
+                this.rebuildMenu();
+              },
+            },
+            {
+              label: 'Hide Overlay',
+              click: () => {
+                windowManager.overlayWindow.hide();
+                this.rebuildMenu();
+              },
+            },
+            { type: 'separator' },
+            {
+              label: windowManager.overlayWindow.isAlwaysOnTop()
+                ? 'Overlay disable always on top'
+                : 'Overlay enable always on top',
+              click: () => {
+                windowManager.overlayWindow.setAlwaysOnTop(!windowManager.overlayWindow.isAlwaysOnTop());
+                this.rebuildMenu();
+              },
+            },
+            {
+              label: 'Disable overlay mouse',
+              click() {
+                windowManager.overlayWindow.setIgnoreMouseEvents(true);
+              },
+            },
+            {
+              label: 'Enable overlay mouse',
+              click() {
+                windowManager.overlayWindow.setIgnoreMouseEvents(false);
+              },
+            },
+          ]
+        : []),
       {
         label: 'Quit',
         click() {
@@ -138,8 +140,8 @@ class TrayManager extends EventEmitter {
     this.webAppTray = webAppTray;
   }
 
-  detroyWebAppTray() {
-    this.webAppTray.destroy();
+  destroyWebAppTray() {
+    this.webAppTray && this.webAppTray.destroy();
     this.webAppTray = null;
   }
 }

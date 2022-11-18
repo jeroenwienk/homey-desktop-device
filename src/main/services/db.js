@@ -75,7 +75,7 @@ class DataBase {
   async createSettings() {
     return new Promise((resolve, reject) => {
       this.basicCollection.insert(
-        { id: 'settings', webAppWindowEnabled: true },
+        { id: 'settings', webAppWindowEnabled: false, overlayWindowEnabled: false },
         (error, entry) => {
           if (error) return reject(error);
           resolve(entry);
