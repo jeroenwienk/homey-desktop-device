@@ -17,6 +17,7 @@ import { CancelIcon } from '../shared/components/IconMask';
 // import { TextField } from './components/form/TextField';
 import { Button } from '../shared/components/Button';
 import { Checkbox } from '../shared/components/form/Checkbox';
+import { AcceleratorField } from '../shared/components/form/AcceleratorField';
 
 export function SettingsDialog(props) {
   const formId = useId();
@@ -66,6 +67,14 @@ function SettingsForm(props) {
         defaultValue={true}
         register={register}
         error={errors.overlayWindowEnabled}
+      />
+
+      <AcceleratorField
+        label="Shortcut"
+        name="commanderShortcutAccelerator"
+        defaultValue=""
+        register={register}
+        error={errors.accelerator}
       />
 
       <Button onPress={handleSubmit(onSubmit)}>Save</Button>

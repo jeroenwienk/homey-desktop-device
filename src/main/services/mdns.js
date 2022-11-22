@@ -15,6 +15,8 @@ class MDNS {
     console.log('mdns:init');
     this.mac = await macaddress.one();
 
+    console.log(this.mac);
+
     this.responder = ciao.getResponder();
     this.service = this.responder.createService({
       name: `homey-desktop-device-${this.mac}`,

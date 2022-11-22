@@ -188,6 +188,10 @@ async function handleSettingsUpdate(event, args) {
       }
     }
 
+    if (args.commanderShortcutAccelerator) {
+      windowManager.registerCommanderWindowShortcut(args.commanderShortcutAccelerator);
+    }
+
   } catch (error) {
     console.error(error);
   }

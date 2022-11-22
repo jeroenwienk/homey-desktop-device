@@ -16,7 +16,12 @@ export const IconButton = forwardRef((props, forwardedRef) => {
   const color = focusRing.isFocusVisible ? vars.color_focus : props.color;
 
   return (
-    <ButtonBase {...mergeProps(focusRing.focusProps, button.buttonProps)} ref={mergeRefs([buttonRef, forwardedRef])}>
+    <ButtonBase
+      {...mergeProps(focusRing.focusProps, button.buttonProps)}
+      ref={mergeRefs([buttonRef, forwardedRef])}
+      style={props.style}
+      className={props.className}
+    >
       {props.iconComponent ? (
         <props.iconComponent ref={props.iconRef} color={color} size={props.size} />
       ) : (

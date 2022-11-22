@@ -75,7 +75,12 @@ class DataBase {
   async createSettings() {
     return new Promise((resolve, reject) => {
       this.basicCollection.insert(
-        { id: 'settings', webAppWindowEnabled: false, overlayWindowEnabled: false },
+        {
+          id: 'settings',
+          webAppWindowEnabled: false,
+          overlayWindowEnabled: false,
+          commanderShortcutAccelerator: 'CommandOrControl+Alt+K',
+        },
         (error, entry) => {
           if (error) return reject(error);
           resolve(entry);
@@ -86,14 +91,10 @@ class DataBase {
 
   async updateSettings(args) {
     return new Promise((resolve, reject) => {
-      this.basicCollection.update(
-        { id: 'settings' },
-        { $set: args },
-        (error) => {
-          if (error) return reject(error);
-          resolve();
-        }
-      );
+      this.basicCollection.update({ id: 'settings' }, { $set: args }, (error) => {
+        if (error) return reject(error);
+        resolve();
+      });
     });
   }
 

@@ -1,5 +1,5 @@
 const EventEmitter = require('events');
-const { shell } = require('electron');
+const { shell, globalShortcut } = require('electron');
 
 const images = require('../images');
 
@@ -159,6 +159,40 @@ class WindowManager extends EventEmitter {
     this.overlayWindow && this.overlayWindow.close();
     this.commanderWindow && this.commanderWindow.close();
     this.mainWindow && this.mainWindow.close();
+  }
+
+  registerCommanderWindowShortcut(accelerator) {
+    // const accelerator2 = 'Meta+K';
+
+    accelerator = accelerator.replaceAll(' ', '+');
+
+    const handler = () => {
+      console.log(`${accelerator} is pressed`);
+
+      if (this.commanderWindow.isVisible() === false || this.commanderWindow.isFocused() === false) {
+        this.commanderWindow.show();
+        this.commanderWindow.maximize();
+        this.commanderWindow.webContents.focus();
+
+        this.send(this.commanderWindow, 'focusComboBox', {
+          data: true,
+        });
+      } else {
+        this.commanderWindow.hide();
+      }
+    }
+
+    const ret = globalShortcut.register(accelerator, handler);
+    // const ret2 = globalShortcut.register(accelerator2, handler);
+
+    if (ret === false) {
+      // || ret2 === false
+      console.log('registration failed');
+    }
+
+    // Check whether a shortcut is registered.
+    console.log({ isRegistered: globalShortcut.isRegistered(accelerator) });
+    // console.log(globalShortcut.isRegistered(accelerator2));
   }
 }
 

@@ -25,7 +25,7 @@ export function AcceleratorField(props) {
 
   const label = useLabel({
     label: props.label,
-    'aria-label': props.label,
+    'aria-label': props['aria-label'],
   });
 
   const [state, setState] = useState(() => {
@@ -44,6 +44,11 @@ export function AcceleratorField(props) {
 
       if (key === 'Tab' || key === 'Escape') {
         event.continuePropagation();
+
+        if (key === 'Escape') {
+          setState({});
+        }
+
         return;
       }
 
@@ -93,16 +98,18 @@ export function AcceleratorField(props) {
 
   return (
     <sc.Container>
-      <sc.LabelContainer>
-        <sc.Label {...label.labelProps}>{props.label}</sc.Label>
-        <IconButton
-          iconComponent={ClearIcon}
-          size={vars.icon_size_small}
-          onPress={() => {
-            setState({});
-          }}
-        />
-      </sc.LabelContainer>
+      {props.label && (
+        <sc.LabelContainer>
+          <sc.Label {...label.labelProps}>{props.label}</sc.Label>
+          <IconButton
+            iconComponent={ClearIcon}
+            size={vars.icon_size_small}
+            onPress={() => {
+              setState({});
+            }}
+          />
+        </sc.LabelContainer>
+      )}
       <sc.Input
         {...label.fieldProps}
         {...keyboard.keyboardProps}
@@ -120,6 +127,7 @@ export function AcceleratorField(props) {
 const sc = {};
 
 sc.Container = styled.div`
+  position: relative;
   display: flex;
   flex-direction: column;
 `;

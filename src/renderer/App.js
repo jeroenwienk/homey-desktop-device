@@ -60,7 +60,7 @@ export function App() {
       />
 
       <App.Header>
-        <div>
+        <div style={{ display: 'flex', gap: 4 }}>
           <MenuButton
             label="Create"
             onAction={(key) => {
@@ -73,13 +73,19 @@ export function App() {
             <MenuButton.Item key="display">Display</MenuButton.Item>
           </MenuButton>
 
-          <IconButton
-            iconComponent={SettingsIcon}
-            aria-label="settings"
-            onPress={() => {
-              history.push(`/settings`);
-            }}
-          />
+          <div style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+            <IconButton
+              iconComponent={SettingsIcon}
+              aria-label="settings"
+              onPress={() => {
+                history.push(`/settings`);
+              }}
+            />
+          </div>
         </div>
 
         {isLatestVersion === false && (

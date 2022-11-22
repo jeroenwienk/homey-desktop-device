@@ -74,47 +74,17 @@ app.on('ready', async () => {
 
   trayManager.addButtons(trayButtons);
 
+  try {
+    windowManager.registerCommanderWindowShortcut(settings.commanderShortcutAccelerator);
+  } catch (error) {
+    console.error(error);
+  }
+
   await mdns.init();
   await mdns.advertise();
 });
 
-app.whenReady().then(() => {
-  // Register a 'CommandOrControl+X' shortcut listener.
-  const accelerator = 'CommandOrControl+Alt+K';
-
-  // const accelerator2 = 'Meta+K';
-
-  function handler() {
-    console.log(`${accelerator} is pressed`);
-
-    if (
-      windowManager.commanderWindow.isVisible() === false ||
-      windowManager.commanderWindow.isFocused() === false
-    ) {
-      windowManager.commanderWindow.show();
-      windowManager.commanderWindow.maximize();
-      windowManager.commanderWindow.webContents.focus();
-
-      windowManager.send(windowManager.commanderWindow, 'focusComboBox', {
-        data: true,
-      });
-    } else {
-      windowManager.commanderWindow.hide();
-    }
-  }
-
-  const ret = globalShortcut.register(accelerator, handler);
-  // const ret2 = globalShortcut.register(accelerator2, handler);
-
-  if (ret === false) {
-    // || ret2 === false
-    console.log('registration failed');
-  }
-
-  // Check whether a shortcut is registered.
-  console.log({ isRegistered: globalShortcut.isRegistered(accelerator) });
-  // console.log(globalShortcut.isRegistered(accelerator2));
-});
+app.whenReady().then(() => {});
 
 app.on('window-all-closed', (event) => {
   console.log('app:window-all-closed');
