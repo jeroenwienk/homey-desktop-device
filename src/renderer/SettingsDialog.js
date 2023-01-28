@@ -71,7 +71,7 @@ function SettingsForm(props) {
 
       <AcceleratorField
         label="Shortcut"
-        name="commanderShortcutAccelerator"
+        name="commanderShortcutAcceleratorKeys"
         defaultValue=""
         register={register}
         error={errors.accelerator}

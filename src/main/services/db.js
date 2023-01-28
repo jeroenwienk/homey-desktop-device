@@ -79,7 +79,7 @@ class DataBase {
           id: 'settings',
           webAppWindowEnabled: false,
           overlayWindowEnabled: false,
-          commanderShortcutAccelerator: 'CommandOrControl+Alt+K',
+          commanderShortcutAcceleratorKeys: 'CommandOrControl+Alt+K',
         },
         (error, entry) => {
           if (error) return reject(error);

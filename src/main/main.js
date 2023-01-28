@@ -24,6 +24,7 @@ const { mdns } = require('./services/mdns');
 const { serverSocket } = require('./services/serverSocket');
 const { db } = require('./services/db');
 
+const { acceleratorManager } = require('./managers/acceleratorManager');
 const { windowManager } = require('./managers/windowManager');
 const { trayManager } = require('./managers/trayManager');
 
@@ -74,17 +75,15 @@ app.on('ready', async () => {
 
   trayManager.addButtons(trayButtons);
 
-  try {
-    windowManager.registerCommanderWindowShortcut(settings.commanderShortcutAccelerator);
-  } catch (error) {
-    console.error(error);
-  }
+  acceleratorManager.registerCommanderShortcutAccelerator(settings.commanderShortcutAcceleratorKeys, () => {
+    windowManager.toggleCommanderWindow()
+  })
 
   await mdns.init();
   await mdns.advertise();
 });
 
-app.whenReady().then(() => {});
+app.whenReady().then(() => { });
 
 app.on('window-all-closed', (event) => {
   console.log('app:window-all-closed');

@@ -5,6 +5,7 @@ const { serverSocket } = require('./services/serverSocket');
 const { exec } = require('child_process');
 
 const { windowManager } = require('./managers/windowManager');
+const { acceleratorManager } = require('./managers/acceleratorManager');
 
 const { REND, OVERLAY, MAIN, IO_EMIT, IO_ON, events } = require('../shared/events');
 const { trayManager } = require('./managers/trayManager');
@@ -188,8 +189,10 @@ async function handleSettingsUpdate(event, args) {
       }
     }
 
-    if (args.commanderShortcutAccelerator) {
-      windowManager.registerCommanderWindowShortcut(args.commanderShortcutAccelerator);
+    if (args.commanderShortcutAcceleratorKeys) {
+      acceleratorManager.registerCommanderShortcutAccelerator(args.commanderShortcutAcceleratorKeys, () => {
+        windowManager.toggleCommanderWindow();
+      })
     }
 
   } catch (error) {
@@ -336,23 +339,47 @@ function registerAccelerators(accelerators) {
   // globalShortcut.unregisterAll();
 
   // TODO: fails on arrows
-  accelerators.forEach((accelerator) => {
-    try {
-      const ret = globalShortcut.register(accelerator.keys.replaceAll(' ', '+'), () => {
+
+  const mapped = accelerators.map(accelerator => {
+    return {
+      keys: accelerator.keys,
+      callback: () => {
         windowManager.send(windowManager.mainWindow, MAIN.ACCELERATOR_TEST, {
           id: accelerator.id,
         });
 
         serverSocket.io.emit(events.ACCELERATOR_RUN, { id: accelerator.id });
-      });
-
-      if (!ret) {
-        console.log('registration failed');
       }
-    } catch (error) {
-      console.log(error);
     }
-  });
+  })
+
+  acceleratorManager.registerRendererAccelerators(mapped)
+
+  // accelerators.forEach((accelerator) => {
+  //   try {
+  //     acceleratorManager.register(accelerator.keys, () => {
+  //       windowManager.send(windowManager.mainWindow, MAIN.ACCELERATOR_TEST, {
+  //         id: accelerator.id,
+  //       });
+
+  //       serverSocket.io.emit(events.ACCELERATOR_RUN, { id: accelerator.id });
+  //     })
+
+  //     // const ret = globalShortcut.register(accelerator.keys.replaceAll(' ', '+'), () => {
+  //     //   windowManager.send(windowManager.mainWindow, MAIN.ACCELERATOR_TEST, {
+  //     //     id: accelerator.id,
+  //     //   });
+
+  //     //   serverSocket.io.emit(events.ACCELERATOR_RUN, { id: accelerator.id });
+  //     // });
+
+  //     // if (!ret) {
+  //     //   console.log('registration failed');
+  //     // }
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // });
 }
 
 async function handleDisplayCreate(event, args) {

@@ -53,10 +53,11 @@ ipcRenderer.on(events.ON_API_PROPS, (event, data) => {
   const homeyAPI = new HomeyAPIApp({
     homey: {
       api: {
-        getOwnerApiToken() {
+        async getOwnerApiToken() {
           return data.token;
         },
-        getLocalUrl() {
+        async getLocalUrl() {
+          // Why would this ever be localhost?
           return data.url.replace(
             'localhost',
             data.address.substring('::ffff:'.length)

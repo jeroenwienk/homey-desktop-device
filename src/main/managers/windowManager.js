@@ -161,39 +161,44 @@ class WindowManager extends EventEmitter {
     this.mainWindow && this.mainWindow.close();
   }
 
-  registerCommanderWindowShortcut(accelerator) {
-    // const accelerator2 = 'Meta+K';
+  // registerCommanderWindowShortcut(accelerator) {
+  //   // const accelerator2 = 'Meta+K';
 
-    accelerator = accelerator.replaceAll(' ', '+');
+  //   // TODO unregister previous value
 
-    const handler = () => {
-      console.log(`${accelerator} is pressed`);
+  //   accelerator = accelerator.replaceAll(' ', '+');
 
-      if (this.commanderWindow.isVisible() === false || this.commanderWindow.isFocused() === false) {
-        this.commanderWindow.show();
-        this.commanderWindow.maximize();
-        this.commanderWindow.webContents.focus();
+  //   const handler = () => {
+      
+  //   }
 
-        this.send(this.commanderWindow, 'focusComboBox', {
-          data: true,
-        });
-      } else {
-        this.commanderWindow.hide();
-      }
+  //   const ret = globalShortcut.register(accelerator, handler);
+  //   // const ret2 = globalShortcut.register(accelerator2, handler);
+
+  //   if (ret === false) {
+  //     // || ret2 === false
+  //     console.log('registration failed');
+  //   }
+
+  //   // Check whether a shortcut is registered.
+  //   console.log({ isRegistered: globalShortcut.isRegistered(accelerator) });
+  //   // console.log(globalShortcut.isRegistered(accelerator2));
+  // }
+
+  toggleCommanderWindow() {
+    if (this.commanderWindow.isVisible() === false || this.commanderWindow.isFocused() === false) {
+      this.commanderWindow.show();
+      this.commanderWindow.maximize();
+      this.commanderWindow.webContents.focus();
+
+      this.send(this.commanderWindow, 'focusComboBox', {
+        data: true,
+      });
+    } else {
+      this.commanderWindow.hide();
     }
-
-    const ret = globalShortcut.register(accelerator, handler);
-    // const ret2 = globalShortcut.register(accelerator2, handler);
-
-    if (ret === false) {
-      // || ret2 === false
-      console.log('registration failed');
-    }
-
-    // Check whether a shortcut is registered.
-    console.log({ isRegistered: globalShortcut.isRegistered(accelerator) });
-    // console.log(globalShortcut.isRegistered(accelerator2));
   }
+
 }
 
 module.exports = {

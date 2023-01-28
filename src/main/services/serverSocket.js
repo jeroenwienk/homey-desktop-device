@@ -60,9 +60,7 @@ class ServerSocket {
     });
 
     windowManager.once('mainWindow-dom-ready', (event) => {
-
-      console.log('mainWindow-dom-ready.log')
-
+      console.log('mainWindow-dom-ready')
       this.listen();
     });
   }
