@@ -66,7 +66,13 @@ class DataBase {
         if (docs[0] == null) {
           this.createSettings().then(resolve).catch(reject);
         } else {
-          resolve(docs[0]);
+          resolve({
+            id: 'settings',
+            webAppWindowEnabled: false,
+            overlayWindowEnabled: false,
+            commanderShortcutAcceleratorKeys: 'CommandOrControl+Alt+K',
+            ...docs[0],
+          });
         }
       });
     });
