@@ -18,7 +18,7 @@ if (allowContinue === false) {
   app.exit(0);
 }
 
-const { images } = require('./images');
+const images = require('./images');
 
 const { mdns } = require('./services/mdns');
 const { serverSocket } = require('./services/serverSocket');
