@@ -39,6 +39,7 @@ export function useCommands() {
               })
               .finally(() => {
                 commander.decrementLoadingCount();
+                ipc.send({ message: 'close' }).catch(console.log);
               });
           }
 
