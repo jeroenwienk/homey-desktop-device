@@ -101,7 +101,7 @@ class WindowManager extends EventEmitter {
   }
 
   createCommanderWindow() {
-    let debug = true;
+    let debug = false;
 
     this.commanderWindow = new BaseBrowserWindow(
       this,
@@ -160,30 +160,6 @@ class WindowManager extends EventEmitter {
     this.commanderWindow && this.commanderWindow.close();
     this.mainWindow && this.mainWindow.close();
   }
-
-  // registerCommanderWindowShortcut(accelerator) {
-  //   // const accelerator2 = 'Meta+K';
-
-  //   // TODO unregister previous value
-
-  //   accelerator = accelerator.replaceAll(' ', '+');
-
-  //   const handler = () => {
-      
-  //   }
-
-  //   const ret = globalShortcut.register(accelerator, handler);
-  //   // const ret2 = globalShortcut.register(accelerator2, handler);
-
-  //   if (ret === false) {
-  //     // || ret2 === false
-  //     console.log('registration failed');
-  //   }
-
-  //   // Check whether a shortcut is registered.
-  //   console.log({ isRegistered: globalShortcut.isRegistered(accelerator) });
-  //   // console.log(globalShortcut.isRegistered(accelerator2));
-  // }
 
   toggleCommanderWindow() {
     if (this.commanderWindow.isVisible() === false || this.commanderWindow.isFocused() === false) {
